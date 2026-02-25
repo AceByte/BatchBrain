@@ -1,6 +1,6 @@
-# BarBatch
+# BatchBrain
 
-**BarBatch** is a professional bar inventory and batch cocktail management system for modern bars and restaurants.
+**BatchBrain** is a professional bar inventory and batch cocktail management system for modern bars and restaurants.
 It helps you track cocktail specs, manage batched/prepped cocktails, monitor inventory, and streamline prep and shopping workflows.
 
 ---
@@ -55,7 +55,7 @@ It helps you track cocktail specs, manage batched/prepped cocktails, monitor inv
 1. Clone the repository:
     ```sh
     git clone https://github.com/AceByte/BarBatch.git
-    cd BarBatch
+    cd BatchBrain
     ```
 
 2. Install dependencies:
