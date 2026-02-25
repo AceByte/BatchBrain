@@ -103,11 +103,6 @@ Please open an issue or discussion for major changes.
 
 ---
 
-## 📄 License
-
-MIT License
-
----
 
 ## 👨‍💻 Author
 
