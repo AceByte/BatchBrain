@@ -5,6 +5,10 @@
 
 const InventoryModule = {
 
+  // staging helpers for edit/save workflow
+  _editMode: false,
+  _stagedCounts: {},
+
   /* ═══════════════════════════════════════
      HELPERS
   ═══════════════════════════════════════ */
@@ -114,12 +118,17 @@ const InventoryModule = {
      CARD
   ═══════════════════════════════════════ */
 
+  // when rendering each card, prefer staged value if present and show input in editMode
   renderCard(item, index, isUrgent = false) {
     const cocktail = this.getCocktail(item);
-    if (!cocktail) return "";
+    const staged = this._stagedCounts[cocktail.id];
+    const displayCount = (staged !== undefined) ? staged : item.count;
 
     const usage = this.calcDailyUsage(item.premixLog || []);
-    const daysLeft = usage > 0 ? (item.count / usage).toFixed(1) : '∞';
+    let daysLeft = '∞';
+    if (usage > 0) {
+      daysLeft = (displayCount / usage).toFixed(1);
+    }
 
     const cardClass = isUrgent ? 'inv-card urgent' : 'inv-card';
 
@@ -148,16 +157,23 @@ const InventoryModule = {
           <div class="count-controller" style="display:flex; align-items:center; justify-content:center; gap:24px; padding:16px; background:var(--bg-input); border-radius:var(--radius-md); border:1px solid var(--border);">
             <button class="btn-count"
                onclick="InventoryModule.adjustCount('${cocktail.id}',-1)"
-               ${item.count <= 0 ? 'disabled' : ''}
+               ${displayCount <= 0 ? 'disabled' : ''}
                style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.03); border:1px solid var(--border); font-size:1.5rem; transition:all 0.2s;">
               −
             </button>
+
             <div style="display:flex; flex-direction:column; align-items:center;">
-              <span class="count-value" style="font-size:2.8rem; font-weight:800; font-family:var(--font-mono); line-height:1; color:${isUrgent ? 'var(--danger)' : 'var(--text-primary)'}">
-                ${item.count}
-              </span>
-              <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-top:4px;">Bottles</span>
+              ${this._editMode ? `
+                <input type="number" id="inv-count-input-${cocktail.id}" value="${displayCount}" min="0" style="width:120px; text-align:center; font-size:2.4rem; font-family:var(--font-mono); font-weight:700;" oninput="InventoryModule.stageDirectInput('${cocktail.id}', this.value)">
+                <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-top:6px;">Editing — bottles</div>
+              ` : `
+                <span class="count-value" style="font-size:2.8rem; font-weight:800; font-family:var(--font-mono); line-height:1; color:${isUrgent ? 'var(--danger)' : 'var(--text-primary)'}">
+                  ${displayCount}
+                </span>
+                <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-top:4px;">Bottles</span>
+              `}
             </div>
+
             <button class="btn-count"
                onclick="InventoryModule.adjustCount('${cocktail.id}',1)"
                style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.03); border:1px solid var(--border); font-size:1.5rem; transition:all 0.2s;">
@@ -196,11 +212,44 @@ const InventoryModule = {
      ACTIONS
   ═══════════════════════════════════════ */
 
+  // toggle edit mode (show inputs, enable staging)
+  toggleEditMode() {
+    this._editMode = !this._editMode;
+    if (!this._editMode) {
+      // leaving edit mode without saving clears staged changes
+      this._stagedCounts = {};
+    }
+    this.renderAll?.() || this.render?.(); // re-render inventory view (method name depends on file)
+    this.renderStagingControls();
+  },
+
+  // Called from number inputs while editing
+  stageDirectInput(cocktailId, raw) {
+    const v = parseInt(raw) || 0;
+    const item = BB.state.inventory.find(i => i.cocktailId === cocktailId);
+    if (!item) return;
+    const clamped = Math.max(0, v);
+    this._stagedCounts[cocktailId] = clamped;
+    this.renderCardUpdate?.(cocktailId);
+    this.renderStagingControls();
+  },
+
+  // When in edit mode, +/- adjust will stage instead of dispatching
   adjustCount(cocktailId, delta) {
     const item = BB.state.inventory.find(i => i.cocktailId === cocktailId);
     if (!item) return;
 
-    // Prevent negative counts
+    if (this._editMode) {
+      const base = (this._stagedCounts[cocktailId] !== undefined) ? this._stagedCounts[cocktailId] : item.count;
+      const next = Math.max(0, base + delta);
+      this._stagedCounts[cocktailId] = next;
+      // update only the card UI for responsiveness
+      if (this.renderCardUpdate) this.renderCardUpdate(cocktailId);
+      this.renderStagingControls();
+      return;
+    }
+
+    // Original immediate behavior
     if (item.count + delta < 0) return;
 
     BB.dispatch({
@@ -218,26 +267,101 @@ const InventoryModule = {
     BB.checkLowStock();
   },
 
-  // NEW: Efficient single card re-render
-  renderCardUpdate(cocktailId) {
-    const item = BB.state.inventory.find(i => i.cocktailId === cocktailId);
-    if (!item) return;
-
-    const card = document.querySelector(`[data-cocktail-id="${cocktailId}"]`);
-    if (!card) {
-      // Fall back to full render if card not found
-      BB.renderAll();
+  // apply all staged changes in one operation (one save)
+  saveStagedChanges() {
+    const stagedKeys = Object.keys(this._stagedCounts);
+    if (stagedKeys.length === 0) {
+      BB_toast('No changes to save', 'info');
       return;
     }
 
-    const cocktail = this.getCocktail(item);
-    const index = BB.state.inventory.indexOf(item);
-    const newCardHTML = this.renderCard(item, index);
+    let lastLog = null;
 
-    // Parse and replace
-    const temp = document.createElement('div');
-    temp.innerHTML = newCardHTML;
-    card.replaceWith(temp.firstElementChild);
+    // Apply directly to state and create grouped logs, then call BB.save once
+    stagedKeys.forEach(id => {
+      const newCount = this._stagedCounts[id];
+      const item = BB.state.inventory.find(i => i.cocktailId === id);
+      if (!item) return;
+      const prev = item.count;
+      const delta = newCount - prev;
+      if (delta === 0) return;
+
+      item.count = newCount;
+      // create a grouped log entry (BB._addLogWithGrouping exists on BB)
+      if (BB._addLogWithGrouping) {
+        lastLog = BB._addLogWithGrouping(item, delta, 'batch-edit') || lastLog;
+      }
+    });
+
+    // save once for the whole batch
+    BB.save(lastLog || null);
+
+    // clear staging and exit edit mode
+    this._stagedCounts = {};
+    this._editMode = false;
+
+    // re-render inventory and update low-stock banner
+    if (this.renderAll) this.renderAll();
+    else if (this.render) this.render();
+
+    BB.checkLowStock();
+    BB_toast('Changes saved', 'success');
+    this.renderStagingControls();
+  },
+
+  // discard staged changes
+  discardStagedChanges() {
+    this._stagedCounts = {};
+    this._editMode = false;
+    if (this.renderAll) this.renderAll();
+    else if (this.render) this.render();
+    BB_toast('Changes discarded', 'info');
+    this.renderStagingControls();
+  },
+
+  // small control bar for Save/Discard while editing
+  renderStagingControls() {
+    // place the bar inside app-root so it only appears within app context
+    const root = document.getElementById('app-root') || document.body;
+    let bar = document.getElementById('inventory-staging-bar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'inventory-staging-bar';
+      bar.style.cssText = 'position:sticky; top:8px; z-index:40; display:flex; gap:8px; justify-content:flex-end; margin-bottom:12px;';
+      root.insertBefore(bar, root.firstChild);
+    }
+
+    // show a toggle even when not in inventory (safe no-op)
+    bar.innerHTML = `
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button class="btn btn-ghost" id="btn-toggle-edit">${this._editMode ? 'Exit edit' : 'Edit counts'}</button>
+        ${this._editMode ? '<button class="btn btn-secondary" id="btn-discard">Discard changes</button><button class="btn btn-primary" id="btn-save">Save changes</button>' : ''}
+      </div>
+    `;
+
+    // attach handlers
+    const btnToggle = document.getElementById('btn-toggle-edit');
+    if (btnToggle) btnToggle.onclick = () => this.toggleEditMode();
+
+    const btnSave = document.getElementById('btn-save');
+    if (btnSave) btnSave.onclick = () => this.saveStagedChanges();
+
+    const btnDiscard = document.getElementById('btn-discard');
+    if (btnDiscard) btnDiscard.onclick = () => {
+      if (confirm('Discard staged changes?')) this.discardStagedChanges();
+    };
+  },
+
+  // When a single card updates (after staging) update its DOM quickly
+  renderCardUpdate(cocktailId) {
+    const el = document.getElementById(`inv-card-${cocktailId}`);
+    if (!el) return;
+    // Re-render the single card by replacing outerHTML using renderCard
+    const item = BB.state.inventory.find(i => i.cocktailId === cocktailId);
+    if (!item) return;
+    const idx = BB.state.inventory.indexOf(item);
+    const html = this.renderCard(item, idx, item.count <= (item.threshold || BB.state.config.defaultThreshold));
+    el.outerHTML = html;
   },
 
   /* ═══════════════════════════════════════

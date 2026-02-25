@@ -780,9 +780,16 @@ const BB = {
   ═══════════════════════════════════════ */
 
   ensurePremix(cocktailId) {
+    // Remove duplicates, keep the one with the highest count
+    const matches = this.state.inventory.filter(i => i.cocktailId === cocktailId);
+    if (matches.length > 1) {
+      const keep = matches.reduce((a, b) => (a.count > b.count ? a : b));
+      this.state.inventory = this.state.inventory.filter(i => i.cocktailId !== cocktailId);
+      this.state.inventory.push(keep);
+    }
+    // Add if not present
     const exists = this.state.inventory.find(i => i.cocktailId === cocktailId);
     if (exists) return;
-
     this.state.inventory.push({
       cocktailId,
       count: 0,
@@ -903,6 +910,7 @@ const BB = {
               <button class="btn btn-primary" onclick="CocktailsModule.openForm()">
                 <span style="font-size:1.2rem; margin-right:4px;">＋</span> Add Recipe
               </button>
+              <button class="btn btn-primary" onclick="PrepSessionModule.open()">New Prep Session</button>
             </div>
           </div>
         </div>
@@ -1013,7 +1021,26 @@ const BB = {
     }
   },
 
+  cleanInventoryDuplicates() {
+    // Group by cocktailId
+    const byId = {};
+    this.state.inventory.forEach(item => {
+      if (!byId[item.cocktailId]) byId[item.cocktailId] = [];
+      byId[item.cocktailId].push(item);
+    });
 
+    // Keep only the one with the highest count for each cocktailId
+    const cleaned = [];
+    Object.values(byId).forEach(list => {
+      const keep = list.reduce((a, b) => (a.count > b.count ? a : b));
+      cleaned.push(keep);
+    });
+
+    const removed = this.state.inventory.length - cleaned.length;
+    this.state.inventory = cleaned;
+    this.save();
+    BB_toast(`Cleaned inventory: removed ${removed} duplicate entries.`, 'success');
+  },
 
   /* ═══════════════════════════════════════
      INIT

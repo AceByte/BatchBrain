@@ -1055,7 +1055,7 @@
   "inventory": [
     {
       "cocktailId": "victor-spritz",
-      "count": 10,
+      "count": 5,
       "threshold": 7,
       "premixLog": []
     },
@@ -1114,5 +1114,13 @@
     "defaultThreshold": 2,
     "perishables": "lemon,lime,juice,egg,cream,mint,basil,cucumber,fruit"
   },
-  "searchQuery": ""
+  "searchQuery": "",
+  "lastLogEntry": {
+    "ts": 1771992734136,
+    "count": 5,
+    "previousCount": 6,
+    "delta": -1,
+    "action": "adjust",
+    "cocktailName": "Victor Spritz"
+  }
 }
