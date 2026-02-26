@@ -16,7 +16,7 @@ const InventoryModule = {
   _maxUndoSize: 10,
 
   getCocktail(item) {
-    return BB.state.cocktails.find(c => c.id === item.cocktailId);
+    return BB.state.cocktails.find(c => c.cocktailId === item.cocktailId);
   },
 
   calcDailyUsage(log = []) {

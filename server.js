@@ -1,98 +1,129 @@
+require("dotenv").config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
+const { neon } = require("@neondatabase/serverless");
 
 const app = express();
 const PORT = 3000;
-const DATA_FILE = path.join(__dirname, 'data.json');
+const sql = neon(process.env.DATABASE_URL);
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 
 // Serve static files for the frontend
 app.use(express.static(__dirname));
-app.use('/barbrain', express.static(__dirname)); // Ensure /barbrain path works too
+app.use('/barbrain', express.static(__dirname));
 
-// Ensure data.json exists
-if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify({}, null, 2));
-}
+// GET data from DB
+app.get('/api/data', async (req, res) => {
+    try {
+        const [cocktails, specs, batchRecipes, inventoryRows, prepLogs, configRows] = await Promise.all([
+            sql`SELECT * FROM cocktails`,
+            sql`SELECT * FROM cocktail_specs`,
+            sql`SELECT * FROM batch_recipes`,
+            sql`SELECT * FROM inventory`,
+            sql`SELECT * FROM prep_logs`,
+            sql`SELECT * FROM config`
+        ]);
 
-// GET data
-app.get('/api/data', (req, res) => {
-    fs.readFile(DATA_FILE, 'utf8', (err, data) => {
-        if (err) {
-            console.error('Error reading data:', err);
-            return res.status(500).json({ error: 'Failed to read data' });
-        }
-        try {
-            res.json(JSON.parse(data || '{}'));
-        } catch (e) {
-            res.json({});
-        }
-    });
+        // Compose cocktails with their specs and batch recipes
+        const cocktailsWithSpecs = cocktails.map(cocktail => ({
+            ...cocktail,
+            spec: specs.filter(s => s.cocktail_id === cocktail.cocktailId).map(s => ({ ingredient: s.ingredient, ml: s.ml })),
+            batchRecipe: batchRecipes.filter(b => b.cocktail_id === cocktail.cocktailId).map(b => ({ ingredient: b.ingredient, parts: b.parts }))
+        }));
+
+        // Compose config as key-value pairs
+        const configObj = {};
+        configRows.forEach(row => { configObj[row.key] = row.value; });
+
+        // Compose inventory with threshold
+        const inventory = inventoryRows.map(row => ({
+            cocktailId: row.cocktailId,
+            name: row.name,
+            count: row.count,
+            threshold: row.threshold || configObj.defaultThreshold || 2
+        }));
+
+        res.json({
+            version: 2,
+            cocktails: cocktailsWithSpecs,
+            inventory,
+            prepLogs,
+            config: configObj
+        });
+    } catch (err) {
+        console.error('DB error:', err);
+        res.status(500).json({ error: 'Failed to fetch data' });
+    }
 });
 
-const LOG_FILE = path.join(__dirname, 'premixlog.log');
+// POST data to DB
+app.post('/api/data', async (req, res) => {
+    const { state } = req.body;
+    if (!state) return res.status(400).json({ error: "Missing state" });
 
-function updateLogGroup(entry) {
-    const THREE_HOURS = 3 * 60 * 60 * 1000;
-    const now = entry.ts || Date.now();
-    let content = '';
-    if (fs.existsSync(LOG_FILE)) content = fs.readFileSync(LOG_FILE, 'utf8');
+    const { cocktails, inventory, prepLogs, config } = state;
+    try {
+        await sql`DELETE FROM cocktail_specs`;
+        await sql`DELETE FROM batch_recipes`;
+        await sql`DELETE FROM cocktails`;
+        await sql`DELETE FROM inventory`;
+        await sql`DELETE FROM prep_logs`;
+        await sql`DELETE FROM config`;
 
-    let lines = content.split('\n').filter(l => l.trim());
-    let lastLine = lines[lines.length - 1];
-    let grouped = false;
-
-    if (lastLine) {
-        // More robust regex to capture the action and delta, allowing for more flexible messages
-        const parts = lastLine.match(/\[(.*?)\] (.*?): (.*?)\s*([-+]?\d+)\s*bottles \(Total: (\d+)\)/);
-        if (parts) {
-            const [_, lastTsStr, lastName, lastAction, lastDeltaStr] = parts;
-            const lastTs = new Date(lastTsStr).getTime();
-            // Check if the action is the same (e.g., 'added', 'removed') and cocktail name matches
-            // The regex now captures the action more broadly, so we compare the captured action part
-            if (lastName === entry.cocktailName && lastAction.trim() === entry.action.trim() && (now - lastTs < THREE_HOURS)) {
-                const newDelta = parseInt(lastDeltaStr) + entry.delta;
-                lines[lines.length - 1] = `[${new Date(now).toLocaleString()}] ${entry.cocktailName}: ${entry.action} ${newDelta > 0 ? '+' : ''}${newDelta} bottles (Total: ${entry.count})`;
-                grouped = true;
+        // Insert cocktails and their specs/batch recipes
+        for (const c of cocktails) {
+            await sql`
+                INSERT INTO cocktails (cocktailId, name, tag, glassware, technique, straining, garnish, is_batched, serve_extras)
+                VALUES (${c.cocktailId}, ${c.name}, ${c.tag}, ${c.glassware}, ${c.technique}, ${c.straining}, ${c.garnish}, ${c.is_batched}, ${c.serve_extras})
+            `;
+            for (const s of c.spec || []) {
+                await sql`
+                    INSERT INTO cocktail_specs (cocktail_id, ingredient, ml)
+                    VALUES (${c.cocktailId}, ${s.ingredient}, ${s.ml})
+                `;
+            }
+            for (const b of c.batchRecipe || []) {
+                await sql`
+                    INSERT INTO batch_recipes (cocktail_id, ingredient, parts)
+                    VALUES (${c.cocktailId}, ${b.ingredient}, ${b.parts})
+                `;
             }
         }
-    }
-    if (!grouped) {
-        lines.push(`[${new Date(now).toLocaleString()}] ${entry.cocktailName}: ${entry.action} ${entry.delta > 0 ? '+' : ''}${entry.delta} bottles (Total: ${entry.count})`);
-    }
-    fs.writeFileSync(LOG_FILE, lines.join('\n') + '\n');
-}
 
-// POST data (save)
-app.post('/api/data', (req, res) => {
-    const newData = req.body;
-    fs.writeFile(DATA_FILE, JSON.stringify(newData, null, 2), (err) => {
-        if (err) {
-            console.error('Error writing data:', err);
-            return res.status(500).json({ error: 'Failed to save data' });
+        // Insert inventory
+        for (const i of inventory) {
+            await sql`
+                INSERT INTO inventory (cocktailId, name, count)
+                VALUES (${i.cocktailId}, ${i.name}, ${i.count})
+            `;
         }
-        if (newData.lastLogEntry) {
-            console.log('Processing log entry for:', newData.lastLogEntry.cocktailName);
-            updateLogGroup(newData.lastLogEntry);
+
+        // Insert prep logs
+        for (const l of prepLogs) {
+            await sql`
+                INSERT INTO prep_logs (date, cocktail_id, amount)
+                VALUES (${l.date}, ${l.cocktail_id}, ${l.amount})
+            `;
         }
-        console.log('Data saved successfully at', new Date().toISOString());
+
+        // Insert config
+        for (const key in config) {
+            await sql`
+                INSERT INTO config (key, value)
+                VALUES (${key}, ${config[key]})
+            `;
+        }
+
         res.json({ success: true });
-    });
-});
-
-// New endpoint for explicit logging if needed
-app.post('/api/logs', (req, res) => {
-    const { message } = req.body;
-    fs.appendFileSync(LOG_FILE, `[${new Date().toLocaleString()}] ${message}\n`);
-    res.json({ success: true });
+    } catch (err) {
+        console.error('DB error:', err);
+        res.status(500).json({ error: 'Failed to save data' });
+    }
 });
 
 app.listen(PORT, () => {
     console.log(`Batchbrain Data Server running on http://localhost:${PORT}`);
-    console.log(`Storage file: ${DATA_FILE}`);
 });
