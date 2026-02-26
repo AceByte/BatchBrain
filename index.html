@@ -76,6 +76,7 @@
             });
         }
     </script>
+<base target="_blank">
 </head>
 
 <body>
@@ -112,17 +113,16 @@
 
             <div class="nav-divider" role="separator"></div>
 
-            <button class="nav-item btn-sync" onclick="BB.manualSync()" role="menuitem" aria-label="Sync and save data">
-                <span class="nav-icon" aria-hidden="true">☁️</span>
-                <span class="nav-label">Sync & Save</span>
-            </button>
-
 
         </nav>
 
         <div class="sidebar-footer">
             <div class="version">v2.1.0</div>
-            <div class="status" id="connection-status">System Online</div>
+            <div class="sync-status-wrapper" style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+                <span id="sync-indicator" style="width:8px; height:8px; border-radius:50%; background:var(--success); display:inline-block;"></span>
+                <div class="status" id="connection-status">System Online</div>
+            </div>
+            <div id="sync-status-text" style="font-size:0.65rem; color:var(--text-muted); margin-top:4px;"></div>
         </div>
 
     </aside>

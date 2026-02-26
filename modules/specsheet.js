@@ -19,8 +19,6 @@ const SpecSheetModule = {
 
   render(root) {
     const cocktails = BB.state.cocktails;
-    const filter = this._filterTag;
-    const filteredList = filter === "all" ? cocktails : cocktails.filter(c => c.tag === filter);
 
     root.innerHTML = `
       <div class="page-header" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;">
@@ -35,6 +33,8 @@ const SpecSheetModule = {
         <div style="display:flex; gap:12px;">
           <button class="btn btn-secondary" onclick="SpecSheetModule.openPrepSheet()">🧾 Prep Sheet</button>
           <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Menu</button>
+          <button class="btn btn-ghost" onclick="BB.promptImport()" title="Import data from JSON file">📥 Import</button>
+          <button class="btn btn-ghost" onclick="BB.exportData()" title="Export data to JSON file">📤 Export</button>
           <button class="btn btn-primary" onclick="CocktailsModule.openForm()">+ Add Cocktail</button>
         </div>
       </div>
@@ -174,7 +174,17 @@ const SpecSheetModule = {
     w.document.close();
     w.focus();
     // user prints from the new window
-  }
+  },
+
+  updateIngredientSuggestions() {
+    const ingredientList = BB.state.inventory.map(i => i.name);
+    const datalist = document.getElementById("ingredient-suggestions");
+    if (datalist) {
+      datalist.innerHTML = ingredientList.map(ing => `<option value="${ing}"></option>`).join("");
+    }
+  },
+
+  
 
 };
 

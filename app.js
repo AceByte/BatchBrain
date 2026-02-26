@@ -231,6 +231,11 @@ const BB_EventBus = {
       try { cb(data); }
       catch (e) { console.error(e); }
     });
+  },
+
+  clear(event) {
+    if (event) delete this._events[event];
+    else this._events = {};
   }
 };
 
@@ -269,7 +274,8 @@ const ErrorResilience = {
 
     if (!this.isCriticalError(event.error)) {
       event.preventDefault();
-      this.showUserFeedback('warning', 'Something went wrong, but you can keep working');
+      this.showUserFeedback('warning', `Non-critical error: ${event.message}`);
+      console.warn('[ErrorResilience] Non-critical error:', errorInfo);
       return false;
     }
 
@@ -412,33 +418,45 @@ const ConflictResolution = {
     if (this.syncInProgress || !navigator.onLine) return;
     this.syncInProgress = true;
 
-    try {
-      const response = await fetch(BB.API_URL);
-      if (!response.ok) throw new Error('Server error');
+    let retryCount = 0;
+    const maxRetries = 3;
 
-      const serverData = await response.json();
-      const localData = BB.state;
+    while (retryCount < maxRetries) {
+      try {
+        const response = await fetch(BB.API_URL);
+        if (!response.ok) throw new Error('Server error');
 
-      const merged = this.mergeData(localData, serverData);
+        const serverData = await response.json();
+        const localData = BB.state;
 
-      BB.state = merged;
-      BB.save();
+        const merged = this.mergeData(localData, serverData);
 
-      await fetch(BB.API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(merged)
-      });
+        BB.state = merged;
+        BB.save();
 
-      this.lastSync = Date.now();
-      BB_EventBus.emit('sync:complete', { timestamp: this.lastSync });
+        await fetch(BB.API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(merged)
+        });
 
-    } catch (error) {
-      console.error('[Sync] Failed:', error);
-      BB_EventBus.emit('sync:error', { error });
-    } finally {
-      this.syncInProgress = false;
+        this.lastSync = Date.now();
+        BB_EventBus.emit('sync:complete', { timestamp: this.lastSync });
+        break; // Exit retry loop on success
+
+      } catch (error) {
+        retryCount++;
+        console.error(`[Sync] Attempt ${retryCount} failed:`, error);
+        if (retryCount >= maxRetries) {
+          BB_EventBus.emit('sync:error', { error });
+          this.showUserFeedback('error', 'Sync failed after multiple attempts.');
+        } else {
+          this.showUserFeedback('warning', `Sync attempt ${retryCount} failed. Retrying...`);
+        }
+      }
     }
+
+    this.syncInProgress = false;
   },
 
   mergeData(local, server) {
@@ -680,31 +698,22 @@ const BB = {
   },
 
   async syncToServer(logEntry = null) {
-    if (!navigator.onLine) return;
+    BB._updateSyncStatus('saving'); // Set status to "Saving..."
 
     try {
-      const payload = JSON.parse(JSON.stringify(this.state));
-      if (payload.inventory) payload.inventory.forEach(item => item.premixLog = []);
-      payload.prepLogs = [];
-      if (logEntry) payload.lastLogEntry = logEntry;
-
-      // UI: indicate network sync
-      BB_EventBus.emit('sync:starting');
-
-      await fetch(this.API_URL, {
+      const response = await fetch(this.API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ logEntry, state: this.state })
       });
 
-      BB_EventBus.emit("data:saved");
-      BB_EventBus.emit('sync:complete');
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      BB._updateSyncStatus('saved'); // Set status to "All changes saved"
+      BB_toast('Synced successfully!', 'success');
     } catch (e) {
-      console.log("Offline — saved locally");
-      BB_EventBus.emit('sync:error', { error: e });
-      if (window.ConflictResolution) {
-        ConflictResolution.queueOperation({ type: 'sync' });
-      }
+      BB._updateSyncStatus('error'); // Set status to "Sync Error"
+      BB_toast('Sync failed. Retrying...', 'error');
     }
   },
 
@@ -830,6 +839,7 @@ const BB = {
           </div>
           <div class="header-actions">
             ${window.QuickCountModule ? QuickCountModule.renderButton() : ''}
+            <button class="btn btn-primary" onclick="PrepSessionModule.open()">New Prep Session</button>
             <button class="btn btn-primary" onclick="CocktailsModule.openForm()">
               <span style="font-size:1.2rem; margin-right:4px;">＋</span> New cocktail
             </button>
@@ -910,7 +920,10 @@ const BB = {
               <button class="btn btn-primary" onclick="CocktailsModule.openForm()">
                 <span style="font-size:1.2rem; margin-right:4px;">＋</span> Add Recipe
               </button>
-              <button class="btn btn-primary" onclick="PrepSessionModule.open()">New Prep Session</button>
+              <button class="btn btn-ghost" onclick="BB.promptImport()" title="Import data from JSON file">📥 Import
+              </button>
+              <button class="btn btn-ghost" onclick="BB.exportData()" title="Export data to JSON file">📤 Export
+              </button>
             </div>
           </div>
         </div>
@@ -930,6 +943,11 @@ const BB = {
         `}
       </div>
     `;
+
+    // Initialize inventory edit controls
+    if (window.InventoryModule) {
+      InventoryModule.renderStagingControls();
+    }
 
     this.checkLowStock();
   },
@@ -972,7 +990,11 @@ const BB = {
   },
 
   checkLowStock() {
-    const low = this.state.inventory.filter(i => i.count <= (i.threshold || 2));
+    const defaultThreshold = this.state.config?.defaultThreshold || 2;
+    const low = this.state.inventory.filter(i => {
+      const threshold = i.threshold !== undefined ? i.threshold : defaultThreshold;
+      return i.count <= threshold;
+    });
     const banner = document.getElementById("lowStockBanner");
     if (!banner) return;
 
@@ -994,6 +1016,33 @@ const BB = {
       const badge = document.getElementById("badge-low-stock");
       if (badge) badge.style.display = "none";
     }
+  },
+
+  /* ═══════════════════════════════════════
+     SYNC STATUS INDICATOR
+  ═══════════════════════════════════════ */
+
+  _updateSyncStatus(state) {
+    const statusEl = document.getElementById('sync-status-label');
+    const indicatorEl = document.getElementById('sync-indicator');
+    const statusTextEl = document.getElementById('sync-status-text');
+
+    if (!statusEl || !indicatorEl) return;
+
+    const states = {
+      online: { text: 'System Online', color: 'var(--success)', indicator: 'var(--success)', subtext: '' },
+      offline: { text: 'Offline Mode', color: 'var(--warning)', indicator: 'var(--warning)', subtext: 'Working locally' },
+      saving: { text: 'Saving...', color: 'var(--accent)', indicator: 'var(--accent)', subtext: 'Please wait' },
+      saved: { text: 'All changes saved', color: 'var(--success)', indicator: 'var(--success)', subtext: 'Synced to server' },
+      unsaved: { text: 'Unsaved changes', color: 'var(--warning)', indicator: 'var(--warning)', subtext: 'Click Save to persist' },
+      error: { text: 'Sync Error', color: 'var(--danger)', indicator: 'var(--danger)', subtext: 'Will retry automatically' }
+    };
+
+    const config = states[state] || states.saved;
+    statusEl.textContent = config.text;
+    statusEl.style.color = config.color;
+    indicatorEl.style.background = config.indicator;
+    if (statusTextEl) statusTextEl.textContent = config.subtext;
   },
 
   _addLogWithGrouping(item, delta, action) {
@@ -1051,26 +1100,29 @@ const BB = {
     if (window.MobileModule) MobileModule.init();
     this.renderAll();
 
-    // update header UI for save/sync
+    // update header UI for save/sync with improved status indicator
     BB_EventBus.on('data:saving', () => {
       const syncBtn = document.querySelector('.btn-sync');
       if (syncBtn) syncBtn.innerText = 'Saving... ☁️';
-      const status = document.getElementById('connection-status');
-      if (status) status.innerText = 'Saving…';
+      this._updateSyncStatus('saving');
     });
     BB_EventBus.on('data:saved', () => {
       const syncBtn = document.querySelector('.btn-sync');
-      if (syncBtn) syncBtn.innerText = 'Sync & Save ☁️';
-      const status = document.getElementById('connection-status');
-      if (status) status.innerText = 'All changes saved';
+      this._updateSyncStatus('saved');
       setTimeout(() => {
-        if (status && BB.isLoading === false) status.innerText = 'System Online';
+        this._updateSyncStatus(InventoryModule._hasUnsavedChanges ? 'unsaved' : 'online');
       }, 2500);
     });
     BB_EventBus.on('sync:error', () => {
-      const status = document.getElementById('connection-status');
-      if (status) status.innerText = 'Sync Error';
+      this._updateSyncStatus('error');
     });
+
+    // Listen for unsaved changes from InventoryModule
+    setInterval(() => {
+      if (InventoryModule && InventoryModule._hasUnsavedChanges) {
+        this._updateSyncStatus('unsaved');
+      }
+    }, 1000);
 
     // Global undo handler: show a toast with action
     BB_EventBus.on('undo:available', (data) => {

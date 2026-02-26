@@ -10,13 +10,7 @@
 - [ ] **Bulk Actions in Inventory**
   - Multi-select inventory items
   - Batch mark as prepped, adjust thresholds, or delete
-
-- [ ] **Save Button for Inventory**
-  - Only save changes when user clicks "Save" (not on every input)
-
-- [ ] **Undo/Redo for Inventory Changes**
-  - Show undo snackbar after a count change (using `_addLogWithGrouping`)
-
+  
 ## Data & Sync
 - [ ] **Sync Status Indicator**
   - Show "Saving...", "All changes saved", or "Sync Error" in the header

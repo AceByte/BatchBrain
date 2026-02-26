@@ -152,6 +152,7 @@ const CocktailsModule = {
 
     this._updateTotalML();
     this._attachLiveListeners();
+    this.setupIngredientTypeaheads();
   },
 
   _getRowHtml(type, ing = "", val = "") {
@@ -171,6 +172,7 @@ const CocktailsModule = {
     if (container) {
       container.insertAdjacentHTML('beforeend', this._getRowHtml(type));
       this._attachLiveListeners();
+      this.setupIngredientTypeaheads();
     }
   },
 
@@ -252,17 +254,149 @@ const CocktailsModule = {
      DELETE
   ═══════════════════════════════════════ */
 
-  deleteById(id) {
-    if (!confirm("Delete this cocktail?")) return;
+deleteById(id) {
+  if (!confirm("Delete this cocktail?")) return;
 
-    BB.dispatch({
-      type: "DELETE_COCKTAIL",
-      payload: { id }
+  BB.dispatch({
+    type: "DELETE_COCKTAIL",
+    payload: { id }
+  });
+
+  this.render(document.getElementById("app-root"));
+},
+
+/* ═══════════════════════════════════════
+   INGREDIENT TYPEAHEAD / AUTOCOMPLETE
+═══════════════════════════════════════ */
+
+// Get all unique ingredients from existing cocktails
+getAllIngredients() {
+    const ingredients = new Set();
+    BB.state.cocktails.forEach(c => {
+      (c.spec || []).forEach(s => {
+        if (s.ingredient) ingredients.add(s.ingredient);
+      });
+      (c.batchRecipe || []).forEach(r => {
+        if (r.ingredient) ingredients.add(r.ingredient);
+      });
+    });
+    return Array.from(ingredients).sort();
+  },
+
+  // Setup typeahead for an input element
+  setupTypeahead(inputElement, suggestions) {
+    if (!inputElement) return;
+
+    // Remove existing typeahead container
+    const existing = inputElement.parentElement.querySelector('.typeahead-container');
+    if (existing) existing.remove();
+
+    const container = document.createElement('div');
+    container.className = 'typeahead-container';
+    container.style.cssText = 'position:absolute; top:100%; left:0; right:0; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-sm); max-height:200px; overflow-y:auto; z-index:1000; display:none; box-shadow:var(--shadow-card);';
+
+    inputElement.parentElement.style.position = 'relative';
+    inputElement.parentElement.appendChild(container);
+
+    inputElement.addEventListener('input', (e) => {
+      const value = e.target.value.toLowerCase();
+      if (value.length < 1) {
+        container.style.display = 'none';
+        return;
+      }
+
+      const matches = suggestions.filter(s => s.toLowerCase().includes(value));
+      if (matches.length === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.innerHTML = matches.slice(0, 8).map(match => `
+        <div class="typeahead-item" style="padding:10px 14px; cursor:pointer; font-size:0.9rem; color:var(--text-secondary); border-bottom:1px solid var(--border); transition:all 0.2s;"
+             onmouseover="this.style.background='var(--accent-soft)'; this.style.color='var(--accent)';"
+             onmouseout="this.style.background='transparent'; this.style.color='var(--text-secondary)';"
+             onclick="this.closest('.typeahead-container').previousElementSibling.value='${match.replace(/'/g, "\'")}'; this.closest('.typeahead-container').style.display='none'; CocktailsModule._updateTotalML();">
+          ${match}
+        </div>
+      `).join('');
+
+      container.style.display = 'block';
     });
 
-    this.render(document.getElementById("app-root"));
-  }
+    // Hide on blur (with delay to allow click)
+    inputElement.addEventListener('blur', () => {
+      setTimeout(() => {
+        container.style.display = 'none';
+      }, 200);
+    });
 
+    // Show on focus if has value
+    inputElement.addEventListener('focus', () => {
+      if (inputElement.value.length >= 1) {
+        inputElement.dispatchEvent(new Event('input'));
+      }
+    });
+
+    // Keyboard navigation
+    inputElement.addEventListener('keydown', (e) => {
+      const items = container.querySelectorAll('.typeahead-item');
+      const active = container.querySelector('.typeahead-item.active');
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!active) {
+          items[0]?.classList.add('active');
+          items[0].style.background = 'var(--accent-soft)';
+          items[0].style.color = 'var(--accent)';
+        } else {
+          const next = active.nextElementSibling;
+          if (next) {
+            active.classList.remove('active');
+            active.style.background = 'transparent';
+            active.style.color = 'var(--text-secondary)';
+            next.classList.add('active');
+            next.style.background = 'var(--accent-soft)';
+            next.style.color = 'var(--accent)';
+          }
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (active) {
+          const prev = active.previousElementSibling;
+          if (prev) {
+            active.classList.remove('active');
+            active.style.background = 'transparent';
+            active.style.color = 'var(--text-secondary)';
+            prev.classList.add('active');
+            prev.style.background = 'var(--accent-soft)';
+            prev.style.color = 'var(--accent)';
+          }
+        }
+      } else if (e.key === 'Enter' && active) {
+        e.preventDefault();
+        inputElement.value = active.textContent.trim();
+        container.style.display = 'none';
+        this._updateTotalML();
+      } else if (e.key === 'Escape') {
+        container.style.display = 'none';
+      }
+    });
+  },
+
+  // Call this after rendering the form to setup typeaheads
+  setupIngredientTypeaheads() {
+    const ingredients = this.getAllIngredients();
+
+    // Setup for spec rows
+    document.querySelectorAll('#spec-list-managed .row-ingredient').forEach(input => {
+      this.setupTypeahead(input, ingredients);
+    });
+
+    // Setup for parts rows
+    document.querySelectorAll('#parts-list-managed .row-ingredient').forEach(input => {
+      this.setupTypeahead(input, ingredients);
+    });
+  }
 };
 
 window.CocktailsModule = CocktailsModule;

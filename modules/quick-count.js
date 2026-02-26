@@ -264,10 +264,11 @@ const QuickCountModule = {
     const item = this.items[this.currentIndex];
 
     if (newCount !== item.count) {
+      const oldCount = item.count; // Store before updating
       this.changes.push({
         id: item.cocktailId,
         name: item.name || 'Unknown',
-        oldCount: item.count,
+        oldCount: oldCount,
         newCount: newCount
       });
 
@@ -283,7 +284,7 @@ const QuickCountModule = {
       });
 
       if (window.MobileModule) MobileModule.haptic('success');
-      this.announce(`${item.name || 'Item'} updated from ${item.oldCount} to ${newCount}`);
+      this.announce(`${item.name || 'Item'} updated from ${oldCount} to ${newCount}`);
     }
 
     if (this.currentIndex < this.items.length - 1) {

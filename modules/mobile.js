@@ -36,7 +36,6 @@ const MobileModule = {
 
     setupMobileUI() {
         this.createBottomNav();
-        this.addFullscreenToggle();
         this.setupPullToRefresh();
         this.addMobileStyles();
     },
@@ -48,23 +47,19 @@ const MobileModule = {
         nav.id = 'mobile-bottom-nav';
         nav.innerHTML = `
       <nav style="position:fixed;bottom:0;left:0;right:0;height:72px;background:var(--bg-glass);backdrop-filter:var(--glass-blur);border-top:1px solid var(--border-glass);display:flex;justify-content:space-around;align-items:center;z-index:1000;padding-bottom:env(safe-area-inset-bottom,0);box-shadow:0 -10px 40px rgba(0,0,0,0.5);">
-        <a href="#main-header" class="mobile-nav-item" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+        <a href="#main-header" class="mobile-nav-item" onclick="window.scrollTo({top:0,behavior:'smooth'});console.log('Navigated to top');return false;">
           <span style="font-size:1.4rem; filter:drop-shadow(0 0 5px var(--accent-glow));">🥃</span>
           <span style="font-size:0.75rem; font-weight:600; margin-top:4px;">Stock</span>
         </a>
-        <a href="#recipes-section" class="mobile-nav-item" onclick="document.getElementById('recipes-section')?.scrollIntoView({behavior:'smooth'});return false;">
+        <a href="#section-specsheet" class="mobile-nav-item" onclick="BB.navigate('recipes');console.log('Navigated to recipes');return false;">
           <span style="font-size:1.4rem;">📋</span>
           <span style="font-size:0.75rem; font-weight:600; margin-top:4px;">Recipes</span>
         </a>
-        <div class="mobile-nav-action" style="margin-top:-36px; padding:4px; background:var(--bg-base); border-radius:50%;">
-            <button onclick="MobileModule.showQuickAddMenu();return false;" style="width:64px;height:64px;background:linear-gradient(135deg, var(--accent), var(--accent-dark));color:#0c0f17;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 8px 25px var(--accent-glow);border:none;font-weight:700;">＋</button>
-        </div>
       </nav>
       <style>
         .mobile-nav-item { display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-secondary);text-decoration:none;padding:8px 12px;min-width:70px;transition:all 0.3s; }
         .mobile-nav-item:active { transform:scale(0.9); opacity:0.7; }
         #mainContent { padding-bottom:100px !important; }
-        @media (min-width:769px) { #mobile-bottom-nav { display:none !important; } #mainContent { padding-bottom:40px !important; } }
       </style>
     `;
         document.body.appendChild(nav);
@@ -121,17 +116,6 @@ const MobileModule = {
 
         main.addEventListener('touchend', endPull);
         main.addEventListener('touchcancel', endPull);
-    },
-
-    addFullscreenToggle() {
-        const btn = document.createElement('button');
-        btn.innerHTML = '⛶';
-        btn.style.cssText = 'position:fixed;bottom:90px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--accent);color:#1a1200;border:none;font-size:1.2rem;display:' + (this.isMobile ? 'flex' : 'none') + ';align-items:center;justify-content:center;box-shadow:0 4px 15px var(--accent-glow);z-index:999;';
-        btn.onclick = () => {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => { });
-            else document.exitFullscreen().catch(() => { });
-        };
-        document.body.appendChild(btn);
     },
 
     addMobileStyles() {

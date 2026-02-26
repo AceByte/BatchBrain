@@ -1055,55 +1055,55 @@
   "inventory": [
     {
       "cocktailId": "victor-spritz",
-      "count": 5,
+      "count": 16,
       "threshold": 7,
       "premixLog": []
     },
     {
       "cocktailId": "spicy-margarita",
-      "count": 10,
+      "count": 13,
       "threshold": 9,
       "premixLog": []
     },
     {
       "cocktailId": "flor-de-mynte",
-      "count": 10,
+      "count": 8,
       "threshold": 7,
       "premixLog": []
     },
     {
       "cocktailId": "belle-amour",
-      "count": 10,
+      "count": 14,
       "threshold": 7,
       "premixLog": []
     },
     {
       "cocktailId": "island-nectar",
-      "count": 10,
+      "count": 14,
       "threshold": 7,
       "premixLog": []
     },
     {
       "cocktailId": "nutcrackers-sour",
-      "count": 10,
+      "count": 12,
       "threshold": 7,
       "premixLog": []
     },
     {
       "cocktailId": "naughty-and-nice",
-      "count": 10,
+      "count": 11,
       "threshold": 7,
       "premixLog": []
     },
     {
       "cocktailId": "wonderland",
-      "count": 10,
+      "count": 8,
       "threshold": 7,
       "premixLog": []
     },
     {
       "cocktailId": "maverick",
-      "count": 15,
+      "count": 18,
       "threshold": 14,
       "premixLog": []
     }
@@ -1116,11 +1116,11 @@
   },
   "searchQuery": "",
   "lastLogEntry": {
-    "ts": 1771992734136,
-    "count": 5,
-    "previousCount": 6,
-    "delta": -1,
-    "action": "adjust",
-    "cocktailName": "Victor Spritz"
+    "ts": 1772063696841,
+    "count": 14,
+    "previousCount": 7,
+    "delta": 7,
+    "action": "batch-edit",
+    "cocktailName": "Belle Amour"
   }
 }
