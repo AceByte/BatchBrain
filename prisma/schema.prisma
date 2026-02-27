@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CocktailCategory {
+  REGULAR
+  SEASONAL
+  SIGNATURE
+}
+
+model Ingredient {
+  id             Int               @id @default(autoincrement())
+  name           String            @unique
+  unit           String
+  premixRecipes  PremixIngredient[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model Premix {
+  id                 Int               @id @default(autoincrement())
+  name               String            @unique
+  currentLiters      Float             @default(0)
+  thresholdLiters    Float             @default(2)
+  targetLiters       Float             @default(6)
+  batchYieldLiters   Float             @default(4)
+  recipeItems        PremixIngredient[]
+  cocktailUsageItems CocktailPremix[]
+  stockEvents        StockEvent[]
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+}
+
+model PremixIngredient {
+  id             Int        @id @default(autoincrement())
+  premixId       Int
+  ingredientId   Int
+  amountPerBatch Float
+  premix         Premix     @relation(fields: [premixId], references: [id], onDelete: Cascade)
+  ingredient     Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+
+  @@unique([premixId, ingredientId])
+}
+
+model Cocktail {
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  category       CocktailCategory
+  weeklyForecast Int              @default(0)
+  premixItems    CocktailPremix[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model CocktailPremix {
+  id              Int      @id @default(autoincrement())
+  cocktailId      Int
+  premixId        Int
+  amountPerDrinkMl Float
+  cocktail        Cocktail @relation(fields: [cocktailId], references: [id], onDelete: Cascade)
+  premix          Premix   @relation(fields: [premixId], references: [id], onDelete: Cascade)
+
+  @@unique([cocktailId, premixId])
+}
+
+model StockEvent {
+  id          Int      @id @default(autoincrement())
+  premixId    Int
+  deltaLiters Float
+  note        String
+  createdAt   DateTime @default(now())
+  premix      Premix   @relation(fields: [premixId], references: [id], onDelete: Cascade)
+}
