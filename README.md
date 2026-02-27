@@ -66,3 +66,5 @@ Then open http://localhost:3000.
 - Add editable forms for cocktails, premixes, and recipes
 - Add historical analytics charting from `StockEvent`
 - Add unit tests for prep-planning logic
+
+# Developed by Bertram B. Bischoff
