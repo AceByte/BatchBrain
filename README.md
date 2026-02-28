@@ -179,8 +179,9 @@ Then open http://localhost:3000.
 ## Suggested Next Steps
 
 - Add auth and role permissions
-- Add editable forms for cocktails, premixes, and recipes
+- Add editable forms for adding or editing cocktails, premixes, and recipes
 - Add historical analytics charting from `StockEvent`
-- Add unit tests for prep-planning logic
+
+check [Todo.md]
 
 # Developed by Bertram B. Bischoff
