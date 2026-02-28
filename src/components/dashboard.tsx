@@ -28,6 +28,7 @@ type DashboardData = {
     garnish: string | null;
     isBatched: boolean;
     serveExtras: string | null;
+    premixNote: string | null;
     premixItems: Array<{
       premixName: string;
       amountPerDrinkMl: number;
@@ -487,7 +488,7 @@ export function Dashboard() {
         </header>
 
         {/* Quick Stats */}
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-5 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
           <div className="group rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-6 shadow-xl ring-1 ring-slate-600 transition-all hover:shadow-2xl">
             <p className="text-sm font-semibold uppercase tracking-wider text-slate-400">Total Premixes</p>
             <p className="mt-2 text-4xl font-extrabold text-white">{data?.premixes.length ?? 0}</p>
@@ -735,7 +736,7 @@ export function Dashboard() {
             onChange={(e) => setCocktailSearch(e.target.value)}
             className="flex-1 min-w-[200px] rounded-xl bg-slate-700 px-5 py-3 text-sm text-white ring-1 ring-slate-600 transition-all placeholder:text-slate-400 focus:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             {["ALL", "REGULAR", "SEASONAL", "SIGNATURE"].map((cat) => (
               <button
                 key={cat}
@@ -761,7 +762,28 @@ export function Dashboard() {
           </div>
         ) : (
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredCocktails.map((cocktail) => {
+          {filteredCocktails
+            .sort((a, b) => {
+              // Calculate content length for sorting
+              const getContentLength = (cocktail: typeof filteredCocktails[0]) => {
+                let length = 0;
+                // Count details
+                if (cocktail.glassware) length++;
+                if (cocktail.technique) length++;
+                if (cocktail.garnish) length++;
+                // Count premix lines
+                if (cocktail.isBatched && cocktail.premixNote) {
+                  length += cocktail.premixNote.split('\n').length;
+                }
+                // Count ingredients
+                length += cocktail.premixItems.length;
+                // Count serve extras
+                if (cocktail.serveExtras) length++;
+                return length;
+              };
+              return getContentLength(b) - getContentLength(a); // Descending (most content first)
+            })
+            .map((cocktail) => {
             const categoryColors = {
               REGULAR: 'bg-gradient-to-r from-blue-900/40 to-blue-800/20 ring-blue-700/50',
               SEASONAL: 'bg-gradient-to-r from-purple-900/40 to-purple-800/20 ring-purple-700/50',
@@ -838,36 +860,30 @@ export function Dashboard() {
                       </div>
                     )}
 
-                    {/* Premix Breakdown - Only for batched cocktails */}
-                    {cocktail.isBatched && premixRows.length > 0 && (
+                    {/* Premix - Only for batched cocktails with premixNote */}
+                    {cocktail.isBatched && cocktail.premixNote && (
                       <div className="rounded-md bg-slate-900/70 p-2 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
                         <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-300">Premix</p>
-                        <div className="space-y-1.5">
-                          {premixRows.map(({ premixItem, idx, premixSpec }) => (
-                            <div
-                              key={`${cocktail.id}-premix-${premixItem.premixName}-${idx}`}
-                              className="rounded-md bg-slate-800/70 p-1.5"
-                            >
-                              <div className="mb-1 flex items-center justify-between text-xs leading-5">
-                                <span className="font-bold text-emerald-300">{premixItem.premixName}</span>
-                                <span className="font-semibold text-blue-300">{premixItem.amountPerDrinkMl}ml</span>
-                              </div>
-                              {premixSpec && premixSpec.recipeItems.length > 0 && (
-                                <ul className="space-y-0.5 border-t border-slate-700/80 pt-1">
-                                  {premixSpec.recipeItems.map((recipeItem, recipeIndex) => (
-                                    <li
-                                      key={`${cocktail.id}-premix-recipe-${premixItem.premixName}-${recipeItem.ingredientName}-${recipeIndex}`}
-                                      className="flex items-center justify-between rounded bg-slate-900/50 px-1 py-0.5 text-[9px] leading-3"
-                                    >
-                                      <span className="text-slate-300">{recipeItem.ingredientName}</span>
-                                      <span className="font-semibold text-blue-200">{recipeItem.amountPerBatch}{recipeItem.unit}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                            </div>
-                          ))}
-                        </div>
+                        <ul className="space-y-1">
+                          {cocktail.premixNote.split('\n').map((line, idx) => {
+                            // Parse "amount ingredient" format (e.g., "7cl Premix" → amount: "7cl", ingredient: "Premix")
+                            const match = line.match(/^([0-9.]+\s*[a-zA-Z]+)\s+(.+)$/);
+                            const amount = match ? match[1].trim() : '';
+                            const ingredient = match ? match[2].trim() : line;
+                            
+                            return (
+                              <li
+                                key={`${cocktail.id}-premix-line-${idx}`}
+                                className="rounded-md bg-slate-800/70 px-2 py-1"
+                              >
+                                <div className="flex items-center justify-between text-xs leading-5">
+                                  <span className="font-semibold text-slate-100">{ingredient}</span>
+                                  {amount && <span className="font-extrabold text-blue-300">{amount}</span>}
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
                       </div>
                     )}
 
@@ -901,12 +917,27 @@ export function Dashboard() {
                             </li>
                           ))}
                           {cocktail.serveExtras && (
-                            <li className="rounded-md bg-slate-800/70 px-2 py-1">
-                              <div className="flex items-center justify-between text-xs leading-5">
-                                <span className="font-semibold text-slate-100">Extra</span>
-                                <span className="font-extrabold text-blue-300">{cocktail.serveExtras}</span>
-                              </div>
-                            </li>
+                            cocktail.serveExtras.split(/[,\n]/).map((line, idx) => {
+                              const trimmedLine = line.trim();
+                              if (!trimmedLine) return null; // Skip empty lines
+                              
+                              // Parse "amount ingredient" format (e.g., "3 dashes Tabasco" → amount: "3 dashes", ingredient: "Tabasco")
+                              const match = trimmedLine.match(/^([0-9.]+\s+[a-z\s]+)\s+(.+)$/i);
+                              const amount = match ? match[1].trim() : '';
+                              const ingredient = match ? match[2].trim() : trimmedLine;
+                              
+                              return (
+                                <li
+                                  key={`${cocktail.id}-serve-extra-${idx}`}
+                                  className="rounded-md bg-slate-800/70 px-2 py-1"
+                                >
+                                  <div className="flex items-center justify-between text-xs leading-5">
+                                    <span className="font-semibold text-slate-100">{ingredient}</span>
+                                    {amount && <span className="font-extrabold text-blue-300">{amount}</span>}
+                                  </div>
+                                </li>
+                              );
+                            })
                           )}
                         </ul>
                       </div>

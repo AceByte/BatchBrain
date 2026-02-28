@@ -41,13 +41,14 @@ type LegacyInventory = {
 
   
 export async function getDashboardData() {
-  const [cocktails, specs, batches, inventory] =
+  const [cocktails, specs, batches, inventory, premixSpecs] =
     await Promise.all([
       sql`SELECT "cocktailId", name, tag, glassware, technique, straining, garnish, is_batched, serve_extras FROM cocktails ORDER BY name ASC`,
       sql`SELECT cocktail_id, ingredient, ml FROM cocktail_specs`,
       sql`SELECT cocktail_id, ingredient, parts FROM batch_recipes`,
       sql`SELECT "cocktailId", name, count, threshold FROM inventory ORDER BY name ASC`,
-    ]) as [LegacyCocktail[], LegacySpec[], LegacyBatchRecipe[], LegacyInventory[]];
+      sql`SELECT cocktail_id, premix_note FROM cocktail_premix_spec`,
+    ]) as [LegacyCocktail[], LegacySpec[], LegacyBatchRecipe[], LegacyInventory[], Array<{cocktail_id: string; premix_note: string | null}>];
 
   const specsByCocktail = new Map<string, LegacySpec[]>();
   for (const row of specs) {
@@ -55,6 +56,11 @@ export async function getDashboardData() {
     const arr = specsByCocktail.get(key) ?? [];
     arr.push(row);
     specsByCocktail.set(key, arr);
+  }
+
+  const specByCocktailId = new Map<string, string | null>();
+  for (const row of premixSpecs) {
+    specByCocktailId.set(row.cocktail_id, row.premix_note);
   }
 
   const batchesByCocktail = new Map<string, LegacyBatchRecipe[]>();
@@ -207,6 +213,7 @@ export async function getDashboardData() {
       garnish: cocktail.garnish,
       isBatched: cocktail.is_batched ?? false,
       serveExtras: cocktail.serve_extras,
+      premixNote: specByCocktailId.get(cocktail.cocktailId) ?? null,
       premixItems: (() => {
         // Deduplicate premix items by premix name
         const specs = specsByCocktail.get(cocktail.cocktailId) ?? [];

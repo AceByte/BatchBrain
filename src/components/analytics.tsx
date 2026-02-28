@@ -185,9 +185,9 @@ export function Analytics() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <h1 className="text-5xl font-extrabold text-white">📊 Analytics</h1>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <select
               value={timeframe}
               onChange={(e) => setTimeframe(e.target.value)}
