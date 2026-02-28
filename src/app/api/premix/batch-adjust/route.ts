@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/legacy-db";
+import { logStockAdjustment } from "@/lib/stock-history";
 
 type Change = {
   id: number;
@@ -9,12 +10,14 @@ type Change = {
 
 type Body = {
   changes: Change[];
+  reason?: string;
+  notes?: string;
 };
 
 export async function PATCH(request: Request) {
   try {
     const body = (await request.json()) as Body;
-    const { changes } = body;
+    const { changes, reason, notes } = body;
 
     if (!Array.isArray(changes) || changes.length === 0) {
       return NextResponse.json(
@@ -65,11 +68,24 @@ export async function PATCH(request: Request) {
         );
       }
 
+      const item = allItems.find((i) => i.cocktailId === cocktailId);
+      const oldValue = item?.count ?? 0;
+
       await sql`
         UPDATE inventory 
         SET count = ${Math.round(change.newValue * 100) / 100}
         WHERE "cocktailId" = ${cocktailId}
       `;
+
+      // Log the adjustment to history
+      await logStockAdjustment({
+        cocktailId,
+        premixName: item?.name ?? "Unknown",
+        oldValue,
+        newValue: change.newValue,
+        reason: reason || "Manual adjustment",
+        notes,
+      });
 
       results.push({
         id: change.id,

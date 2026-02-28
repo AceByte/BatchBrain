@@ -1,5 +1,7 @@
 import { sql } from "@/lib/legacy-db";
 import { round2 } from "@/lib/prep-plan";
+import { getWeeklyUsage } from "@/lib/production";
+import { getConfig } from "@/lib/config";
 
 type LegacyCocktail = {
   cocktailId: string;
@@ -31,7 +33,13 @@ type LegacyInventory = {
   count: number | null;
   threshold: number | null;
 };
+// Load config and production history
+  const [config, weeklyUsageFromHistory] = await Promise.all([
+    getConfig(),
+    getWeeklyUsage(4), // Calculate based on last 4 weeks
+  ]);
 
+  
 export async function getDashboardData() {
   const [cocktails, specs, batches, inventory] =
     await Promise.all([
@@ -82,28 +90,33 @@ export async function getDashboardData() {
     const currentBottles = Number(row.count ?? 0);
     const targetBottles = thresholdBottles + batchYieldLiters;
     
-    // Calculate weekly usage: sum up all cocktails that use this premix
-    // For each cocktail, calculate (ml per drink * weekly forecast) / 750ml per bottle
+    // Calculate weekly usage: use historical data if available, otherwise estimate from specs
     const premixName = row.name ?? row.cocktailId;
-    let weeklyUseBottles = 0;
+    const premixId = row.cocktailId;
     
-    for (const [cocktailId, specs] of specsByCocktail.entries()) {
-      // Find if this cocktail uses this premix
-      const usesThisPremix = specs.some(spec => spec.ingredient === premixName);
-      if (usesThisPremix) {
-        // Get the cocktail info to find weekly forecast
-        const cocktail = cocktails.find(c => c.cocktailId === cocktailId);
-        if (cocktail) {
-          // Each cocktail uses some ml of this premix
-          const mlUsed = specs
-            .filter(spec => spec.ingredient === premixName)
-            .reduce((sum, spec) => sum + Number(spec.ml ?? 0), 0);
-          
-          // Assume a modest weekly forecast of 10 drinks per cocktail if not specified
-          const weeklyForecast = 10;
-          const totalMlPerWeek = mlUsed * weeklyForecast;
-          const bottlesPerWeek = totalMlPerWeek / 750; // Standard bottle is 750ml
-          weeklyUseBottles += bottlesPerWeek;
+    // Check if we have historical production data for this premix
+    let weeklyUseBottles = weeklyUsageFromHistory.get(premixId) ?? 0;
+    
+    // If no history, fall back to calculation from cocktail specs
+    if (weeklyUseBottles === 0) {
+      for (const [cocktailId, specs] of specsByCocktail.entries()) {
+        // Find if this cocktail uses this premix
+        const usesThisPremix = specs.some(spec => spec.ingredient === premixName);
+        if (usesThisPremix) {
+          // Get the cocktail info to find weekly forecast
+          const cocktail = cocktails.find(c => c.cocktailId === cocktailId);
+          if (cocktail) {
+            // Each cocktail uses some ml of this premix
+            const mlUsed = specs
+              .filter(spec => spec.ingredient === premixName)
+              .reduce((sum, spec) => sum + Number(spec.ml ?? 0), 0);
+            
+            // Use configured default weekly forecast
+            const weeklyForecast = config.defaultWeeklyDrinksPerCocktail;
+            const totalMlPerWeek = mlUsed * weeklyForecast;
+            const bottlesPerWeek = totalMlPerWeek / 750; // Standard bottle is 750ml
+            weeklyUseBottles += bottlesPerWeek;
+          }
         }
       }
     }
@@ -150,12 +163,15 @@ export async function getDashboardData() {
   const ingredientTotals = prepPlan.reduce<
     Record<string, { ingredientName: string; unit: string; totalAmount: number }>
   >((acc, premixItem) => {
-    for (const ingredient of premixItem.ingredients) {
-      const key = `${ingredient.ingredientName}:${ingredient.unit}`;
-      if (!acc[key]) {
-        acc[key] = { ...ingredient };
-      } else {
-        acc[key].totalAmount += ingredient.totalAmount;
+    // Only include ingredients for items that actually need prep
+    if (premixItem.batchesToMake > 0) {
+      for (const ingredient of premixItem.ingredients) {
+        const key = `${ingredient.ingredientName}:${ingredient.unit}`;
+        if (!acc[key]) {
+          acc[key] = { ...ingredient };
+        } else {
+          acc[key].totalAmount += ingredient.totalAmount;
+        }
       }
     }
 
