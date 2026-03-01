@@ -24,7 +24,7 @@ const DEFAULT_CONFIG: AppConfig = {
 
 export async function getConfig(): Promise<AppConfig> {
   try {
-    const rows = await sql`SELECT key, value FROM config` as Array<{ key: string; value: any }>;
+    const rows = await sql`SELECT key, value FROM app_config` as Array<{ key: string; value: any }>;
     
     const config: Partial<AppConfig> = {};
     for (const row of rows) {
@@ -43,7 +43,7 @@ export async function getConfig(): Promise<AppConfig> {
 export async function updateConfig(updates: Partial<AppConfig>): Promise<void> {
   for (const [key, value] of Object.entries(updates)) {
     await sql`
-      INSERT INTO config (key, value)
+      INSERT INTO app_config (key, value)
       VALUES (${key}, ${JSON.stringify(value)})
       ON CONFLICT (key)
       DO UPDATE SET value = ${JSON.stringify(value)}
@@ -52,8 +52,8 @@ export async function updateConfig(updates: Partial<AppConfig>): Promise<void> {
 }
 
 export async function resetConfig(): Promise<void> {
-  await sql`DELETE FROM config`;
+  await sql`DELETE FROM app_config`;
   for (const [key, value] of Object.entries(DEFAULT_CONFIG)) {
-    await sql`INSERT INTO config (key, value) VALUES (${key}, ${JSON.stringify(value)})`;
+    await sql`INSERT INTO app_config (key, value) VALUES (${key}, ${JSON.stringify(value)})`;
   }
 }

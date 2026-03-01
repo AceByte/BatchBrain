@@ -1,146 +1,135 @@
 import { sql } from "@/lib/legacy-db";
-import { round2 } from "@/lib/prep-plan";
 import { getWeeklyUsage } from "@/lib/production";
 import { getConfig } from "@/lib/config";
 
-type LegacyCocktail = {
-  cocktailId: string;
+function round2(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+type DbCocktail = {
+  id: string;
   name: string | null;
-  tag: string | null;
+  category: string | null;
   glassware: string | null;
   technique: string | null;
   straining: string | null;
   garnish: string | null;
-  is_batched: boolean | null;
+  is_batched: boolean;
   serve_extras: string | null;
 };
 
-type LegacySpec = {
+type DbCocktailSpec = {
   cocktail_id: string;
   ingredient: string | null;
   ml: number | null;
 };
 
-type LegacyBatchRecipe = {
+type DbPremixSpec = {
   cocktail_id: string;
-  ingredient: string | null;
-  parts: number | null;
+  premix_note: string | null;
+  batch_note: string | null;
 };
 
-type LegacyInventory = {
-  cocktailId: string;
-  name: string | null;
-  count: number | null;
-  threshold: number | null;
+type DbRecipeItem = {
+  premix_id: string;
+  ingredient_name: string | null;
+  amount_per_batch: number | null;
+  unit: string | null;
 };
+
+type DbPremix = {
+  premix_id: string;
+  name: string | null;
+  current_bottles: number | null;
+  threshold_bottles: number | null;
+  target_bottles: number | null;
+};
+
 // Load config and production history
+export async function getDashboardData() {
   const [config, weeklyUsageFromHistory] = await Promise.all([
     getConfig(),
-    getWeeklyUsage(4), // Calculate based on last 4 weeks
+    getWeeklyUsage(4),
   ]);
 
-  
-export async function getDashboardData() {
-  const [cocktails, specs, batches, inventory, premixSpecs] =
+  const [cocktails, cocktailSpecs, premixSpecs, recipeRows, premixes] =
     await Promise.all([
-      sql`SELECT "cocktailId", name, tag, glassware, technique, straining, garnish, is_batched, serve_extras FROM cocktails ORDER BY name ASC`,
+      sql`SELECT id, name, category, glassware, technique, straining, garnish, is_batched, serve_extras FROM cocktails ORDER BY name ASC`,
       sql`SELECT cocktail_id, ingredient, ml FROM cocktail_specs`,
-      sql`SELECT cocktail_id, ingredient, parts FROM batch_recipes`,
-      sql`SELECT "cocktailId", name, count, threshold FROM inventory ORDER BY name ASC`,
-      sql`SELECT cocktail_id, premix_note FROM cocktail_premix_spec`,
-    ]) as [LegacyCocktail[], LegacySpec[], LegacyBatchRecipe[], LegacyInventory[], Array<{cocktail_id: string; premix_note: string | null}>];
+      sql`SELECT cocktail_id, premix_note, batch_note FROM cocktail_premix_specs`,
+      sql`SELECT premix_id, ingredient_name, amount_per_batch, unit FROM premix_recipe_items`,
+      sql`SELECT premix_id, name, current_bottles, threshold_bottles, target_bottles FROM premixes ORDER BY name ASC`,
+    ]) as [DbCocktail[], DbCocktailSpec[], DbPremixSpec[], DbRecipeItem[], DbPremix[]];
 
-  const specsByCocktail = new Map<string, LegacySpec[]>();
-  for (const row of specs) {
+  // Group cocktail specs by cocktail_id
+  const specsByCocktailId = new Map<string, DbCocktailSpec[]>();
+  for (const row of cocktailSpecs) {
     const key = row.cocktail_id;
-    const arr = specsByCocktail.get(key) ?? [];
+    const arr = specsByCocktailId.get(key) ?? [];
     arr.push(row);
-    specsByCocktail.set(key, arr);
+    specsByCocktailId.set(key, arr);
   }
 
-  const specByCocktailId = new Map<string, string | null>();
+  // Map premix specs by cocktail_id
+  const premixSpecByCocktailId = new Map<string, DbPremixSpec>();
   for (const row of premixSpecs) {
-    specByCocktailId.set(row.cocktail_id, row.premix_note);
+    premixSpecByCocktailId.set(row.cocktail_id, row);
   }
 
-  const batchesByCocktail = new Map<string, LegacyBatchRecipe[]>();
-  for (const row of batches) {
-    const key = row.cocktail_id;
-    const arr = batchesByCocktail.get(key) ?? [];
+  // Group recipe items by premix_id
+  const recipesByPremix = new Map<string, DbRecipeItem[]>();
+  for (const row of recipeRows) {
+    const key = row.premix_id;
+    const arr = recipesByPremix.get(key) ?? [];
     arr.push(row);
-    batchesByCocktail.set(key, arr);
+    recipesByPremix.set(key, arr);
   }
 
-  const premixes = inventory.map((row, index) => {
-    const batchRows = batchesByCocktail.get(row.cocktailId) ?? [];
+  // Process premixes
+  const premixList = premixes.map((row, index) => {
+    const recipeRowsForPremix = recipesByPremix.get(row.premix_id) ?? [];
     // Deduplicate recipe items by ingredient name
     const uniqueRecipeMap = new Map<string, { ingredientName: string; amountPerBatch: number; unit: string }>();
-    for (const item of batchRows) {
-      const ingredientName = item.ingredient ?? "Unknown";
+    for (const item of recipeRowsForPremix) {
+      const ingredientName = item.ingredient_name ?? "Unknown";
       if (!uniqueRecipeMap.has(ingredientName)) {
         uniqueRecipeMap.set(ingredientName, {
           ingredientName,
-          amountPerBatch: Number(item.parts ?? 0),
-          unit: "parts",
+          amountPerBatch: Number(item.amount_per_batch ?? 0),
+          unit: item.unit ?? "parts",
         });
       }
     }
     const recipeItems = Array.from(uniqueRecipeMap.values());
 
-    const batchYieldLiters = Math.max(
+    // Calculate batch yield from recipe items
+    const batchYieldBottles = Math.max(
       1,
       recipeItems.reduce((sum, item) => sum + item.amountPerBatch, 0),
     );
 
-    const thresholdBottles = Number(row.threshold ?? 2);
-    const currentBottles = Number(row.count ?? 0);
-    const targetBottles = thresholdBottles + batchYieldLiters;
+    const thresholdBottles = Number(row.threshold_bottles ?? 2);
+    const currentBottles = Number(row.current_bottles ?? 0);
+    const targetBottles = Number(row.target_bottles ?? thresholdBottles + batchYieldBottles);
     
-    // Calculate weekly usage: use historical data if available, otherwise estimate from specs
-    const premixName = row.name ?? row.cocktailId;
-    const premixId = row.cocktailId;
-    
-    // Check if we have historical production data for this premix
+    // Calculate weekly usage: use historical data if available
+    const premixId = row.premix_id;
     let weeklyUseBottles = weeklyUsageFromHistory.get(premixId) ?? 0;
-    
-    // If no history, fall back to calculation from cocktail specs
-    if (weeklyUseBottles === 0) {
-      for (const [cocktailId, specs] of specsByCocktail.entries()) {
-        // Find if this cocktail uses this premix
-        const usesThisPremix = specs.some(spec => spec.ingredient === premixName);
-        if (usesThisPremix) {
-          // Get the cocktail info to find weekly forecast
-          const cocktail = cocktails.find(c => c.cocktailId === cocktailId);
-          if (cocktail) {
-            // Each cocktail uses some ml of this premix
-            const mlUsed = specs
-              .filter(spec => spec.ingredient === premixName)
-              .reduce((sum, spec) => sum + Number(spec.ml ?? 0), 0);
-            
-            // Use configured default weekly forecast
-            const weeklyForecast = config.defaultWeeklyDrinksPerCocktail;
-            const totalMlPerWeek = mlUsed * weeklyForecast;
-            const bottlesPerWeek = totalMlPerWeek / 750; // Standard bottle is 750ml
-            weeklyUseBottles += bottlesPerWeek;
-          }
-        }
-      }
-    }
     
     weeklyUseBottles = Math.round(weeklyUseBottles * 100) / 100; // Round to 2 decimals
     const projectedEndBottles = currentBottles - weeklyUseBottles;
     const bottlesToProduce =
       projectedEndBottles < thresholdBottles ? targetBottles - projectedEndBottles : 0;
-    const batchesToMake = Math.max(0, Math.ceil(bottlesToProduce / batchYieldLiters));
+    const batchesToMake = Math.max(0, Math.ceil(bottlesToProduce / batchYieldBottles));
 
     return {
       id: index + 1,
-      sourceCocktailId: row.cocktailId,
-      name: row.name ?? row.cocktailId,
+      sourceCocktailId: row.premix_id,
+      name: row.name ?? row.premix_id,
       currentBottles,
       thresholdBottles,
       targetBottles,
-      batchYieldBottles: batchYieldLiters,
+      batchYieldBottles,
       recipeItems,
       weeklyUseBottles,
       projectedEndBottles,
@@ -149,7 +138,7 @@ export async function getDashboardData() {
     };
   });
 
-  const prepPlan = premixes.map((premix) => ({
+  const prepPlan = premixList.map((premix) => ({
     premixId: premix.id,
     premixName: premix.name,
     currentBottles: round2(premix.currentBottles),
@@ -185,7 +174,7 @@ export async function getDashboardData() {
   }, {});
 
   return {
-    premixes: premixes.map((premix) => ({
+    premixes: premixList.map((premix) => ({
       id: premix.id,
       name: premix.name,
       currentBottles: round2(premix.currentBottles),
@@ -198,38 +187,35 @@ export async function getDashboardData() {
         unit: item.unit,
       })),
     })),
-    cocktails: cocktails.map((cocktail, index) => ({
-      id: index + 1,
-      name: cocktail.name ?? cocktail.cocktailId,
-      category:
-        cocktail.tag?.toUpperCase() === "SEASONAL"
-          ? "SEASONAL"
-          : cocktail.tag?.toUpperCase() === "SIGNATURE"
-            ? "SIGNATURE"
-            : "REGULAR",
-      glassware: cocktail.glassware,
-      technique: cocktail.technique,
-      straining: cocktail.straining,
-      garnish: cocktail.garnish,
-      isBatched: cocktail.is_batched ?? false,
-      serveExtras: cocktail.serve_extras,
-      premixNote: specByCocktailId.get(cocktail.cocktailId) ?? null,
-      premixItems: (() => {
-        // Deduplicate premix items by premix name
-        const specs = specsByCocktail.get(cocktail.cocktailId) ?? [];
-        const uniqueSpecsMap = new Map<string, { premixName: string; amountPerDrinkMl: number }>();
-        for (const item of specs) {
-          const premixName = item.ingredient ?? "Unknown";
-          if (!uniqueSpecsMap.has(premixName)) {
-            uniqueSpecsMap.set(premixName, {
-              premixName,
-              amountPerDrinkMl: Number(item.ml ?? 0),
-            });
-          }
-        }
-        return Array.from(uniqueSpecsMap.values());
-      })(),
-    })),
+    cocktails: cocktails.map((cocktail, index) => {
+      const specs = specsByCocktailId.get(cocktail.id) ?? [];
+      const premixSpec = premixSpecByCocktailId.get(cocktail.id);
+      return {
+        id: index + 1,
+        name: cocktail.name ?? cocktail.id,
+        category:
+          cocktail.category?.toUpperCase() === "SEASONAL"
+            ? "SEASONAL"
+            : cocktail.category?.toUpperCase() === "SIGNATURE"
+              ? "SIGNATURE"
+              : cocktail.category?.toUpperCase() === "INGREDIENTS"
+                ? "INGREDIENTS"
+                : "REGULAR",
+                
+        glassware: cocktail.glassware,
+        technique: cocktail.technique,
+        straining: cocktail.straining,
+        garnish: cocktail.garnish,
+        isBatched: cocktail.is_batched,
+        serveExtras: cocktail.serve_extras,
+        premixNote: premixSpec?.premix_note ?? null,
+        batchNote: premixSpec?.batch_note ?? null,
+        specs: specs.map((spec) => ({
+          ingredient: spec.ingredient ?? "Unknown",
+          ml: Number(spec.ml ?? 0),
+        })),
+      };
+    }),
     prepPlan,
     ingredientTotals: Object.values(ingredientTotals)
       .map((item) => ({ ...item, totalAmount: round2(item.totalAmount) }))

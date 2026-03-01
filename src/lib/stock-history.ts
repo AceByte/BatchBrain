@@ -23,8 +23,8 @@ export async function logStockAdjustment(params: {
   const delta = params.newValue - params.oldValue;
   
   await sql`
-    INSERT INTO stock_adjustment_history 
-      (cocktail_id, premix_name, old_value, new_value, delta, reason, notes)
+    INSERT INTO stock_adjustment_logs
+      (premix_id, premix_name, old_value, new_value, delta, reason, notes)
     VALUES 
       (${params.cocktailId}, ${params.premixName}, ${params.oldValue}, 
        ${params.newValue}, ${delta}, ${params.reason || null}, ${params.notes || null})
@@ -37,22 +37,22 @@ export async function getStockAdjustmentHistory(
 ): Promise<StockAdjustment[]> {
   const rows = (cocktailId
     ? await sql`
-        SELECT id, cocktail_id, premix_name, old_value, new_value, delta, reason, notes, created_at
-        FROM stock_adjustment_history
-        WHERE cocktail_id = ${cocktailId}
+        SELECT id, premix_id, premix_name, old_value, new_value, delta, reason, notes, created_at
+        FROM stock_adjustment_logs
+        WHERE premix_id = ${cocktailId}
         ORDER BY created_at DESC
         LIMIT ${limit}
       `
     : await sql`
-        SELECT id, cocktail_id, premix_name, old_value, new_value, delta, reason, notes, created_at
-        FROM stock_adjustment_history
+        SELECT id, premix_id, premix_name, old_value, new_value, delta, reason, notes, created_at
+        FROM stock_adjustment_logs
         ORDER BY created_at DESC
         LIMIT ${limit}
       `) as any[];
 
   return rows.map((row: any) => ({
     id: row.id,
-    cocktailId: row.cocktail_id,
+    cocktailId: row.premix_id,
     premixName: row.premix_name,
     oldValue: Number(row.old_value),
     newValue: Number(row.new_value),

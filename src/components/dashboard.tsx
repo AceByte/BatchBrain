@@ -21,7 +21,7 @@ type DashboardData = {
   cocktails: Array<{
     id: number;
     name: string;
-    category: "REGULAR" | "SEASONAL" | "SIGNATURE";
+    category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS";
     glassware: string | null;
     technique: string | null;
     straining: string | null;
@@ -29,9 +29,10 @@ type DashboardData = {
     isBatched: boolean;
     serveExtras: string | null;
     premixNote: string | null;
-    premixItems: Array<{
-      premixName: string;
-      amountPerDrinkMl: number;
+    batchNote: string | null;
+    specs: Array<{
+      ingredient: string;
+      ml: number;
     }>;
   }>;
   prepPlan: Array<{
@@ -61,11 +62,25 @@ function formatCategory(category: DashboardData["cocktails"][number]["category"]
   return category.charAt(0) + category.slice(1).toLowerCase();
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  return isMobile;
+}
+
 export function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const isMobile = useIsMobile();
   
   // Draft/edit mode
   const [pendingChanges, setPendingChanges] = useState<Map<number, number>>(new Map());
@@ -77,7 +92,7 @@ export function Dashboard() {
   
   // UI state
   const [cocktailSearch, setCocktailSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<"ALL" | "REGULAR" | "SEASONAL" | "SIGNATURE">("ALL");
+  const [categoryFilter, setCategoryFilter] = useState<"ALL" | "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS">("ALL");
   const [premixSortBy, setPremixSortBy] = useState<"name" | "stock" | "urgency">("urgency");
   const [currentView, setCurrentView] = useState<"cocktails" | "inventory" | "prep">("inventory");
 
@@ -277,7 +292,7 @@ export function Dashboard() {
       const search = cocktailSearch.toLowerCase();
       filtered = filtered.filter(c => 
         c.name.toLowerCase().includes(search) ||
-        c.premixItems.some(p => p.premixName.toLowerCase().includes(search))
+        c.specs.some(s => s.ingredient.toLowerCase().includes(search))
       );
     }
     
@@ -293,7 +308,7 @@ export function Dashboard() {
         }
         
         // Ingredients section height
-        const ingredientCount = cocktail.premixItems.length + (cocktail.serveExtras ? 1 : 0);
+        const ingredientCount = cocktail.specs.length + (cocktail.serveExtras ? 1 : 0);
         if (ingredientCount > 0) {
           height += 20 + (ingredientCount * 24) + 16; // header + items + padding
         }
@@ -349,7 +364,7 @@ export function Dashboard() {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
         <div className="text-center">
           <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600 shadow-lg"></div>
-          <p className="mt-6 text-xl font-bold text-slate-700">Loading BatchBrain data...</p>
+          <p className="mt-6 text-sm font-bold text-slate-700">Loading BatchBrain data...</p>
         </div>
       </div>
     );
@@ -363,7 +378,7 @@ export function Dashboard() {
             <span className="text-4xl">❌</span>
             <p className="text-2xl font-extrabold text-red-800">Unable to load dashboard</p>
           </div>
-          <p className="mt-4 text-base font-medium text-red-700">{error ?? "Unknown error"}</p>
+          <p className="mt-4 text-sm font-medium text-red-700">{error ?? "Unknown error"}</p>
           <button
             onClick={loadData}
             className="mt-6 w-full rounded-xl bg-gradient-to-br from-red-600 to-rose-700 px-6 py-3 font-bold text-white shadow-lg transition-all hover:shadow-xl hover:from-red-700 hover:to-rose-800"
@@ -377,54 +392,51 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className="mx-auto flex w-full flex-col gap-8 p-4 md:p-6 lg:p-8">
+      <div className={`mx-auto flex w-full flex-col gap-4 ${isMobile ? "p-2 pb-20 md:p-6 lg:p-8" : "p-4 md:p-6 lg:p-8"}`}>
         {/* Top Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 print:hidden">
-          <div className="flex items-center gap-4">
+        <div className={`flex flex-wrap items-center justify-between gap-2 print:hidden ${isMobile ? "gap-2" : "gap-4"}`}>
+          <div className={`flex items-center gap-2 ${isMobile ? "w-full" : ""}`}>
             <button
               onClick={loadData}
               disabled={loading}
-              className="rounded-xl bg-slate-800 px-5 py-2.5 text-sm font-semibold text-white shadow-lg ring-1 ring-slate-700 transition-all hover:bg-slate-700 hover:shadow-xl disabled:opacity-50"
+              className={`rounded-xl bg-slate-800 text-white shadow-lg ring-1 ring-slate-700 transition-all hover:bg-slate-700 hover:shadow-xl disabled:opacity-50 ${isMobile ? "px-2 py-1.5 text-xs" : "px-5 py-2.5 text-sm"} font-semibold`}
               title="Refresh data (F5)"
             >
-              🔄 Refresh
+              🔄 {isMobile ? "Refresh" : "Refresh"}
             </button>
             {lastUpdated && (
-              <span className="text-sm font-medium text-slate-400">
-                Last updated: {lastUpdated.toLocaleTimeString()}
+              <span className={`font-medium text-slate-400 ${isMobile ? "text-xs" : "text-sm"}`}>
+                {isMobile ? "Updated" : "Last updated"}: {lastUpdated.toLocaleTimeString()}
               </span>
             )}
           </div>
           <a
             href="/analytics"
-            className="rounded-xl bg-slate-800 px-5 py-2.5 text-sm font-semibold text-white shadow-lg ring-1 ring-slate-700 transition-all hover:bg-slate-700 hover:shadow-xl"
+            className={`rounded-xl bg-slate-800 text-white shadow-lg ring-1 ring-slate-700 transition-all hover:bg-slate-700 hover:shadow-xl font-semibold ${isMobile ? "px-2 py-1.5 text-xs" : "px-5 py-2.5 text-sm"}`}
           >
-            📊 Analytics
+            📊 {isMobile ? "Analytics" : "Analytics"}
           </a>
         </div>
 
-        <header className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 p-8 shadow-xl print:border-slate-300 print:bg-white print:text-slate-900">
+        <header className={`relative overflow-hidden rounded-lg bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 shadow-lg print:border-slate-300 print:bg-white print:text-slate-900 ${isMobile ? "p-2" : "p-3"}`}>
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
           <div className="relative flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h1 className="text-5xl font-extrabold tracking-tight text-white print:text-slate-900">BatchBrain</h1>
-              <p className="mt-3 text-lg font-medium text-blue-100 print:text-slate-600">
-                Weekly prep control for premix stock, cocktail specs, and batching needs.
-              </p>
+              <h1 className={`font-extrabold tracking-tight text-white print:text-slate-900 ${isMobile ? "text-xl" : "text-2xl"}`}>BatchBrain</h1>
               {lowPremixCount > 0 && (
-                <div className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white shadow-md">
-                  <span className="text-lg">⚠️</span>
-                  <span>{lowPremixCount} premix item{lowPremixCount !== 1 ? 's' : ''} below threshold this week</span>
+                <div className="mt-1 inline-flex items-center gap-0.5 rounded px-2 py-0.5 bg-red-500 text-[12px] font-semibold text-white">
+                  <span>⚠️</span>
+                  <span>{lowPremixCount} item{lowPremixCount !== 1 ? 's' : ''} low</span>
                 </div>
               )}
               {pendingChanges.size > 0 && (
-                <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-yellow-400 px-3 py-1.5 text-sm font-semibold text-yellow-900 shadow-md">
+                <div className="mt-0.5 inline-flex items-center gap-0.5 rounded px-2 py-0.5 bg-yellow-400 text-xs font-semibold text-yellow-900">
                   <span>✏️</span>
-                  <span>{pendingChanges.size} pending change{pendingChanges.size !== 1 ? 's' : ''} · Press Ctrl+S to save or Esc to discard</span>
+                  <span>{pendingChanges.size} pending</span>
                 </div>
               )}
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="flex flex-col gap-1 sm:flex-row">
               {pendingChanges.size > 0 && (
                 <>
                   <button
@@ -488,30 +500,30 @@ export function Dashboard() {
         </header>
 
         {/* Quick Stats */}
-        <div className="grid gap-5 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="group rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-6 shadow-xl ring-1 ring-slate-600 transition-all hover:shadow-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-slate-400">Total Premixes</p>
-            <p className="mt-2 text-4xl font-extrabold text-white">{data?.premixes.length ?? 0}</p>
+        <div className={`grid gap-2 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4`}>
+          <div className={`group rounded-lg bg-gradient-to-br from-slate-800 to-slate-700 shadow-md ring-1 ring-slate-600 transition-all hover:shadow-lg ${isMobile ? "p-2" : "p-3"}`}>
+            <p className={`font-semibold uppercase tracking-wider text-slate-400 text-xs`}>Total Premixes</p>
+            <p className={`mt-0.5 font-extrabold text-white ${isMobile ? "text-lg" : "text-xl"}`}>{data?.premixes.length ?? 0}</p>
           </div>
-          <div className="group rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-6 shadow-xl ring-1 ring-slate-600 transition-all hover:shadow-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-slate-400">Total Cocktails</p>
-            <p className="mt-2 text-4xl font-extrabold text-white">{data?.cocktails.length ?? 0}</p>
+          <div className={`group rounded-lg bg-gradient-to-br from-slate-800 to-slate-700 shadow-md ring-1 ring-slate-600 transition-all hover:shadow-lg ${isMobile ? "p-2" : "p-3"}`}>
+            <p className={`font-semibold uppercase tracking-wider text-slate-400 text-xs`}>Total Cocktails</p>
+            <p className={`mt-0.5 font-extrabold text-white ${isMobile ? "text-lg" : "text-xl"}`}>{data?.cocktails.length ?? 0}</p>
           </div>
-          <div className="group rounded-2xl bg-gradient-to-br from-blue-900 to-indigo-900 p-6 shadow-xl ring-1 ring-blue-700 transition-all hover:shadow-2xl">
-            <p className="text-sm font-semibold uppercase tracking-wider text-blue-300">Batches Needed</p>
-            <p className="mt-2 text-4xl font-extrabold text-blue-100">
+          <div className={`group rounded-lg bg-gradient-to-br from-blue-900 to-indigo-900 shadow-md ring-1 ring-blue-700 transition-all hover:shadow-lg ${isMobile ? "p-2" : "p-3"}`}>
+            <p className={`font-semibold uppercase tracking-wider text-blue-300 text-xs`}>Batches Needed</p>
+            <p className={`mt-0.5 font-extrabold text-blue-100 ${isMobile ? "text-lg" : "text-xl"}`}>
               {data?.prepPlan.reduce((sum, item) => sum + item.batchesToMake, 0) ?? 0}
             </p>
           </div>
-          <div className={`group rounded-2xl p-6 shadow-xl ring-1 transition-all hover:shadow-2xl ${
+          <div className={`group rounded-lg shadow-md ring-1 transition-all hover:shadow-lg ${isMobile ? "p-2" : "p-3"} ${
             lowPremixCount > 0 
               ? 'bg-gradient-to-br from-red-900 to-rose-900 ring-red-700' 
               : 'bg-gradient-to-br from-green-900 to-emerald-900 ring-green-700'
           }`}>
-            <p className={`text-sm font-semibold uppercase tracking-wider ${
+            <p className={`font-semibold uppercase tracking-wider text-xs ${
               lowPremixCount > 0 ? 'text-red-300' : 'text-green-300'
             }`}>Low Stock Items</p>
-            <p className={`mt-2 text-4xl font-extrabold ${
+            <p className={`mt-0.5 font-extrabold ${isMobile ? "text-lg" : "text-xl"} ${
               lowPremixCount > 0 ? 'text-red-100' : 'text-green-100'
             }`}>
               {lowPremixCount}
@@ -519,41 +531,41 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between rounded-2xl bg-slate-800/80 p-3 shadow-lg ring-1 ring-slate-700 print:hidden">
+        <div className={`flex items-center justify-between rounded-lg bg-slate-800/80 shadow-md ring-1 ring-slate-700 print:hidden ${isMobile ? "fixed bottom-2 left-2 right-2 z-50 p-2 backdrop-blur-lg bg-slate-800/95" : "p-1.5"}`}>
           <button
             onClick={() => setCurrentView(viewOrder[(currentViewIndex - 1 + viewOrder.length) % viewOrder.length])}
-            className="rounded-xl bg-slate-700 px-4 py-2 text-sm font-semibold text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600"
+            className={`rounded-lg bg-slate-700 text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600 font-semibold ${isMobile ? "px-3 py-2 text-sm" : "px-2 py-1 text-sm"}`}
           >
             ←
           </button>
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Current View</p>
-            <p className="text-lg font-extrabold text-white">{viewTitles[currentView]}</p>
+            <p className="font-semibold uppercase tracking-wider text-slate-400 text-xs">View</p>
+            <p className={`font-extrabold text-white ${isMobile ? "text-sm" : "text-sm"}`}>{viewTitles[currentView]}</p>
           </div>
           <button
             onClick={() => setCurrentView(viewOrder[(currentViewIndex + 1) % viewOrder.length])}
-            className="rounded-xl bg-slate-700 px-4 py-2 text-sm font-semibold text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600"
+            className={`rounded-lg bg-slate-700 text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600 font-semibold ${isMobile ? "px-3 py-2 text-sm" : "px-2 py-1 text-sm"}`}
           >
             →
           </button>
         </div>
 
       {currentView === "inventory" && (
-      <section className="rounded-3xl bg-slate-800 p-8 shadow-2xl ring-1 ring-slate-700">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-3xl font-bold text-white">💧 Premix Inventory</h2>
-          <div className="flex items-center gap-3">
+      <section className={`rounded-3xl bg-slate-800 shadow-2xl ring-1 ring-slate-700 ${isMobile ? "p-4" : "p-8"}`}>
+        <div className={`flex flex-wrap items-center justify-between gap-2 ${isMobile ? "gap-2" : "gap-4"}`}>
+          <h2 className={`font-bold text-white ${isMobile ? "text-lg" : "text-2xl"}`}>💧 Premix Inventory</h2>
+          <div className={`flex items-center gap-2 ${isMobile ? "w-full flex-wrap" : "gap-3"}`}>
             <button
               onClick={() => setShowProductionForm(true)}
-              className="rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg print:hidden"
+              className={`rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md transition-all hover:shadow-lg print:hidden font-semibold ${isMobile ? "px-2 py-1.5 text-xs" : "px-5 py-2.5 text-sm"}`}
             >
               📦 Log Production
             </button>
-            <label className="text-sm font-semibold text-slate-300">Sort by:</label>
+            <label className={`font-semibold text-slate-300 ${isMobile ? "text-xs" : "text-sm"}`}>Sort by:</label>
             <select 
               value={premixSortBy}
               onChange={(e) => setPremixSortBy(e.target.value as any)}
-              className="rounded-xl bg-slate-700 px-4 py-2.5 text-sm font-medium text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`rounded-xl bg-slate-700 text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium ${isMobile ? "px-2 py-1.5 text-xs" : "px-4 py-2.5 text-sm"}`}
             >
               <option value="urgency">Urgency</option>
               <option value="name">Name</option>
@@ -643,12 +655,12 @@ export function Dashboard() {
                     <div className="mt-2 grid gap-2 md:grid-cols-2 md:items-start">
                       {premix.recipeItems.length > 0 && (
                         <div className="rounded bg-slate-900/70 p-1.5 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
-                          <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">Ingredients:</p>
+                          <p className="mb-1 text-sm font-bold uppercase tracking-wider text-slate-300">Ingredients:</p>
                           <ul className="space-y-0.5">
                             {premix.recipeItems.map((item, itemIndex) => (
                               <li
                                 key={`${premix.id}-${item.ingredientName}-${itemIndex}`}
-                                className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-xs leading-5"
+                                className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-sm leading-5"
                               >
                                 <span className="font-semibold text-slate-100">{item.ingredientName}</span>
                                 <span className="font-extrabold text-blue-300">{item.amountPerBatch}{item.unit}</span>
@@ -658,40 +670,40 @@ export function Dashboard() {
                         </div>
                       )}
 
-                      <div className={`grid grid-cols-2 gap-2 text-xs ${premix.recipeItems.length === 0 ? 'md:col-span-2' : ''}`}>
+                      <div className={`grid grid-cols-2 gap-2 text-sm ${premix.recipeItems.length === 0 ? 'md:col-span-2' : ''}`}>
                         <div className="rounded-md bg-slate-800/80 p-1.5">
-                          <p className="text-[10px] font-bold text-slate-400">Current</p>
+                          <p className="text-sm font-bold text-slate-400">Current</p>
                           <p className={`text-sm font-bold ${isCritical ? 'text-red-400' : isLow ? 'text-amber-400' : 'text-slate-200'}`}>
                             {premix.currentBottles.toFixed(2)}
                             {hasChange && (
-                              <span className="text-[10px] text-slate-500 ml-1">({originalValue.toFixed(2)})</span>
+                              <span className="text-sm text-slate-500 ml-1">({originalValue.toFixed(2)})</span>
                             )}
                           </p>
                         </div>
                         <div className="rounded-md bg-slate-800/80 p-1.5">
-                          <p className="text-[10px] font-bold text-slate-400">Threshold</p>
+                          <p className="text-sm font-bold text-slate-400">Threshold</p>
                           <p className="text-sm font-bold text-slate-300">{premix.thresholdBottles.toFixed(2)}</p>
                         </div>
                         <div className="rounded-md bg-slate-800/80 p-1.5">
-                          <p className="text-[10px] font-bold text-slate-400">Target</p>
+                          <p className="text-sm font-bold text-slate-400">Target</p>
                           <p className="text-sm font-bold text-slate-300">{premix.targetBottles.toFixed(2)}</p>
                         </div>
                         <div className="rounded-md bg-slate-800/80 p-1.5">
-                          <p className="text-[10px] font-bold text-slate-400">Batch Yield</p>
+                          <p className="text-sm font-bold text-slate-400">Batch Yield</p>
                           <p className="text-sm font-bold text-slate-300">{premix.batchYieldBottles.toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="mt-2 flex items-center justify-center gap-1 print:hidden">
+                    <div className={`mt-2 flex items-stretch print:hidden ${isMobile ? 'gap-1' : 'gap-2'}`}>
                       <button
-                        className="rounded-lg bg-gradient-to-br from-red-500 to-rose-600 px-2 py-1 text-xs font-bold text-white shadow-sm transition-all hover:shadow-md disabled:opacity-50"
+                        className={`flex-1 rounded-lg bg-gradient-to-br from-red-500 to-rose-600 font-bold text-white shadow-sm transition-all hover:shadow-md disabled:opacity-50 ${isMobile ? 'py-1.5 text-sm' : 'py-2.5 text-base'}`}
                         onClick={() => adjustStock(premix.id, -5)}
                       >
                         -5
                       </button>
                       <button
-                        className="rounded-lg bg-gradient-to-br from-red-400 to-red-500 px-2 py-1 text-xs font-bold text-white shadow-sm transition-all hover:shadow-md disabled:opacity-50"
+                        className={`flex-1 rounded-lg bg-gradient-to-br from-red-400 to-red-500 font-bold text-white shadow-sm transition-all hover:shadow-md disabled:opacity-50 ${isMobile ? 'py-1.5 text-sm' : 'py-2.5 text-base'}`}
                         onClick={() => adjustStock(premix.id, -1)}
                       >
                         -1
@@ -701,16 +713,16 @@ export function Dashboard() {
                         min="0"
                         value={pendingChanges.get(premix.id) ?? (data?.premixes.find(p => p.id === premix.id)?.currentBottles ?? 0)}
                         onChange={(e) => setStockValue(premix.id, Number(e.target.value))}
-                        className="w-14 rounded-lg bg-slate-700 px-2 py-1 text-center text-xs font-bold text-white shadow-sm ring-1 ring-slate-600 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={`rounded-lg bg-slate-700 text-center font-bold text-white shadow-sm ring-1 ring-slate-600 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${isMobile ? 'w-16 px-2 py-1.5 text-sm' : 'w-24 px-3 py-2.5 text-base'}`}
                       />
                       <button
-                        className="rounded-lg bg-gradient-to-br from-green-400 to-emerald-500 px-2 py-1 text-xs font-bold text-white shadow-sm transition-all hover:shadow-md disabled:opacity-50"
+                        className={`flex-1 rounded-lg bg-gradient-to-br from-green-400 to-emerald-500 font-bold text-white shadow-sm transition-all hover:shadow-md disabled:opacity-50 ${isMobile ? 'py-1.5 text-sm' : 'py-2.5 text-base'}`}
                         onClick={() => adjustStock(premix.id, 1)}
                       >
                         +1
                       </button>
                       <button
-                        className="rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 px-2 py-1 text-xs font-bold text-white shadow-sm transition-all hover:shadow-md disabled:opacity-50"
+                        className={`flex-1 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 font-bold text-white shadow-sm transition-all hover:shadow-md disabled:opacity-50 ${isMobile ? 'py-1.5 text-sm' : 'py-2.5 text-base'}`}
                         onClick={() => adjustStock(premix.id, 5)}
                       >
                         +5
@@ -724,24 +736,24 @@ export function Dashboard() {
       )}
 
       {currentView === "cocktails" && (
-      <section className="rounded-3xl bg-slate-800 p-8 shadow-2xl ring-1 ring-slate-700">
+      <section className={`rounded-3xl bg-slate-800 shadow-2xl ring-1 ring-slate-700 ${isMobile ? "p-4" : "p-8"}`}>
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-3xl font-bold text-white">🍸 Cocktail Specsheet</h2>
+          <h2 className={`font-bold text-white ${isMobile ? "text-lg" : "text-2xl"}`}>🍸 Cocktail Specsheet</h2>
         </div>
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className={`flex flex-wrap gap-2 ${isMobile ? "gap-2 mt-4" : "mt-6 gap-3"}`}>
           <input
             type="text"
             placeholder="Search cocktails..."
             value={cocktailSearch}
             onChange={(e) => setCocktailSearch(e.target.value)}
-            className="flex-1 min-w-[200px] rounded-xl bg-slate-700 px-5 py-3 text-sm text-white ring-1 ring-slate-600 transition-all placeholder:text-slate-400 focus:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`flex-1 rounded-xl bg-slate-700 text-white ring-1 ring-slate-600 transition-all placeholder:text-slate-400 focus:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 ${isMobile ? "min-w-[150px] px-3 py-2 text-xs" : "min-w-[200px] px-5 py-3 text-sm"}`}
           />
-          <div className="flex flex-wrap gap-3">
-            {["ALL", "REGULAR", "SEASONAL", "SIGNATURE"].map((cat) => (
+          <div className="flex flex-wrap gap-2">
+            {["ALL", "REGULAR", "SEASONAL", "SIGNATURE", "INGREDIENTS"].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setCategoryFilter(cat as any)}
-                className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition-all ${
+                className={`rounded-xl font-semibold transition-all ${isMobile ? "px-2 py-1.5 text-xs" : "px-5 py-2.5 text-sm"} ${
                   categoryFilter === cat
                     ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-md'
                     : 'bg-slate-700 text-slate-200 ring-1 ring-slate-600 hover:bg-slate-600 hover:shadow-sm'
@@ -752,16 +764,16 @@ export function Dashboard() {
             ))}
           </div>
         </div>
-        <div className="mt-2 text-sm font-medium text-slate-400">
+        <div className={`font-medium text-slate-400 ${isMobile ? "text-xs mt-2" : "text-sm mt-2"}`}>
           Showing {filteredCocktails.length} of {data?.cocktails.length ?? 0} cocktails
         </div>
         {filteredCocktails.length === 0 ? (
           <div className="mt-6 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 p-10 text-center ring-1 ring-slate-600">
-            <p className="text-xl font-bold text-slate-300">No cocktails found</p>
-            <p className="mt-2 text-base font-medium text-slate-400">Try adjusting your search or filters</p>
+            <p className="text-base font-bold text-slate-300">No cocktails found</p>
+            <p className="mt-2 text-xs font-medium text-slate-400">Try adjusting your search or filters</p>
           </div>
         ) : (
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className={`grid gap-3 mt-4 ${isMobile ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}>
           {filteredCocktails
             .sort((a, b) => {
               // Calculate content length for sorting
@@ -776,7 +788,7 @@ export function Dashboard() {
                   length += cocktail.premixNote.split('\n').length;
                 }
                 // Count ingredients
-                length += cocktail.premixItems.length;
+                length += cocktail.specs.length;
                 // Count serve extras
                 if (cocktail.serveExtras) length++;
                 return length;
@@ -788,21 +800,23 @@ export function Dashboard() {
               REGULAR: 'bg-gradient-to-r from-blue-900/40 to-blue-800/20 ring-blue-700/50',
               SEASONAL: 'bg-gradient-to-r from-purple-900/40 to-purple-800/20 ring-purple-700/50',
               SIGNATURE: 'bg-gradient-to-r from-amber-900/40 to-amber-800/20 ring-amber-700/50',
+              INGREDIENTS: 'bg-gradient-to-r from-emerald-900/40 to-teal-800/20 ring-emerald-700/50',
             };
             const categoryBadgeColors = {
               REGULAR: 'bg-gradient-to-br from-blue-900 to-blue-800 text-blue-200 ring-1 ring-blue-700',
               SEASONAL: 'bg-gradient-to-br from-purple-900 to-purple-800 text-purple-200 ring-1 ring-purple-700',
               SIGNATURE: 'bg-gradient-to-br from-amber-900 to-amber-800 text-amber-200 ring-1 ring-amber-700',
+              INGREDIENTS: 'bg-gradient-to-br from-emerald-900 to-teal-800 text-emerald-200 ring-1 ring-emerald-700',
             };
             const categoryEmoji = {
               REGULAR: '🥃',
               SEASONAL: '🌸',
               SIGNATURE: '⭐',
+              INGREDIENTS: '🧂',
             };
-            const premixRows = cocktail.premixItems.map((premixItem, idx) => ({
-              premixItem,
+            const specRows = cocktail.specs.map((spec, idx) => ({
+              spec,
               idx,
-              premixSpec: premixSpecsByName.get(premixItem.premixName.toLowerCase().trim()),
             }));
             
             return (
@@ -815,12 +829,12 @@ export function Dashboard() {
                   <div className="space-y-1.5">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <h3 className="text-sm font-extrabold text-white">{cocktail.name}</h3>
-                      <span className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${categoryBadgeColors[cocktail.category]}`}>
+                      <span className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-xs font-bold ${categoryBadgeColors[cocktail.category]}`}>
                         <span>{categoryEmoji[cocktail.category]}</span>
                         {formatCategory(cocktail.category)}
                       </span>
                       {cocktail.isBatched && (
-                        <div className="inline-flex items-center gap-0.5 rounded-full bg-gradient-to-br from-green-900 to-emerald-900 px-1.5 py-0.5 text-[10px] font-bold text-green-200 ring-1 ring-green-700">
+                        <div className="inline-flex items-center gap-0.5 rounded-full bg-gradient-to-br from-green-900 to-emerald-900 px-1.5 py-0.5 text-xs font-bold text-green-200 ring-1 ring-green-700">
                           <span>📦</span>
                           Batched
                         </div>
@@ -830,29 +844,29 @@ export function Dashboard() {
                     {/* Cocktail Details (Glass, Technique, Garnish) */}
                     {(cocktail.glassware || cocktail.technique || cocktail.garnish) && (
                       <div className="rounded-md bg-slate-900/70 p-2 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
-                        <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-300">Details</p>
+                        <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-300">Details</p>
                         <ul className="space-y-1">
                           {cocktail.glassware && (
                             <li className="rounded-md bg-slate-800/70 px-2 py-1">
                               <div className="flex items-center justify-between text-xs leading-5">
-                                <span className="font-semibold text-slate-100">🍷 Glass</span>
-                                <span className="font-extrabold text-blue-300">{cocktail.glassware}</span>
+                                <span className="font-semibold text-slate-100">Glass</span>
+                                <span className="ml-2 font-extrabold text-blue-300">{cocktail.glassware}</span>
                               </div>
                             </li>
                           )}
                           {cocktail.technique && (
                             <li className="rounded-md bg-slate-800/70 px-2 py-1">
                               <div className="flex items-center justify-between text-xs leading-5">
-                                <span className="font-semibold text-slate-100">🔧 Technique</span>
-                                <span className="font-extrabold text-blue-300">{cocktail.technique}</span>
+                                <span className="font-semibold text-slate-100">Technique</span>
+                                <span className="ml-5 font-extrabold text-blue-300">{cocktail.technique}</span>
                               </div>
                             </li>
                           )}
                           {cocktail.garnish && (
                             <li className="rounded-md bg-slate-800/70 px-2 py-1">
                               <div className="flex items-center justify-between text-xs leading-5">
-                                <span className="font-semibold text-slate-100">🌿 Garnish</span>
-                                <span className="font-extrabold text-blue-300">{cocktail.garnish}</span>
+                                <span className="font-semibold text-slate-100">Garnish</span>
+                                <span className="ml-2 font-extrabold text-blue-300">{cocktail.garnish}</span>
                               </div>
                             </li>
                           )}
@@ -863,7 +877,7 @@ export function Dashboard() {
                     {/* Premix - Only for batched cocktails with premixNote */}
                     {cocktail.isBatched && cocktail.premixNote && (
                       <div className="rounded-md bg-slate-900/70 p-2 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
-                        <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-300">Premix</p>
+                        <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-300">Premix</p>
                         <ul className="space-y-1">
                           {cocktail.premixNote.split('\n').map((line, idx) => {
                             // Parse "amount ingredient" format (e.g., "7cl Premix" → amount: "7cl", ingredient: "Premix")
@@ -888,32 +902,19 @@ export function Dashboard() {
                     )}
 
                     {/* Ingredients */}
-                    {(premixRows.length > 0 || cocktail.serveExtras) && (
+                    {(specRows.length > 0 || cocktail.serveExtras) && (
                       <div className="rounded-md bg-slate-900/70 p-2 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
-                        <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-300">Ingredients</p>
+                        <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-300">Ingredients</p>
                         <ul className="space-y-1">
-                          {premixRows.map(({ premixItem, idx, premixSpec }) => (
+                          {specRows.map(({ spec, idx }) => (
                             <li
-                              key={`${cocktail.id}-${premixItem.premixName}-${idx}`}
+                              key={`${cocktail.id}-${spec.ingredient}-${idx}`}
                               className="rounded-md bg-slate-800/70 px-2 py-1"
                             >
                               <div className="flex items-center justify-between text-xs leading-5">
-                                <span className="font-semibold text-slate-100">{premixItem.premixName}</span>
-                                <span className="font-extrabold text-blue-300">{premixItem.amountPerDrinkMl}ml</span>
+                                <span className="font-semibold text-slate-100">{spec.ingredient}</span>
+                                <span className="font-extrabold text-blue-300">{spec.ml}ml</span>
                               </div>
-                              {premixSpec && premixSpec.recipeItems.length > 0 && (
-                                <ul className="mt-1 space-y-0.5 border-t border-slate-700/80 pt-1">
-                                  {premixSpec.recipeItems.map((recipeItem, recipeIndex) => (
-                                    <li
-                                      key={`${cocktail.id}-${premixItem.premixName}-${recipeItem.ingredientName}-${recipeIndex}`}
-                                      className="flex items-center justify-between rounded bg-slate-900/70 px-1.5 py-0.5 text-[10px] leading-4"
-                                    >
-                                      <span className="text-slate-200">{recipeItem.ingredientName}</span>
-                                      <span className="font-semibold text-blue-200">{recipeItem.amountPerBatch}{recipeItem.unit}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
                             </li>
                           ))}
                           {cocktail.serveExtras && (
@@ -921,19 +922,14 @@ export function Dashboard() {
                               const trimmedLine = line.trim();
                               if (!trimmedLine) return null; // Skip empty lines
                               
-                              // Parse "amount ingredient" format (e.g., "3 dashes Tabasco" → amount: "3 dashes", ingredient: "Tabasco")
-                              const match = trimmedLine.match(/^([0-9.]+\s+[a-z\s]+)\s+(.+)$/i);
-                              const amount = match ? match[1].trim() : '';
-                              const ingredient = match ? match[2].trim() : trimmedLine;
-                              
                               return (
                                 <li
                                   key={`${cocktail.id}-serve-extra-${idx}`}
                                   className="rounded-md bg-slate-800/70 px-2 py-1"
                                 >
                                   <div className="flex items-center justify-between text-xs leading-5">
-                                    <span className="font-semibold text-slate-100">{ingredient}</span>
-                                    {amount && <span className="font-extrabold text-blue-300">{amount}</span>}
+                                    <span className="font-semibold text-slate-100"></span>
+                                    <span className="ml-2 font-extrabold text-blue-300">{trimmedLine}</span>
                                   </div>
                                 </li>
                               );
@@ -953,105 +949,196 @@ export function Dashboard() {
       )}
 
       {currentView === "prep" && (
-      <section className="rounded-3xl bg-slate-800 p-8 shadow-2xl ring-1 ring-slate-700">
+      <section className={`rounded-3xl bg-slate-800 shadow-2xl ring-1 ring-slate-700 ${isMobile ? "p-4" : "p-8"}`}>
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-3xl font-bold text-white">📋 Prep List (This Week)</h2>
+          <h2 className={`font-bold text-white ${isMobile ? "text-lg" : "text-2xl"}`}>📋 Prep List (This Week)</h2>
         </div>
+
+        {(() => {
+          const bottlesNeeded = data.prepPlan.reduce((total, item) => {
+            const bottlesForThisItem = item.ingredients.reduce((sum, ing) => {
+              const ingNameLower = ing.ingredientName.toLowerCase();
+              const emptyBottleIngredients = ['juice', 'honey syrup', 'espresso martini', 'spice mix', 'passionfruit puree'];
+              const waterSugarIngredients = ['water', 'sugar'];
+              
+              if (emptyBottleIngredients.some(name => ingNameLower.includes(name.toLowerCase()))) {
+                return sum + ing.totalAmount;
+              }
+              
+              // For water and sugar, check they don't contain syrup or "still water"
+              if (waterSugarIngredients.some(name => ingNameLower.includes(name.toLowerCase()))) {
+                if (!ingNameLower.includes('syrup') && !ingNameLower.includes('still water')) {
+                  return sum + ing.totalAmount;
+                }
+              }
+              
+              return sum;
+            }, 0);
+            return total + bottlesForThisItem;
+          }, 0);
+
+          return bottlesNeeded > 0 && (
+            <div className="mt-4 rounded-lg bg-blue-900/40 ring-1 ring-blue-700 p-3">
+              <p className="text-sm font-semibold text-blue-200">
+                🍾 Empty Bottles Needed: <span className="text-lg font-bold text-blue-100">{Math.ceil(bottlesNeeded)}</span>
+              </p>
+            </div>
+          );
+        })()}
 
         {data.prepPlan.filter(item => item.batchesToMake > 0).length === 0 ? (
           <div className="mt-6 rounded-2xl bg-gradient-to-br from-green-900 to-emerald-900 p-8 text-center ring-1 ring-green-700">
-            <p className="text-xl font-bold text-green-200">✓ All stock levels are good!</p>
+            <p className="text-base font-bold text-green-200">✓ All stock levels are good!</p>
             <p className="mt-2 text-sm font-medium text-green-300">No prep needed this week.</p>
           </div>
         ) : (
-        <div className="mt-6 space-y-5">
-          {data.prepPlan.filter(item => item.batchesToMake > 0).map((item) => {
-            const needsPrep = item.batchesToMake > 0;
-            const isUrgent = item.projectedEndBottles < item.thresholdBottles;
-            const isCritical = item.projectedEndBottles < item.thresholdBottles * 0.5;
-            
-            const cardClass = isCritical
-              ? 'bg-gradient-to-br from-red-900 to-rose-900 ring-2 ring-red-700 shadow-lg'
-              : isUrgent
-              ? 'bg-gradient-to-br from-amber-900 to-orange-900 ring-2 ring-amber-700 shadow-lg'
-              : needsPrep
-              ? 'bg-gradient-to-br from-blue-900 to-indigo-900 ring-1 ring-blue-700 shadow-md'
-              : 'bg-gradient-to-br from-slate-900 to-slate-800 ring-1 ring-slate-700';
+        <div className="mt-6 space-y-4">
+          {(() => {
+            const prepItems = data.prepPlan.filter(item => item.batchesToMake > 0);
+            const criticalItems = prepItems.filter(item => item.projectedEndBottles < item.thresholdBottles * 0.5);
+            const urgentItems = prepItems.filter(item => item.projectedEndBottles < item.thresholdBottles && item.projectedEndBottles >= item.thresholdBottles * 0.5);
+            const normalItems = prepItems.filter(item => item.projectedEndBottles >= item.thresholdBottles);
             
             return (
-              <article key={item.premixId} className={`rounded-2xl p-6 transition-all hover:shadow-xl ${cardClass}`}>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    {isCritical && <span className="text-3xl">🔴</span>}
-                    {isUrgent && !isCritical && <span className="text-3xl">⚠️</span>}
-                    {!isUrgent && <span className="text-3xl">📦</span>}
-                    <h3 className="text-xl font-extrabold text-white">{item.premixName}</h3>
-                  </div>
-                  <div className={`rounded-2xl px-6 py-4 text-center shadow-lg ${isCritical ? 'bg-gradient-to-br from-red-600 to-rose-700 text-white' : isUrgent ? 'bg-gradient-to-br from-amber-500 to-orange-600 text-white' : 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'}`}>
-                    <p className="text-xs font-bold uppercase tracking-wider opacity-90">Make</p>
-                    <p className="text-3xl font-black">{item.batchesToMake}</p>
-                    <p className="text-xs opacity-90">batch{item.batchesToMake !== 1 ? 'es' : ''} ({item.bottlesToProduce.toFixed(2)} bottles)</p>
-                  </div>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-4 rounded-2xl bg-slate-900/70 p-5 text-xs shadow-inner backdrop-blur-sm sm:grid-cols-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Current</p>
-                    <p className="mt-1 text-xl font-extrabold text-white">{item.currentBottles.toFixed(2)} bottles</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Weekly Use</p>
-                    <p className="mt-1 text-xl font-extrabold text-white">{item.weeklyUseBottles.toFixed(2)} bottles</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Projected End</p>
-                    <p className={`mt-1 text-xl font-extrabold ${
-                      isCritical ? 'text-red-400' : isUrgent ? 'text-amber-400' : 'text-white'
-                    }`}>
-                      {item.projectedEndBottles.toFixed(2)} bottles
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Threshold</p>
-                    <p className="mt-1 text-xl font-extrabold text-white">{item.thresholdBottles.toFixed(2)} bottles</p>
-                  </div>
-                </div>
-                {item.ingredients.length > 0 && (
-                  <div className="mt-5">
-                    <p className="mb-3 text-sm font-bold uppercase tracking-wider text-slate-300">Ingredients Needed:</p>
-                    <ul className="grid gap-3 sm:grid-cols-2">
-                      {item.ingredients.map((ingredient, idx) => (
-                        <li 
-                          key={`${item.premixId}-${ingredient.ingredientName}-${idx}`}
-                          className="flex items-center gap-3 rounded-xl bg-slate-800 px-4 py-3 text-sm shadow-sm ring-1 ring-slate-700 transition-all hover:shadow-md"
-                        >
-                          <span className="text-xl">🔹</span>
-                          <span className="font-bold text-white">{ingredient.ingredientName}:</span>
-                          <span className="font-semibold text-slate-300">{ingredient.totalAmount.toFixed(2)}{ingredient.unit}</span>
-                        </li>
+              <>
+                {criticalItems.length > 0 && (
+                  <div className="rounded-2xl bg-gradient-to-br from-red-900 to-rose-900 ring-2 ring-red-700 shadow-lg overflow-hidden">
+                    <div className="bg-gradient-to-r from-red-800 to-rose-800 px-6 py-3">
+                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <span>🔴</span>
+                        Critical - {criticalItems.length} item{criticalItems.length !== 1 ? 's' : ''}
+                      </h3>
+                    </div>
+                    <div className="p-4 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                      {criticalItems.map((item) => (
+                        <div key={item.premixId} className="rounded-lg bg-slate-900/50 p-3 hover:bg-slate-900/70 transition-all">
+                          <div className="flex items-center justify-between gap-3 mb-2">
+                            <div className="flex-1">
+                              <p className="font-bold text-white text-sm">{item.premixName}</p>
+                              <p className="text-xs text-slate-300 mt-0.5">Current: {item.currentBottles.toFixed(2)} → {item.projectedEndBottles.toFixed(2)} (threshold: {item.thresholdBottles.toFixed(2)})</p>
+                            </div>
+                            <div className="bg-red-600 rounded-lg px-4 py-2 text-center whitespace-nowrap">
+                              <p className="text-xs font-bold text-white">Make</p>
+                              <p className="text-lg font-black text-red-100">{item.batchesToMake}</p>
+                            </div>
+                          </div>
+                          {item.ingredients.length > 0 && (
+                            <div className="ml-0 pt-2 border-t border-slate-700">
+                              <ul className="grid gap-1 grid-cols-1">
+                                {item.ingredients.map((ing, idx) => (
+                                  <li key={`${item.premixId}-${ing.ingredientName}-${idx}`} className="text-xs text-slate-300 flex items-center gap-2">
+                                    <span className="text-slate-500">•</span>
+                                    <span className="font-semibold text-slate-100">{ing.ingredientName}:</span>
+                                    <span className="text-slate-400">{ing.totalAmount.toFixed(2)}{ing.unit}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
-              </article>
+                
+                {urgentItems.length > 0 && (
+                  <div className="rounded-2xl bg-gradient-to-br from-amber-900 to-orange-900 ring-2 ring-amber-700 shadow-lg overflow-hidden">
+                    <div className="bg-gradient-to-r from-amber-800 to-orange-800 px-6 py-3">
+                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <span>⚠️</span>
+                        Urgent - {urgentItems.length} item{urgentItems.length !== 1 ? 's' : ''}
+                      </h3>
+                    </div>
+                    <div className="p-4 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                      {urgentItems.map((item) => (
+                        <div key={item.premixId} className="rounded-lg bg-slate-900/50 p-3 hover:bg-slate-900/70 transition-all">
+                          <div className="flex items-center justify-between gap-3 mb-2">
+                            <div className="flex-1">
+                              <p className="font-bold text-white text-sm">{item.premixName}</p>
+                              <p className="text-xs text-slate-300 mt-0.5">Current: {item.currentBottles.toFixed(2)} → {item.projectedEndBottles.toFixed(2)} (threshold: {item.thresholdBottles.toFixed(2)})</p>
+                            </div>
+                            <div className="bg-amber-600 rounded-lg px-4 py-2 text-center whitespace-nowrap">
+                              <p className="text-xs font-bold text-white">Make</p>
+                              <p className="text-lg font-black text-amber-100">{item.batchesToMake}</p>
+                            </div>
+                          </div>
+                          {item.ingredients.length > 0 && (
+                            <div className="ml-0 pt-2 border-t border-slate-700">
+                              <ul className="grid gap-1 grid-cols-1">
+                                {item.ingredients.map((ing, idx) => (
+                                  <li key={`${item.premixId}-${ing.ingredientName}-${idx}`} className="text-xs text-slate-300 flex items-center gap-2">
+                                    <span className="text-slate-500">•</span>
+                                    <span className="font-semibold text-slate-100">{ing.ingredientName}:</span>
+                                    <span className="text-slate-400">{ing.totalAmount.toFixed(2)}{ing.unit}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {normalItems.length > 0 && (
+                  <div className="rounded-2xl bg-gradient-to-br from-blue-900 to-indigo-900 ring-1 ring-blue-700 shadow-md overflow-hidden">
+                    <div className="bg-gradient-to-r from-blue-800 to-indigo-800 px-6 py-3">
+                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <span>📦</span>
+                        Regular - {normalItems.length} item{normalItems.length !== 1 ? 's' : ''}
+                      </h3>
+                    </div>
+                    <div className="p-4 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                      {normalItems.map((item) => (
+                        <div key={item.premixId} className="rounded-lg bg-slate-900/50 p-3 hover:bg-slate-900/70 transition-all">
+                          <div className="flex items-center justify-between gap-3 mb-2">
+                            <div className="flex-1">
+                              <p className="font-bold text-white text-sm">{item.premixName}</p>
+                              <p className="text-xs text-slate-300 mt-0.5">Current: {item.currentBottles.toFixed(2)} → {item.projectedEndBottles.toFixed(2)} (threshold: {item.thresholdBottles.toFixed(2)})</p>
+                            </div>
+                            <div className="bg-blue-600 rounded-lg px-4 py-2 text-center whitespace-nowrap">
+                              <p className="text-xs font-bold text-white">Make</p>
+                              <p className="text-lg font-black text-blue-100">{item.batchesToMake}</p>
+                            </div>
+                          </div>
+                          {item.ingredients.length > 0 && (
+                            <div className="ml-0 pt-2 border-t border-slate-700">
+                              <ul className="grid gap-1 grid-cols-1">
+                                {item.ingredients.map((ing, idx) => (
+                                  <li key={`${item.premixId}-${ing.ingredientName}-${idx}`} className="text-xs text-slate-300 flex items-center gap-2">
+                                    <span className="text-slate-500">•</span>
+                                    <span className="font-semibold text-slate-100">{ing.ingredientName}:</span>
+                                    <span className="text-slate-400">{ing.totalAmount.toFixed(2)}{ing.unit}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
             );
-          })}
+          })()}
         </div>
         )}
 
-        <div className="mt-8 rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900/30 to-indigo-900/30 p-6 shadow-md ring-1 ring-slate-700">
-          <h3 className="text-2xl font-bold text-white">🛍️ Ingredients Shopping List</h3>
+        <div className="mt-6 rounded-2xl bg-gradient-to-br from-slate-900 via-blue-900/30 to-indigo-900/30 p-4 shadow-md ring-1 ring-slate-700">
+          <h3 className="text-base font-bold text-white mb-3">🛍️ Shopping List</h3>
           {data.ingredientTotals.length === 0 ? (
-            <p className="mt-4 text-center text-lg font-semibold text-slate-300">No ingredients needed - all stock levels are good! ✓</p>
+            <p className="text-center text-xs font-semibold text-slate-400">No ingredients needed - all stock levels are good! ✓</p>
           ) : (
-            <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid gap-2 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {data.ingredientTotals.map((ingredient, idx) => (
                 <li 
                   key={`${ingredient.ingredientName}-${ingredient.unit}-${idx}`}
-                  className="flex items-center gap-3 rounded-2xl bg-slate-800 px-5 py-4 shadow-md ring-1 ring-slate-700 transition-all hover:shadow-lg"
+                  className="flex items-center justify-between gap-2 rounded-lg bg-slate-800/60 px-3 py-2 ring-1 ring-slate-700 text-xs transition-all hover:bg-slate-800"
                 >
-                  <span className="text-2xl">📦</span>
-                  <span className="font-bold text-white">{ingredient.ingredientName}:</span>
-                  <span className="font-extrabold text-blue-400">{ingredient.totalAmount.toFixed(2)}{ingredient.unit}</span>
+                  <span className="font-semibold text-white">{ingredient.ingredientName}</span>
+                  <span className="font-bold text-blue-300">{ingredient.totalAmount.toFixed(2)}{ingredient.unit}</span>
                 </li>
               ))}
             </ul>

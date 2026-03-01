@@ -13,66 +13,106 @@ enum CocktailCategory {
   SIGNATURE
 }
 
-model Ingredient {
-  id             Int               @id @default(autoincrement())
-  name           String            @unique
-  unit           String
-  premixRecipes  PremixIngredient[]
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+model Cocktail {
+  id             String             @id
+  name           String             @unique
+  category       CocktailCategory   @default(REGULAR)
+  glassware      String?
+  technique      String?
+  straining      String?
+  garnish        String?
+  isBatched      Boolean            @default(false) @map("is_batched")
+  serveExtras    String?            @map("serve_extras")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+  specs          CocktailSpec[]
+  premixSpec     CocktailPremixSpec?
+
+  @@map("cocktails")
 }
 
 model Premix {
-  id                 Int               @id @default(autoincrement())
-  name               String            @unique
-  currentLiters      Float             @default(0)
-  thresholdLiters    Float             @default(2)
-  targetLiters       Float             @default(6)
-  batchYieldLiters   Float             @default(4)
-  recipeItems        PremixIngredient[]
-  cocktailUsageItems CocktailPremix[]
-  stockEvents        StockEvent[]
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
+  premixId            String               @id @map("premix_id")
+  name                String               @unique
+  currentBottles      Decimal              @default(0) @db.Decimal(10, 2) @map("current_bottles")
+  thresholdBottles    Decimal              @default(2) @db.Decimal(10, 2) @map("threshold_bottles")
+  targetBottles       Decimal              @default(6) @db.Decimal(10, 2) @map("target_bottles")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  recipeItems         PremixRecipeItem[]
+  productionLogs      ProductionLog[]
+  stockAdjustmentLogs StockAdjustmentLog[]
+
+  @@map("premixes")
 }
 
-model PremixIngredient {
-  id             Int        @id @default(autoincrement())
-  premixId       Int
-  ingredientId   Int
-  amountPerBatch Float
-  premix         Premix     @relation(fields: [premixId], references: [id], onDelete: Cascade)
-  ingredient     Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+model PremixRecipeItem {
+  id             BigInt   @id @default(autoincrement())
+  premixId       String   @map("premix_id")
+  ingredientName String   @map("ingredient_name")
+  amountPerBatch Decimal  @db.Decimal(10, 2) @map("amount_per_batch")
+  unit           String   @default("parts")
+  createdAt      DateTime @default(now()) @map("created_at")
+  premix         Premix   @relation(fields: [premixId], references: [premixId], onDelete: Cascade)
 
-  @@unique([premixId, ingredientId])
+  @@unique([premixId, ingredientName])
+  @@map("premix_recipe_items")
 }
 
-model Cocktail {
-  id             Int              @id @default(autoincrement())
-  name           String           @unique
-  category       CocktailCategory
-  weeklyForecast Int              @default(0)
-  premixItems    CocktailPremix[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+model CocktailSpec {
+  id         BigInt   @id @default(autoincrement())
+  cocktailId String   @map("cocktail_id")
+  ingredient String
+  ml         Decimal  @db.Decimal(10, 2)
+  createdAt  DateTime @default(now()) @map("created_at")
+  cocktail   Cocktail @relation(fields: [cocktailId], references: [id], onDelete: Cascade)
+
+  @@unique([cocktailId, ingredient])
+  @@map("cocktail_specs")
 }
 
-model CocktailPremix {
-  id              Int      @id @default(autoincrement())
-  cocktailId      Int
-  premixId        Int
-  amountPerDrinkMl Float
-  cocktail        Cocktail @relation(fields: [cocktailId], references: [id], onDelete: Cascade)
-  premix          Premix   @relation(fields: [premixId], references: [id], onDelete: Cascade)
+model CocktailPremixSpec {
+  id         BigInt   @id @default(autoincrement())
+  cocktailId String   @unique @map("cocktail_id")
+  premixNote String?  @map("premix_note")
+  batchNote  String?  @map("batch_note")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  cocktail   Cocktail @relation(fields: [cocktailId], references: [id], onDelete: Cascade)
 
-  @@unique([cocktailId, premixId])
+  @@map("cocktail_premix_specs")
 }
 
-model StockEvent {
-  id          Int      @id @default(autoincrement())
-  premixId    Int
-  deltaLiters Float
-  note        String
-  createdAt   DateTime @default(now())
-  premix      Premix   @relation(fields: [premixId], references: [id], onDelete: Cascade)
+model ProductionLog {
+  id             BigInt   @id @default(autoincrement())
+  premixId       String   @map("premix_id")
+  producedBottles Decimal @db.Decimal(10, 2) @map("produced_bottles")
+  productionDate DateTime @db.Date @map("production_date")
+  loggedAt       DateTime @default(now()) @map("logged_at")
+  notes          String?
+  premix         Premix   @relation(fields: [premixId], references: [premixId], onDelete: Restrict)
+
+  @@map("production_logs")
+}
+
+model StockAdjustmentLog {
+  id         BigInt   @id @default(autoincrement())
+  premixId   String   @map("premix_id")
+  premixName String   @map("premix_name")
+  oldValue   Decimal  @db.Decimal(10, 2) @map("old_value")
+  newValue   Decimal  @db.Decimal(10, 2) @map("new_value")
+  delta      Decimal  @db.Decimal(10, 2)
+  reason     String?
+  notes      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  premix     Premix   @relation(fields: [premixId], references: [premixId], onDelete: Restrict)
+
+  @@map("stock_adjustment_logs")
+}
+
+model AppConfig {
+  key   String @id
+  value Json
+
+  @@map("app_config")
 }

@@ -9,7 +9,11 @@
     "lint": "eslint",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:refactor": "node scripts/refactor-database-optimized.mjs",
+    "db:restore-backup": "node scripts/restore-from-backup.mjs",
+    "db:remove-calculated-cols": "node scripts/remove-calculated-columns.mjs",
+    "db:fix-cocktail-specs": "node scripts/fix-cocktail-specs.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

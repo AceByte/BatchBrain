@@ -186,7 +186,7 @@ export function Analytics() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-5xl font-extrabold text-white">📊 Analytics</h1>
+          <h1 className="text-4xl font-extrabold text-white">📊 Analytics</h1>
           <div className="flex flex-wrap gap-4">
             <select
               value={timeframe}
@@ -228,22 +228,22 @@ export function Analytics() {
         <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-2xl bg-gradient-to-br from-blue-900 to-blue-800 p-6 shadow-xl ring-1 ring-blue-700">
             <p className="text-xs font-bold uppercase tracking-wider text-blue-300">Production Velocity</p>
-            <p className="mt-2 text-4xl font-extrabold text-white">{analytics.productionVelocity}</p>
+            <p className="mt-2 text-3xl font-extrabold text-white">{analytics.productionVelocity}</p>
             <p className="mt-1 text-xs font-semibold text-blue-200">bottles/day</p>
           </div>
           <div className="rounded-2xl bg-gradient-to-br from-purple-900 to-purple-800 p-6 shadow-xl ring-1 ring-purple-700">
             <p className="text-xs font-bold uppercase tracking-wider text-purple-300">Avg Batch Size</p>
-            <p className="mt-2 text-4xl font-extrabold text-white">{analytics.avgBatchSize}</p>
+            <p className="mt-2 text-3xl font-extrabold text-white">{analytics.avgBatchSize}</p>
             <p className="mt-1 text-xs font-semibold text-purple-200">bottles/batch</p>
           </div>
           <div className="rounded-2xl bg-gradient-to-br from-green-900 to-emerald-800 p-6 shadow-xl ring-1 ring-green-700">
             <p className="text-xs font-bold uppercase tracking-wider text-green-300">Positive Adjustments</p>
-            <p className="mt-2 text-4xl font-extrabold text-white">+{analytics.netPositive}</p>
+            <p className="mt-2 text-3xl font-extrabold text-white">+{analytics.netPositive}</p>
             <p className="mt-1 text-xs font-semibold text-green-200">bottles added</p>
           </div>
           <div className="rounded-2xl bg-gradient-to-br from-red-900 to-rose-800 p-6 shadow-xl ring-1 ring-red-700">
             <p className="text-xs font-bold uppercase tracking-wider text-red-300">Negative Adjustments</p>
-            <p className="mt-2 text-4xl font-extrabold text-white">-{analytics.netNegative}</p>
+            <p className="mt-2 text-3xl font-extrabold text-white">-{analytics.netNegative}</p>
             <p className="mt-1 text-xs font-semibold text-red-200">bottles removed</p>
           </div>
         </div>
@@ -251,21 +251,21 @@ export function Analytics() {
         {/* Summary Cards */}
         <div className="mb-8 grid gap-6 md:grid-cols-3">
           <div className="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-8 shadow-xl ring-1 ring-slate-600">
-            <p className="text-sm font-bold uppercase tracking-wider text-blue-400">Total Produced</p>
-            <p className="mt-3 text-5xl font-extrabold text-white">{analytics.totalProduced}</p>
-            <p className="mt-1 text-sm font-semibold text-slate-400">bottles</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-blue-400">Total Produced</p>
+            <p className="mt-3 text-3xl font-extrabold text-white">{analytics.totalProduced}</p>
+            <p className="mt-1 text-xs font-semibold text-slate-400">bottles</p>
           </div>
           <div className="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-8 shadow-xl ring-1 ring-slate-600">
-            <p className="text-sm font-bold uppercase tracking-wider text-green-400">Production Batches</p>
-            <p className="mt-3 text-5xl font-extrabold text-white">
+            <p className="text-xs font-bold uppercase tracking-wider text-green-400">Production Batches</p>
+            <p className="mt-3 text-3xl font-extrabold text-white">
               {analytics.totalBatches}
             </p>
-            <p className="mt-1 text-sm font-semibold text-slate-400">logged</p>
+            <p className="mt-1 text-xs font-semibold text-slate-400">logged</p>
           </div>
           <div className="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 p-8 shadow-xl ring-1 ring-slate-600">
-            <p className="text-sm font-bold uppercase tracking-wider text-amber-400">Stock Adjustments</p>
-            <p className="mt-3 text-5xl font-extrabold text-white">{analytics.totalAdjustments}</p>
-            <p className="mt-1 text-sm font-semibold text-slate-400">changes</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-amber-400">Stock Adjustments</p>
+            <p className="mt-3 text-3xl font-extrabold text-white">{analytics.totalAdjustments}</p>
+            <p className="mt-1 text-xs font-semibold text-slate-400">changes</p>
           </div>
         </div>
 
@@ -273,7 +273,7 @@ export function Analytics() {
         <div className="mb-8 grid gap-6 lg:grid-cols-2">
           {/* Top Premixes */}
           <section className="rounded-3xl bg-slate-800 p-8 shadow-2xl ring-1 ring-slate-700">
-            <h2 className="mb-6 text-2xl font-extrabold text-white">🏆 Top Premixes</h2>
+            <h2 className="mb-6 text-lg font-extrabold text-white">🏆 Top Premixes</h2>
             <div className="space-y-4">
               {analytics.topPremixes.length > 0 ? (
                 analytics.topPremixes.map(([name, stats], idx) => (
@@ -304,7 +304,7 @@ export function Analytics() {
 
           {/* Adjustment Reasons */}
           <section className="rounded-3xl bg-slate-800 p-8 shadow-2xl ring-1 ring-slate-700">
-            <h2 className="mb-6 text-2xl font-extrabold text-white">📋 Adjustment Reasons</h2>
+            <h2 className="mb-6 text-lg font-extrabold text-white">📋 Adjustment Reasons</h2>
             <div className="space-y-4">
               {analytics.reasonStats.length > 0 ? (
                 analytics.reasonStats.map(([reason, stats]) => (
@@ -335,7 +335,7 @@ export function Analytics() {
 
         {/* Most Adjusted Premixes */}
         <section className="mb-8 rounded-3xl bg-slate-800 p-8 shadow-2xl ring-1 ring-slate-700">
-          <h2 className="mb-6 text-2xl font-extrabold text-white">⚙️ Most Adjusted Premixes</h2>
+          <h2 className="mb-6 text-lg font-extrabold text-white">⚙️ Most Adjusted Premixes</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {analytics.mostAdjusted.length > 0 ? (
               analytics.mostAdjusted.map(([name, stats], idx) => (

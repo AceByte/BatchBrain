@@ -19,15 +19,15 @@ export async function logProduction(params: {
   const date = params.date || new Date().toISOString().split("T")[0];
   
   await sql`
-    INSERT INTO prep_logs (date, cocktail_id, amount, "Time", notes)
-    VALUES (${date}, ${params.cocktailId}, ${params.amount}, NOW(), ${params.notes || null})
+    INSERT INTO production_logs (premix_id, produced_bottles, production_date, logged_at, notes)
+    VALUES (${params.cocktailId}, ${params.amount}, ${date}, NOW(), ${params.notes || null})
   `;
   
   // Update inventory count
   await sql`
-    UPDATE inventory
-    SET count = count + ${params.amount}
-    WHERE "cocktailId" = ${params.cocktailId}
+    UPDATE premixes
+    SET current_bottles = current_bottles + ${params.amount}, updated_at = NOW()
+    WHERE premix_id = ${params.cocktailId}
   `;
 }
 
@@ -37,28 +37,28 @@ export async function getProductionHistory(
 ): Promise<PrepLog[]> {
   const rows = (cocktailId
     ? await sql`
-        SELECT p.id, p.date, p.cocktail_id, p.amount, p."Time", p.notes, i.name as cocktail_name
-        FROM prep_logs p
-        LEFT JOIN inventory i ON p.cocktail_id = i."cocktailId"
-        WHERE p.cocktail_id = ${cocktailId}
-        ORDER BY p."Time" DESC
+        SELECT p.id, p.production_date, p.premix_id, p.produced_bottles, p.logged_at, p.notes, pm.name as premix_name
+        FROM production_logs p
+        LEFT JOIN premixes pm ON p.premix_id = pm.premix_id
+        WHERE p.premix_id = ${cocktailId}
+        ORDER BY p.logged_at DESC
         LIMIT ${limit}
       `
     : await sql`
-        SELECT p.id, p.date, p.cocktail_id, p.amount, p."Time", p.notes, i.name as cocktail_name
-        FROM prep_logs p
-        LEFT JOIN inventory i ON p.cocktail_id = i."cocktailId"
-        ORDER BY p."Time" DESC
+        SELECT p.id, p.production_date, p.premix_id, p.produced_bottles, p.logged_at, p.notes, pm.name as premix_name
+        FROM production_logs p
+        LEFT JOIN premixes pm ON p.premix_id = pm.premix_id
+        ORDER BY p.logged_at DESC
         LIMIT ${limit}
       `) as any[];
 
   return rows.map((row: any) => ({
     id: row.id,
-    date: row.date,
-    cocktailId: row.cocktail_id,
-    cocktailName: row.cocktail_name || "Unknown",
-    amount: Number(row.amount),
-    timestamp: new Date(row.Time),
+    date: row.production_date,
+    cocktailId: row.premix_id,
+    cocktailName: row.premix_name || "Unknown",
+    amount: Number(row.produced_bottles),
+    timestamp: new Date(row.logged_at),
     notes: row.notes,
   }));
 }
@@ -70,16 +70,16 @@ export async function getWeeklyUsage(
   cutoffDate.setDate(cutoffDate.getDate() - weeksBack * 7);
   
   const rows = await sql`
-    SELECT cocktail_id, SUM(amount) as total_amount
-    FROM prep_logs
-    WHERE "Time" >= ${cutoffDate.toISOString()}
-    GROUP BY cocktail_id
+    SELECT premix_id, SUM(produced_bottles) as total_amount
+    FROM production_logs
+    WHERE logged_at >= ${cutoffDate.toISOString()}
+    GROUP BY premix_id
   ` as any[];
   
   const weeklyUsage = new Map<string, number>();
   for (const row of rows) {
     const avgPerWeek = Number(row.total_amount) / weeksBack;
-    weeklyUsage.set(row.cocktail_id, avgPerWeek);
+    weeklyUsage.set(row.premix_id, avgPerWeek);
   }
   
   return weeklyUsage;

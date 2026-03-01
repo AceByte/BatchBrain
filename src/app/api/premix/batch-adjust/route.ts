@@ -44,17 +44,17 @@ export async function PATCH(request: Request) {
 
     // Get all inventory items in order (matching dashboard order)
     const allItems = (await sql`
-      SELECT "cocktailId", name, count, threshold FROM inventory ORDER BY name ASC
+      SELECT premix_id, name, current_bottles, threshold_bottles FROM premixes ORDER BY name ASC
     `) as Array<{
-      cocktailId: string;
+      premix_id: string;
       name: string;
-      count: number;
-      threshold: number;
+      current_bottles: number;
+      threshold_bottles: number;
     }>;
 
     // Create a map of id (1-based) to cocktailId
     const idToCocktailId = new Map(
-      allItems.map((item, index) => [index + 1, item.cocktailId]),
+      allItems.map((item, index) => [index + 1, item.premix_id]),
     );
 
     // Apply all changes
@@ -68,13 +68,13 @@ export async function PATCH(request: Request) {
         );
       }
 
-      const item = allItems.find((i) => i.cocktailId === cocktailId);
-      const oldValue = item?.count ?? 0;
+      const item = allItems.find((i) => i.premix_id === cocktailId);
+      const oldValue = item?.current_bottles ?? 0;
 
       await sql`
-        UPDATE inventory 
-        SET count = ${Math.round(change.newValue * 100) / 100}
-        WHERE "cocktailId" = ${cocktailId}
+        UPDATE premixes
+        SET current_bottles = ${Math.round(change.newValue * 100) / 100}, updated_at = NOW()
+        WHERE premix_id = ${cocktailId}
       `;
 
       // Log the adjustment to history

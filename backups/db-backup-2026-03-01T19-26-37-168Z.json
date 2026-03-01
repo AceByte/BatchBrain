@@ -1,0 +1,2564 @@
+{
+  "meta": {
+    "createdAt": "2026-03-01T19:26:37.168Z",
+    "databaseSchema": "public",
+    "tableCount": 8
+  },
+  "tables": {
+    "batch_recipes": {
+      "rowCount": 35,
+      "rows": [
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "Lillet Rouge",
+          "parts": 3,
+          "id": "1"
+        },
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "Cointreau",
+          "parts": 1,
+          "id": "2"
+        },
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "St. Germain",
+          "parts": 1,
+          "id": "3"
+        },
+        {
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Altos Plata",
+          "parts": 4,
+          "id": "4"
+        },
+        {
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Cointreau",
+          "parts": 1,
+          "id": "5"
+        },
+        {
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Spice Mix",
+          "parts": 2,
+          "id": "6"
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Midori",
+          "parts": 3,
+          "id": "7"
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "St. Germain",
+          "parts": 2,
+          "id": "8"
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Sugar Syrup",
+          "parts": 2,
+          "id": "9"
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Cointreau",
+          "parts": 3,
+          "id": "10"
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Beefeater 24",
+          "parts": 2,
+          "id": "11"
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Sugar Syrup",
+          "parts": 1,
+          "id": "12"
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Grenadine",
+          "parts": 1,
+          "id": "13"
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Fiji Rum",
+          "parts": 5,
+          "id": "14"
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Honey Syrup",
+          "parts": 2,
+          "id": "15"
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Martell VS",
+          "parts": 3,
+          "id": "16"
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Cardamom Syrup",
+          "parts": 3,
+          "id": "17"
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Amaretto",
+          "parts": 1,
+          "id": "18"
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Cointreau",
+          "parts": 1,
+          "id": "19"
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Havana 7yr",
+          "parts": 4,
+          "id": "20"
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Cherry Heering",
+          "parts": 2,
+          "id": "21"
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Cinnamon Syrup",
+          "parts": 1,
+          "id": "22"
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Havana 7yr",
+          "parts": 4,
+          "id": "23"
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Pimento Dram",
+          "parts": 1,
+          "id": "24"
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Crème de mure",
+          "parts": 2,
+          "id": "25"
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "White chocolate",
+          "parts": 2,
+          "id": "26"
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Vanilla Vodka",
+          "parts": 3,
+          "id": "27"
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Sugar",
+          "parts": 1,
+          "id": "28"
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Lemon Juice",
+          "parts": 1,
+          "id": "29"
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Passionfruit Puree",
+          "parts": 2,
+          "id": "30"
+        },
+        {
+          "cocktail_id": "smackery",
+          "ingredient": "Havana 3",
+          "parts": 2,
+          "id": "31"
+        },
+        {
+          "cocktail_id": "smackery",
+          "ingredient": "Sugar Surup",
+          "parts": 1,
+          "id": "32"
+        },
+        {
+          "cocktail_id": "smackery",
+          "ingredient": "Lime Juice",
+          "parts": 1,
+          "id": "33"
+        },
+        {
+          "cocktail_id": "smackery",
+          "ingredient": "Still Water",
+          "parts": 1,
+          "id": "34"
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Espresso Martini",
+          "parts": 12,
+          "id": "35"
+        }
+      ]
+    },
+    "cocktail_premix_spec": {
+      "rowCount": 8,
+      "rows": [
+        {
+          "id": 1,
+          "cocktail_id": "victor-spritz",
+          "premix_note": "5cl Premix",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:03.738Z",
+          "updated_at": "2026-02-28T02:15:33.719Z"
+        },
+        {
+          "id": 2,
+          "cocktail_id": "spicy-margarita",
+          "premix_note": "7cl Premix\n3cl lime juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:03.807Z",
+          "updated_at": "2026-02-28T02:15:33.780Z"
+        },
+        {
+          "id": 3,
+          "cocktail_id": "flor-de-mynte",
+          "premix_note": "7cl Premix\n3cl lemon juice\n2cl egg whites",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:03.875Z",
+          "updated_at": "2026-02-28T02:15:33.843Z"
+        },
+        {
+          "id": 4,
+          "cocktail_id": "belle-amour",
+          "premix_note": "7cl Premix\n3cl lemon juice\n1cl egg whites",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:03.939Z",
+          "updated_at": "2026-02-28T02:15:33.903Z"
+        },
+        {
+          "id": 5,
+          "cocktail_id": "island-nectar",
+          "premix_note": "7cl Premix\n3cl lime juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:04.002Z",
+          "updated_at": "2026-02-28T02:15:33.967Z"
+        },
+        {
+          "id": 6,
+          "cocktail_id": "naughty-and-nice",
+          "premix_note": "7cl Premix\n6cl pomegranate juice\n1cl lime juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:04.083Z",
+          "updated_at": "2026-02-28T02:15:34.047Z"
+        },
+        {
+          "id": 7,
+          "cocktail_id": "wonderland",
+          "premix_note": "9cl Premix\n2cl lemon juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:04.147Z",
+          "updated_at": "2026-02-28T02:15:34.108Z"
+        },
+        {
+          "id": 8,
+          "cocktail_id": "nutcrackers-sour",
+          "premix_note": "8cl Premix\n3cl lemon juice\n2cl egg whites",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:13:34.345Z",
+          "updated_at": "2026-02-28T02:13:34.345Z"
+        }
+      ]
+    },
+    "cocktail_specs": {
+      "rowCount": 351,
+      "rows": [
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "Lillet Rouge",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "Cointreau",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "St. Germain",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Spice Mix",
+          "ml": 70
+        },
+        {
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Lime",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Midori",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "St. Germain",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Lemon",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Egg Whites",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Cointreau",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Beefeater 24",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Lemon",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Sugar Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Grenadine",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Egg Whites",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Fiji Rum",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Honey Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Lime",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Martell VS",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Cardamom Syrup",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Lemon",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Amaretto",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Cointreau",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Egg Whites",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Havana 7yr",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Cherry Heering",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Pomegranate",
+          "ml": 60
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Lime",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Cinnamon Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Havana 7yr",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Pimento Dram",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Crème de mure",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "White chocolate",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Lemon",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Amaretto",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Bourbon",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Egg White",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Lemon Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "americano",
+          "ingredient": "Campari",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "americano",
+          "ingredient": "Cocchi Rosso",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "aperol-spritz",
+          "ingredient": "Aperol",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Elyx",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Looza tomat",
+          "ml": 100
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Lemon Juice",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Worcestershire sauce",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "caipirinha",
+          "ingredient": "Cachaça",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "caipirinha",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "caipirinha",
+          "ingredient": "Sugar Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Elyx",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Cointreau",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Cranberry Juice",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bobby-burns",
+          "ingredient": "4 Roses",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bobby-burns",
+          "ingredient": "Cocchi Rosso",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bobby-burns",
+          "ingredient": "Dom Benedictine",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "boulevardier",
+          "ingredient": "4 Roses",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "boulevardier",
+          "ingredient": "Campari",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "boulevardier",
+          "ingredient": "Cocchi Rosso",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Plymouth",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Lemon Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Sugar Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Cassis",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "daiquiri",
+          "ingredient": "Havana 3 Year",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "daiquiri",
+          "ingredient": "Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "daiquiri",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "dark-and-stormy",
+          "ingredient": "Havana 7 Year",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "dark-and-stormy",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "old-fashioned",
+          "ingredient": "Whisky",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "old-fashioned",
+          "ingredient": "Sugar syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "vodka-martini",
+          "ingredient": "Elyx",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "vodka-martini",
+          "ingredient": "Noilly Prat",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "white-russian",
+          "ingredient": "Elyx",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "white-russian",
+          "ingredient": "Kahlua",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "4 Roses",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Egg White",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Lemon Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Absolut vanilla",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Lemon juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Passionfruit Puree",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Absolut vanilla",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Kahlua",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Coffee",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Plymouth",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Lemon juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Eggwhites",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "gin-martini",
+          "ingredient": "Plymouth",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "gin-martini",
+          "ingredient": "Noilly Prat",
+          "ml": 15
+        },
+        {
+          "cocktail_id": "irish-coffee",
+          "ingredient": "Jameson or Tullamore",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "irish-coffee",
+          "ingredient": "Filter coffee",
+          "ml": 100
+        },
+        {
+          "cocktail_id": "manhattan-sweet",
+          "ingredient": "Rittenhouse",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "manhattan-sweet",
+          "ingredient": "Martini Rosso",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "White Tequila",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "Cointreau",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Absolut vanilla",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Vanilla Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Passionfruit Puree",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "mojito",
+          "ingredient": "Havana 3 Year",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "mojito",
+          "ingredient": "Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "mojito",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "moscow-mule",
+          "ingredient": "Elyx",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "moscow-mule",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "negroni",
+          "ingredient": "Plymouth",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "negroni",
+          "ingredient": "Campari",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "negroni",
+          "ingredient": "Martini Rosso",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Spirit",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Egg White",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Lemon or Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "Lillet Rouge",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "Cointreau",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "St. Germain",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Spice Mix",
+          "ml": 70
+        },
+        {
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Lime",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Midori",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "St. Germain",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Lemon",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Egg Whites",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Cointreau",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Beefeater 24",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Lemon",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Sugar Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Grenadine",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Egg Whites",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Fiji Rum",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Honey Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Lime",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Martell VS",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Cardamom Syrup",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Lemon",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Amaretto",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Cointreau",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Egg Whites",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Havana 7yr",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Cherry Heering",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Pomegranate",
+          "ml": 60
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Lime",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Cinnamon Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Havana 7yr",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Pimento Dram",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Crème de mure",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "White chocolate",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Lemon",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Amaretto",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Bourbon",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Egg White",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Lemon Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "americano",
+          "ingredient": "Campari",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "americano",
+          "ingredient": "Cocchi Rosso",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "aperol-spritz",
+          "ingredient": "Aperol",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Elyx",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Looza tomat",
+          "ml": 100
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Lemon Juice",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Worcestershire sauce",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "caipirinha",
+          "ingredient": "Cachaça",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "caipirinha",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "caipirinha",
+          "ingredient": "Sugar Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Elyx",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Cointreau",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Cranberry Juice",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bobby-burns",
+          "ingredient": "4 Roses",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bobby-burns",
+          "ingredient": "Cocchi Rosso",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bobby-burns",
+          "ingredient": "Dom Benedictine",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "boulevardier",
+          "ingredient": "4 Roses",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "boulevardier",
+          "ingredient": "Campari",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "boulevardier",
+          "ingredient": "Cocchi Rosso",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Plymouth",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Lemon Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Sugar Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Cassis",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "daiquiri",
+          "ingredient": "Havana 3 Year",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "daiquiri",
+          "ingredient": "Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "daiquiri",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "dark-and-stormy",
+          "ingredient": "Havana 7 Year",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "dark-and-stormy",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "old-fashioned",
+          "ingredient": "Whisky",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "old-fashioned",
+          "ingredient": "Sugar syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "vodka-martini",
+          "ingredient": "Elyx",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "vodka-martini",
+          "ingredient": "Noilly Prat",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "white-russian",
+          "ingredient": "Elyx",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "white-russian",
+          "ingredient": "Kahlua",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "4 Roses",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Egg White",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Lemon Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Absolut vanilla",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Lemon juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Passionfruit Puree",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Absolut vanilla",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Kahlua",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Coffee",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Plymouth",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Lemon juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Eggwhites",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "gin-martini",
+          "ingredient": "Plymouth",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "gin-martini",
+          "ingredient": "Noilly Prat",
+          "ml": 15
+        },
+        {
+          "cocktail_id": "irish-coffee",
+          "ingredient": "Jameson or Tullamore",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "irish-coffee",
+          "ingredient": "Filter coffee",
+          "ml": 100
+        },
+        {
+          "cocktail_id": "manhattan-sweet",
+          "ingredient": "Rittenhouse",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "manhattan-sweet",
+          "ingredient": "Martini Rosso",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "White Tequila",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "Cointreau",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Absolut vanilla",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Vanilla Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Passionfruit Puree",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "mojito",
+          "ingredient": "Havana 3 Year",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "mojito",
+          "ingredient": "Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "mojito",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "moscow-mule",
+          "ingredient": "Elyx",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "moscow-mule",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "negroni",
+          "ingredient": "Plymouth",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "negroni",
+          "ingredient": "Campari",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "negroni",
+          "ingredient": "Martini Rosso",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Spirit",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Egg White",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Lemon or Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "Lillet Rouge",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "Cointreau",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "victor-spritz",
+          "ingredient": "St. Germain",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Spice Mix",
+          "ml": 70
+        },
+        {
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Lime",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Midori",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "St. Germain",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Lemon",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Egg Whites",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Cointreau",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Beefeater 24",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Lemon",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Sugar Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Grenadine",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "belle-amour",
+          "ingredient": "Egg Whites",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Fiji Rum",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Honey Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "island-nectar",
+          "ingredient": "Lime",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Martell VS",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Cardamom Syrup",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Lemon",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Amaretto",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Cointreau",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Egg Whites",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Havana 7yr",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Cherry Heering",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Pomegranate",
+          "ml": 60
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Lime",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Cinnamon Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Havana 7yr",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Pimento Dram",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Crème de mure",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "White chocolate",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "wonderland",
+          "ingredient": "Lemon",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Amaretto",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Bourbon",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Egg White",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Lemon Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "americano",
+          "ingredient": "Campari",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "americano",
+          "ingredient": "Cocchi Rosso",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "aperol-spritz",
+          "ingredient": "Aperol",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Elyx",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Looza tomat",
+          "ml": 100
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Lemon Juice",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Worcestershire sauce",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "caipirinha",
+          "ingredient": "Cachaça",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "caipirinha",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "caipirinha",
+          "ingredient": "Sugar Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Elyx",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Cointreau",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Cranberry Juice",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bobby-burns",
+          "ingredient": "4 Roses",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bobby-burns",
+          "ingredient": "Cocchi Rosso",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bobby-burns",
+          "ingredient": "Dom Benedictine",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "boulevardier",
+          "ingredient": "4 Roses",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "boulevardier",
+          "ingredient": "Campari",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "boulevardier",
+          "ingredient": "Cocchi Rosso",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Plymouth",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Lemon Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Sugar Syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "bramble",
+          "ingredient": "Cassis",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "daiquiri",
+          "ingredient": "Havana 3 Year",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "daiquiri",
+          "ingredient": "Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "daiquiri",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "dark-and-stormy",
+          "ingredient": "Havana 7 Year",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "dark-and-stormy",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "old-fashioned",
+          "ingredient": "Whisky",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "old-fashioned",
+          "ingredient": "Sugar syrup",
+          "ml": 10
+        },
+        {
+          "cocktail_id": "vodka-martini",
+          "ingredient": "Elyx",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "vodka-martini",
+          "ingredient": "Noilly Prat",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "white-russian",
+          "ingredient": "Elyx",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "white-russian",
+          "ingredient": "Kahlua",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "4 Roses",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Egg White",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Lemon Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Absolut vanilla",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Lemon juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Passionfruit Puree",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Absolut vanilla",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Kahlua",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Coffee",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Plymouth",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Lemon juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Eggwhites",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "gin-martini",
+          "ingredient": "Plymouth",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "gin-martini",
+          "ingredient": "Noilly Prat",
+          "ml": 15
+        },
+        {
+          "cocktail_id": "irish-coffee",
+          "ingredient": "Jameson or Tullamore",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "irish-coffee",
+          "ingredient": "Filter coffee",
+          "ml": 100
+        },
+        {
+          "cocktail_id": "manhattan-sweet",
+          "ingredient": "Rittenhouse",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "manhattan-sweet",
+          "ingredient": "Martini Rosso",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "White Tequila",
+          "ml": 40
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "Cointreau",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "margarita",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Absolut vanilla",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Vanilla Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "maverick",
+          "ingredient": "Passionfruit Puree",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "mojito",
+          "ingredient": "Havana 3 Year",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "mojito",
+          "ingredient": "Lime Juice",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "mojito",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "moscow-mule",
+          "ingredient": "Elyx",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "moscow-mule",
+          "ingredient": "Lime Juice",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "negroni",
+          "ingredient": "Plymouth",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "negroni",
+          "ingredient": "Campari",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "negroni",
+          "ingredient": "Martini Rosso",
+          "ml": 30
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Spirit",
+          "ml": 50
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Sugar Syrup",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Egg White",
+          "ml": 20
+        },
+        {
+          "cocktail_id": "sour-base",
+          "ingredient": "Lemon or Lime Juice",
+          "ml": 30
+        }
+      ]
+    },
+    "cocktails": {
+      "rowCount": 36,
+      "rows": [
+        {
+          "cocktailId": "amaretto-sour",
+          "name": "Amaretto Sour",
+          "tag": "Regular",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Maraschino cherry",
+          "is_batched": false,
+          "serve_extras": "2 Dashes Angostura bitters"
+        },
+        {
+          "cocktailId": "belle-amour",
+          "name": "Belle Amour",
+          "tag": "Seasonal",
+          "glassware": "Nick & Nora",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Gold rim, Flower",
+          "is_batched": true,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "caipirinha",
+          "name": "Caipirinha",
+          "tag": "Regular",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Dirty Pour",
+          "garnish": "Lime Wedge",
+          "is_batched": false,
+          "serve_extras": "2 lime wedges cut in half in the glass"
+        },
+        {
+          "cocktailId": "cosmopolitan",
+          "name": "Cosmopolitan",
+          "tag": "Regular",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Dehydrated lime wheel",
+          "is_batched": false,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "daiquiri",
+          "name": "Daiquiri",
+          "tag": "Regular",
+          "glassware": "Nick & Nora",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Dehydrated lime wheel on rim",
+          "is_batched": false,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "flor-de-mynte",
+          "name": "Flor de Mynte",
+          "tag": "Seasonal",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Mint leaf",
+          "is_batched": true,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "gin-fizz",
+          "name": "Gin Fizz",
+          "tag": "Regular",
+          "glassware": "Highball",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Lemon slice",
+          "is_batched": false,
+          "serve_extras": "Top soda"
+        },
+        {
+          "cocktailId": "gin-martini",
+          "name": "Gin Martini",
+          "tag": "Regular",
+          "glassware": "Nick & Nora",
+          "technique": "Stir",
+          "straining": "Strain",
+          "garnish": "Lemon Twist/Olive",
+          "is_batched": false,
+          "serve_extras": "If Dirty Add 1cl Olive brie"
+        },
+        {
+          "cocktailId": "island-nectar",
+          "name": "Island Nectar",
+          "tag": "Seasonal",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Dehydrated lime",
+          "is_batched": true,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "manhattan-sweet",
+          "name": "Manhattan (Sweet)",
+          "tag": "Regular",
+          "glassware": "Coupe",
+          "technique": "Stir",
+          "straining": "Strain",
+          "garnish": "Maraschino Cherry",
+          "is_batched": false,
+          "serve_extras": "2 Dashes Angostura Bitters"
+        },
+        {
+          "cocktailId": "margarita",
+          "name": "Margarita",
+          "tag": "Regular",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Salt Rim and dehydrated lime wheel",
+          "is_batched": false,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "naughty-and-nice",
+          "name": "Naughty and Nice",
+          "tag": "Seasonal",
+          "glassware": "Wine Glass",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Cinnamon rim, Cinnamon stick",
+          "is_batched": true,
+          "serve_extras": "Top with Gingerbeer"
+        },
+        {
+          "cocktailId": "nutcrackers-sour",
+          "name": "The Nutcrackers Sour",
+          "tag": "Seasonal",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Cardamom rim",
+          "is_batched": true,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "pornstar-martini",
+          "name": "Pornstar Martini",
+          "tag": "Regular",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Prosecco Shot on Side",
+          "is_batched": false,
+          "serve_extras": "Shot of Prosecco (on side)"
+        },
+        {
+          "cocktailId": "sour-base",
+          "name": "Sour (Base)",
+          "tag": "Regular",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Various",
+          "is_batched": false,
+          "serve_extras": "3 Dashes Bitters if appropriate"
+        },
+        {
+          "cocktailId": "vodka-martini",
+          "name": "Vodka Martini",
+          "tag": "Regular",
+          "glassware": "Nick & Nora",
+          "technique": "Stir",
+          "straining": "Strain",
+          "garnish": "Lemon Twist/Olive",
+          "is_batched": false,
+          "serve_extras": "If Dirty Add 1cl Olive brie"
+        },
+        {
+          "cocktailId": "whisky-sour",
+          "name": "Whisky Sour",
+          "tag": "Regular",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Orange peel",
+          "is_batched": false,
+          "serve_extras": "3 Dashes Angostura bitters"
+        },
+        {
+          "cocktailId": "wonderland",
+          "name": "Wonderland",
+          "tag": "Seasonal",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Mint spring with powder",
+          "is_batched": true,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "spicy-margarita",
+          "name": "Victor's Spicy Margarita",
+          "tag": "Signature",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Chili rim",
+          "is_batched": true,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "smackery",
+          "name": "Smackery",
+          "tag": "Signature",
+          "glassware": "Shot Glass",
+          "technique": "Pour",
+          "straining": null,
+          "garnish": null,
+          "is_batched": true,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "maverick",
+          "name": "Maverick",
+          "tag": "Signature",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": null,
+          "is_batched": true,
+          "serve_extras": "Top Prosecco (to top of glass)"
+        },
+        {
+          "cocktailId": "moscow-mule",
+          "name": "Moscow Mule",
+          "tag": "Regular",
+          "glassware": "Highball",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Lime Wedge",
+          "is_batched": false,
+          "serve_extras": "2 Dashes Angostura Bitters, Top Ginger beer"
+        },
+        {
+          "cocktailId": "white-russian",
+          "name": "White Russian",
+          "tag": "Regular",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": null,
+          "is_batched": false,
+          "serve_extras": "Top double cream, Layered"
+        },
+        {
+          "cocktailId": "mojito",
+          "name": "Mojito",
+          "tag": "Regular",
+          "glassware": "Highball",
+          "technique": "Build & Churn",
+          "straining": null,
+          "garnish": "Mint Sprig and lime wedge",
+          "is_batched": false,
+          "serve_extras": "6 Mint Leaves (churned), Top soda"
+        },
+        {
+          "cocktailId": "victor-spritz",
+          "name": "Victor Spritz",
+          "tag": "Signature",
+          "glassware": "Wine Glass",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Lemon slice, Umbrella, Straw",
+          "is_batched": true,
+          "serve_extras": "Top Prosecco"
+        },
+        {
+          "cocktailId": "bramble",
+          "name": "Bramble",
+          "tag": "Regular",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Lemon Wedge",
+          "is_batched": false,
+          "serve_extras": "Cassis over top of crushed ice"
+        },
+        {
+          "cocktailId": "negroni",
+          "name": "Negroni",
+          "tag": "Regular",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange Slice or peel",
+          "is_batched": false,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "aperol-spritz",
+          "name": "Aperol Spritz",
+          "tag": "Regular",
+          "glassware": "Wine",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange Slice",
+          "is_batched": false,
+          "serve_extras": "Top Prosecco/Cava, splash soda"
+        },
+        {
+          "cocktailId": "irish-coffee",
+          "name": "Irish Coffee",
+          "tag": "Regular",
+          "glassware": "Water Glass",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Coffee Bean and Straw",
+          "is_batched": false,
+          "serve_extras": "Spoon of brown sugar, Layered Siphon cream"
+        },
+        {
+          "cocktailId": "americano",
+          "name": "Americano",
+          "tag": "Regular",
+          "glassware": "Highball",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange Slice",
+          "is_batched": false,
+          "serve_extras": "Top Soda"
+        },
+        {
+          "cocktailId": "boulevardier",
+          "name": "Boulevardier",
+          "tag": "Regular",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange peel",
+          "is_batched": false,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "dark-and-stormy",
+          "name": "Dark & Stormy",
+          "tag": "Regular",
+          "glassware": "Highball",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Lime wedge",
+          "is_batched": false,
+          "serve_extras": "2 Dashes Angostura Bitters, Top Ginger beer"
+        },
+        {
+          "cocktailId": "old-fashioned",
+          "name": "Old Fashioned",
+          "tag": "Regular",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange slice or peel",
+          "is_batched": false,
+          "serve_extras": "3 dashes Angostura bitters"
+        },
+        {
+          "cocktailId": "bobby-burns",
+          "name": "Bobby Burns",
+          "tag": "Regular",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange peel",
+          "is_batched": false,
+          "serve_extras": "2 Dashes Peychards"
+        },
+        {
+          "cocktailId": "espresso-martini",
+          "name": "Espresso Martini",
+          "tag": "Regular",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "3 Coffee Beans",
+          "is_batched": true,
+          "serve_extras": null
+        },
+        {
+          "cocktailId": "bloody-mary",
+          "name": "Bloody Mary",
+          "tag": "Regular",
+          "glassware": "Highball",
+          "technique": "Throw",
+          "straining": "Strain",
+          "garnish": "Cucumber slice on a skewer",
+          "is_batched": false,
+          "serve_extras": "3 dashes Tabasco\n2 shaker twists Pepper\n2 dashes Celery salt"
+        }
+      ]
+    },
+    "config": {
+      "rowCount": 8,
+      "rows": [
+        {
+          "key": "defaultThresholdDays",
+          "value": 3
+        },
+        {
+          "key": "defaultTargetDays",
+          "value": 7
+        },
+        {
+          "key": "defaultWeeklyDrinksPerCocktail",
+          "value": 10
+        },
+        {
+          "key": "enableLowStockAlerts",
+          "value": true
+        },
+        {
+          "key": "enableBrowserNotifications",
+          "value": false
+        },
+        {
+          "key": "darkMode",
+          "value": true
+        },
+        {
+          "key": "autoSaveDrafts",
+          "value": true
+        },
+        {
+          "key": "productionLeadTimeDays",
+          "value": 1
+        }
+      ]
+    },
+    "inventory": {
+      "rowCount": 10,
+      "rows": [
+        {
+          "cocktailId": "maverick",
+          "name": "Maverick",
+          "count": 21,
+          "threshold": 14
+        },
+        {
+          "cocktailId": "spicy-margarita",
+          "name": "Victor's Spicy Margarita",
+          "count": 12,
+          "threshold": 10
+        },
+        {
+          "cocktailId": "flor-de-mynte",
+          "name": "Flor de Mynte",
+          "count": 14,
+          "threshold": 7
+        },
+        {
+          "cocktailId": "naughty-and-nice",
+          "name": "Naughty and Nice",
+          "count": 8,
+          "threshold": 7
+        },
+        {
+          "cocktailId": "belle-amour",
+          "name": "Belle Amour",
+          "count": 18,
+          "threshold": 7
+        },
+        {
+          "cocktailId": "nutcrackers-sour",
+          "name": "The Nutcrackers Sour",
+          "count": 10,
+          "threshold": 7
+        },
+        {
+          "cocktailId": "victor-spritz",
+          "name": "Victor Spritz",
+          "count": 10,
+          "threshold": 7
+        },
+        {
+          "cocktailId": "wonderland",
+          "name": "Wonderland",
+          "count": 9,
+          "threshold": 7
+        },
+        {
+          "cocktailId": "island-nectar",
+          "name": "Island Nectar",
+          "count": 18,
+          "threshold": 7
+        },
+        {
+          "cocktailId": "espresso-martini",
+          "name": "Espresso Martini",
+          "count": 68,
+          "threshold": 90
+        }
+      ]
+    },
+    "prep_logs": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "stock_adjustment_history": {
+      "rowCount": 0,
+      "rows": []
+    }
+  }
+}
