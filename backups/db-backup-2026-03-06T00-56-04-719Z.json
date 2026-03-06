@@ -1,0 +1,3486 @@
+{
+  "meta": {
+    "createdAt": "2026-03-06T00:56:04.719Z",
+    "databaseSchema": "public",
+    "tableCount": 8
+  },
+  "tables": {
+    "app_config": {
+      "rowCount": 8,
+      "rows": [
+        {
+          "key": "defaultThresholdDays",
+          "value": 3
+        },
+        {
+          "key": "defaultTargetDays",
+          "value": 7
+        },
+        {
+          "key": "defaultWeeklyDrinksPerCocktail",
+          "value": 10
+        },
+        {
+          "key": "enableLowStockAlerts",
+          "value": true
+        },
+        {
+          "key": "darkMode",
+          "value": true
+        },
+        {
+          "key": "autoSaveDrafts",
+          "value": true
+        },
+        {
+          "key": "productionLeadTimeDays",
+          "value": 1
+        },
+        {
+          "key": "enableBrowserNotifications",
+          "value": true
+        }
+      ]
+    },
+    "cocktail_premix_specs": {
+      "rowCount": 8,
+      "rows": [
+        {
+          "id": "1",
+          "cocktail_id": "victor-spritz",
+          "premix_note": "5cl Premix",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:03.738Z",
+          "updated_at": "2026-02-28T02:15:33.719Z"
+        },
+        {
+          "id": "2",
+          "cocktail_id": "spicy-margarita",
+          "premix_note": "7cl Premix\n3cl lime juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:03.807Z",
+          "updated_at": "2026-02-28T02:15:33.780Z"
+        },
+        {
+          "id": "3",
+          "cocktail_id": "flor-de-mynte",
+          "premix_note": "7cl Premix\n3cl lemon juice\n2cl egg whites",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:03.875Z",
+          "updated_at": "2026-02-28T02:15:33.843Z"
+        },
+        {
+          "id": "4",
+          "cocktail_id": "belle-amour",
+          "premix_note": "7cl Premix\n3cl lemon juice\n1cl egg whites",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:03.939Z",
+          "updated_at": "2026-02-28T02:15:33.903Z"
+        },
+        {
+          "id": "5",
+          "cocktail_id": "island-nectar",
+          "premix_note": "7cl Premix\n3cl lime juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:04.002Z",
+          "updated_at": "2026-02-28T02:15:33.967Z"
+        },
+        {
+          "id": "6",
+          "cocktail_id": "naughty-and-nice",
+          "premix_note": "7cl Premix\n6cl pomegranate juice\n1cl lime juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:04.083Z",
+          "updated_at": "2026-02-28T02:15:34.047Z"
+        },
+        {
+          "id": "7",
+          "cocktail_id": "wonderland",
+          "premix_note": "9cl Premix\n2cl lemon juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:04.147Z",
+          "updated_at": "2026-02-28T02:15:34.108Z"
+        },
+        {
+          "id": "8",
+          "cocktail_id": "nutcrackers-sour",
+          "premix_note": "8cl Premix\n3cl lemon juice\n2cl egg whites",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:13:34.345Z",
+          "updated_at": "2026-02-28T02:13:34.345Z"
+        }
+      ]
+    },
+    "cocktail_specs": {
+      "rowCount": 130,
+      "rows": [
+        {
+          "id": "470",
+          "cocktail_id": "victor-spritz",
+          "ingredient": "Lillet Rouge",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "471",
+          "cocktail_id": "victor-spritz",
+          "ingredient": "Cointreau",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "472",
+          "cocktail_id": "victor-spritz",
+          "ingredient": "St. Germain",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "473",
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Spice Mix",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              70
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "474",
+          "cocktail_id": "spicy-margarita",
+          "ingredient": "Lime",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "475",
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Midori",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "476",
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "St. Germain",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "477",
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Lemon",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "478",
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "479",
+          "cocktail_id": "flor-de-mynte",
+          "ingredient": "Egg Whites",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "480",
+          "cocktail_id": "belle-amour",
+          "ingredient": "Cointreau",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "481",
+          "cocktail_id": "belle-amour",
+          "ingredient": "Beefeater 24",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "482",
+          "cocktail_id": "belle-amour",
+          "ingredient": "Lemon",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "483",
+          "cocktail_id": "belle-amour",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "484",
+          "cocktail_id": "belle-amour",
+          "ingredient": "Grenadine",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "485",
+          "cocktail_id": "belle-amour",
+          "ingredient": "Egg Whites",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "486",
+          "cocktail_id": "island-nectar",
+          "ingredient": "Fiji Rum",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "487",
+          "cocktail_id": "island-nectar",
+          "ingredient": "Honey Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "488",
+          "cocktail_id": "island-nectar",
+          "ingredient": "Lime",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "489",
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Martell VS",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "490",
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Cardamom Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "491",
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Lemon",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "492",
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Amaretto",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "493",
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Cointreau",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "494",
+          "cocktail_id": "nutcrackers-sour",
+          "ingredient": "Egg Whites",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "495",
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Havana 7yr",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "496",
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Cherry Heering",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "497",
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Pomegranate",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              60
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "498",
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Lime",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "499",
+          "cocktail_id": "naughty-and-nice",
+          "ingredient": "Cinnamon Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "500",
+          "cocktail_id": "wonderland",
+          "ingredient": "Havana 7yr",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "501",
+          "cocktail_id": "wonderland",
+          "ingredient": "Pimento Dram",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "502",
+          "cocktail_id": "wonderland",
+          "ingredient": "Crème de mure",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "503",
+          "cocktail_id": "wonderland",
+          "ingredient": "White chocolate",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "504",
+          "cocktail_id": "wonderland",
+          "ingredient": "Lemon",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "505",
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Amaretto",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "506",
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Bourbon",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "507",
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "508",
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Egg White",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "509",
+          "cocktail_id": "amaretto-sour",
+          "ingredient": "Lemon Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "510",
+          "cocktail_id": "americano",
+          "ingredient": "Campari",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "511",
+          "cocktail_id": "americano",
+          "ingredient": "Cocchi Rosso",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "512",
+          "cocktail_id": "aperol-spritz",
+          "ingredient": "Aperol",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "513",
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Elyx",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "514",
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Looza tomat",
+          "ml": {
+            "s": 1,
+            "e": 2,
+            "d": [
+              100
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "515",
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Lemon Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "516",
+          "cocktail_id": "bloody-mary",
+          "ingredient": "Worcestershire sauce",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "517",
+          "cocktail_id": "caipirinha",
+          "ingredient": "Cachaça",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "518",
+          "cocktail_id": "caipirinha",
+          "ingredient": "Lime Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "519",
+          "cocktail_id": "caipirinha",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "520",
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Elyx",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "521",
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Cointreau",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "522",
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Lime Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "523",
+          "cocktail_id": "cosmopolitan",
+          "ingredient": "Cranberry Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "524",
+          "cocktail_id": "bobby-burns",
+          "ingredient": "4 Roses",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "525",
+          "cocktail_id": "bobby-burns",
+          "ingredient": "Cocchi Rosso",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "526",
+          "cocktail_id": "bobby-burns",
+          "ingredient": "Dom Benedictine",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "527",
+          "cocktail_id": "boulevardier",
+          "ingredient": "4 Roses",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "528",
+          "cocktail_id": "boulevardier",
+          "ingredient": "Campari",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "529",
+          "cocktail_id": "boulevardier",
+          "ingredient": "Cocchi Rosso",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "530",
+          "cocktail_id": "bramble",
+          "ingredient": "Plymouth",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "531",
+          "cocktail_id": "bramble",
+          "ingredient": "Lemon Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "532",
+          "cocktail_id": "bramble",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "533",
+          "cocktail_id": "bramble",
+          "ingredient": "Cassis",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "534",
+          "cocktail_id": "daiquiri",
+          "ingredient": "Havana 3 Year",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "535",
+          "cocktail_id": "daiquiri",
+          "ingredient": "Lime Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "536",
+          "cocktail_id": "daiquiri",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "537",
+          "cocktail_id": "dark-and-stormy",
+          "ingredient": "Havana 7 Year",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "538",
+          "cocktail_id": "dark-and-stormy",
+          "ingredient": "Lime Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "539",
+          "cocktail_id": "old-fashioned",
+          "ingredient": "Whisky",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "540",
+          "cocktail_id": "old-fashioned",
+          "ingredient": "Sugar syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "541",
+          "cocktail_id": "vodka-martini",
+          "ingredient": "Elyx",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "542",
+          "cocktail_id": "vodka-martini",
+          "ingredient": "Noilly Prat",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "543",
+          "cocktail_id": "white-russian",
+          "ingredient": "Elyx",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "544",
+          "cocktail_id": "white-russian",
+          "ingredient": "Kahlua",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "545",
+          "cocktail_id": "whisky-sour",
+          "ingredient": "4 Roses",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "546",
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "547",
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Egg White",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "548",
+          "cocktail_id": "whisky-sour",
+          "ingredient": "Lemon Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "549",
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Absolut vanilla",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "550",
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "551",
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Lemon juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "552",
+          "cocktail_id": "pornstar-martini",
+          "ingredient": "Passionfruit Puree",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "553",
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Absolut vanilla",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "554",
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Kahlua",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "555",
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "556",
+          "cocktail_id": "espresso-martini",
+          "ingredient": "Coffee",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "557",
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Plymouth",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "558",
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Lemon juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "559",
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "560",
+          "cocktail_id": "gin-fizz",
+          "ingredient": "Eggwhites",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "561",
+          "cocktail_id": "gin-martini",
+          "ingredient": "Plymouth",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "562",
+          "cocktail_id": "gin-martini",
+          "ingredient": "Noilly Prat",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              15
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "563",
+          "cocktail_id": "irish-coffee",
+          "ingredient": "Jameson or Tullamore",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "564",
+          "cocktail_id": "irish-coffee",
+          "ingredient": "Filter coffee",
+          "ml": {
+            "s": 1,
+            "e": 2,
+            "d": [
+              100
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "565",
+          "cocktail_id": "manhattan-sweet",
+          "ingredient": "Rittenhouse",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "566",
+          "cocktail_id": "manhattan-sweet",
+          "ingredient": "Martini Rosso",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "567",
+          "cocktail_id": "margarita",
+          "ingredient": "White Tequila",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              40
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "568",
+          "cocktail_id": "margarita",
+          "ingredient": "Cointreau",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "569",
+          "cocktail_id": "margarita",
+          "ingredient": "Lime Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "570",
+          "cocktail_id": "margarita",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "571",
+          "cocktail_id": "maverick",
+          "ingredient": "Absolut vanilla",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "573",
+          "cocktail_id": "maverick",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "574",
+          "cocktail_id": "maverick",
+          "ingredient": "Passionfruit Puree",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "575",
+          "cocktail_id": "mojito",
+          "ingredient": "Havana 3 Year",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "576",
+          "cocktail_id": "mojito",
+          "ingredient": "Lime Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "577",
+          "cocktail_id": "mojito",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "578",
+          "cocktail_id": "moscow-mule",
+          "ingredient": "Elyx",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "579",
+          "cocktail_id": "moscow-mule",
+          "ingredient": "Lime Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "580",
+          "cocktail_id": "negroni",
+          "ingredient": "Plymouth",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "581",
+          "cocktail_id": "negroni",
+          "ingredient": "Campari",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "582",
+          "cocktail_id": "negroni",
+          "ingredient": "Martini Rosso",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "583",
+          "cocktail_id": "sour-base",
+          "ingredient": "Spirit",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              50
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "584",
+          "cocktail_id": "sour-base",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "585",
+          "cocktail_id": "sour-base",
+          "ingredient": "Egg White",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "586",
+          "cocktail_id": "sour-base",
+          "ingredient": "Lemon or Lime Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "572",
+          "cocktail_id": "maverick",
+          "ingredient": "Lemon Juice",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              20
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "821",
+          "cocktail_id": "sugar-syrup",
+          "ingredient": "Sugar",
+          "ml": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "822",
+          "cocktail_id": "sugar-syrup",
+          "ingredient": "Water",
+          "ml": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "823",
+          "cocktail_id": "honey-syrup",
+          "ingredient": "Honey",
+          "ml": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "824",
+          "cocktail_id": "honey-syrup",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "825",
+          "cocktail_id": "spice-mix",
+          "ingredient": "Chilli (cut)",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              12
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "826",
+          "cocktail_id": "spice-mix",
+          "ingredient": "Honey",
+          "ml": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "827",
+          "cocktail_id": "spice-mix",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "828",
+          "cocktail_id": "spice-mix",
+          "ingredient": "Sichuan Pepper",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              15
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "829",
+          "cocktail_id": "spice-mix",
+          "ingredient": "Black Pepper",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              45
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "830",
+          "cocktail_id": "rhubarb-syrup",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "831",
+          "cocktail_id": "rhubarb-syrup",
+          "ingredient": "Rhubarb",
+          "ml": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "832",
+          "cocktail_id": "ernst-cardamom-syrup",
+          "ingredient": "Cardamom Pods (lightly crushed)",
+          "ml": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        },
+        {
+          "id": "833",
+          "cocktail_id": "ernst-cardamom-syrup",
+          "ingredient": "Sugar Syrup",
+          "ml": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "created_at": "2026-03-01T21:53:41.426Z"
+        }
+      ]
+    },
+    "cocktails": {
+      "rowCount": 41,
+      "rows": [
+        {
+          "id": "amaretto-sour",
+          "name": "Amaretto Sour",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Maraschino cherry",
+          "is_batched": false,
+          "serve_extras": "2 Dashes Angostura bitters",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "caipirinha",
+          "name": "Caipirinha",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Dirty Pour",
+          "garnish": "Lime Wedge",
+          "is_batched": false,
+          "serve_extras": "2 lime wedges cut in half in the glass",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "cosmopolitan",
+          "name": "Cosmopolitan",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Dehydrated lime wheel",
+          "is_batched": false,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "daiquiri",
+          "name": "Daiquiri",
+          "glassware": "Nick & Nora",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Dehydrated lime wheel on rim",
+          "is_batched": false,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "gin-fizz",
+          "name": "Gin Fizz",
+          "glassware": "Highball",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Lemon slice",
+          "is_batched": false,
+          "serve_extras": "Top soda",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "gin-martini",
+          "name": "Gin Martini",
+          "glassware": "Nick & Nora",
+          "technique": "Stir",
+          "straining": "Strain",
+          "garnish": "Lemon Twist/Olive",
+          "is_batched": false,
+          "serve_extras": "If Dirty Add 1cl Olive brie",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "manhattan-sweet",
+          "name": "Manhattan (Sweet)",
+          "glassware": "Coupe",
+          "technique": "Stir",
+          "straining": "Strain",
+          "garnish": "Maraschino Cherry",
+          "is_batched": false,
+          "serve_extras": "2 Dashes Angostura Bitters",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "margarita",
+          "name": "Margarita",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Salt Rim and dehydrated lime wheel",
+          "is_batched": false,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "pornstar-martini",
+          "name": "Pornstar Martini",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Prosecco Shot on Side",
+          "is_batched": false,
+          "serve_extras": "Shot of Prosecco (on side)",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "sour-base",
+          "name": "Sour (Base)",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Various",
+          "is_batched": false,
+          "serve_extras": "3 Dashes Bitters if appropriate",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "vodka-martini",
+          "name": "Vodka Martini",
+          "glassware": "Nick & Nora",
+          "technique": "Stir",
+          "straining": "Strain",
+          "garnish": "Lemon Twist/Olive",
+          "is_batched": false,
+          "serve_extras": "If Dirty Add 1cl Olive brie",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "whisky-sour",
+          "name": "Whisky Sour",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Orange peel",
+          "is_batched": false,
+          "serve_extras": "3 Dashes Angostura bitters",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "moscow-mule",
+          "name": "Moscow Mule",
+          "glassware": "Highball",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Lime Wedge",
+          "is_batched": false,
+          "serve_extras": "2 Dashes Angostura Bitters, Top Ginger beer",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "white-russian",
+          "name": "White Russian",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": null,
+          "is_batched": false,
+          "serve_extras": "Top double cream, Layered",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "mojito",
+          "name": "Mojito",
+          "glassware": "Highball",
+          "technique": "Build & Churn",
+          "straining": null,
+          "garnish": "Mint Sprig and lime wedge",
+          "is_batched": false,
+          "serve_extras": "6 Mint Leaves (churned), Top soda",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "bramble",
+          "name": "Bramble",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Lemon Wedge",
+          "is_batched": false,
+          "serve_extras": "Cassis over top of crushed ice",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "negroni",
+          "name": "Negroni",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange Slice or peel",
+          "is_batched": false,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "aperol-spritz",
+          "name": "Aperol Spritz",
+          "glassware": "Wine",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange Slice",
+          "is_batched": false,
+          "serve_extras": "Top Prosecco/Cava, splash soda",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "irish-coffee",
+          "name": "Irish Coffee",
+          "glassware": "Water Glass",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Coffee Bean and Straw",
+          "is_batched": false,
+          "serve_extras": "Spoon of brown sugar, Layered Siphon cream",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "americano",
+          "name": "Americano",
+          "glassware": "Highball",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange Slice",
+          "is_batched": false,
+          "serve_extras": "Top Soda",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "boulevardier",
+          "name": "Boulevardier",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange peel",
+          "is_batched": false,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "dark-and-stormy",
+          "name": "Dark & Stormy",
+          "glassware": "Highball",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Lime wedge",
+          "is_batched": false,
+          "serve_extras": "2 Dashes Angostura Bitters, Top Ginger beer",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "old-fashioned",
+          "name": "Old Fashioned",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange slice or peel",
+          "is_batched": false,
+          "serve_extras": "3 dashes Angostura bitters",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "bobby-burns",
+          "name": "Bobby Burns",
+          "glassware": "LowBall/Rocks",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Orange peel",
+          "is_batched": false,
+          "serve_extras": "2 Dashes Peychards",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "espresso-martini",
+          "name": "Espresso Martini",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "3 Coffee Beans",
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "bloody-mary",
+          "name": "Bloody Mary",
+          "glassware": "Highball",
+          "technique": "Throw",
+          "straining": "Strain",
+          "garnish": "Cucumber slice on a skewer",
+          "is_batched": false,
+          "serve_extras": "3 dashes Tabasco\n2 shaker twists Pepper\n2 dashes Celery salt",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "REGULAR"
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": null,
+          "is_batched": true,
+          "serve_extras": "Top Prosecco (to top of glass)",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "SIGNATURE"
+        },
+        {
+          "id": "belle-amour",
+          "name": "Belle Amour",
+          "glassware": "Nick & Nora",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Gold rim, Flower",
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "SEASONAL"
+        },
+        {
+          "id": "wonderland",
+          "name": "Wonderland",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Mint spring with powder",
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "SEASONAL"
+        },
+        {
+          "id": "smackery",
+          "name": "Smackery",
+          "glassware": "Shot Glass",
+          "technique": "Pour",
+          "straining": null,
+          "garnish": null,
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "SIGNATURE"
+        },
+        {
+          "id": "spicy-margarita",
+          "name": "Victor's Spicy Margarita",
+          "glassware": "LowBall/Rocks",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Chili rim",
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "SIGNATURE"
+        },
+        {
+          "id": "flor-de-mynte",
+          "name": "Flor de Mynte",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Mint leaf",
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "SEASONAL"
+        },
+        {
+          "id": "naughty-and-nice",
+          "name": "Naughty and Nice",
+          "glassware": "Wine Glass",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Cinnamon rim, Cinnamon stick",
+          "is_batched": true,
+          "serve_extras": "Top with Gingerbeer",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "SEASONAL"
+        },
+        {
+          "id": "nutcrackers-sour",
+          "name": "The Nutcrackers Sour",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Cardamom rim",
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "SEASONAL"
+        },
+        {
+          "id": "island-nectar",
+          "name": "Island Nectar",
+          "glassware": "Coupe",
+          "technique": "Shake",
+          "straining": "Double Strain",
+          "garnish": "Dehydrated lime",
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "SEASONAL"
+        },
+        {
+          "id": "victor-spritz",
+          "name": "Victor Spritz",
+          "glassware": "Wine Glass",
+          "technique": "Build",
+          "straining": null,
+          "garnish": "Lemon slice, Umbrella, Straw",
+          "is_batched": true,
+          "serve_extras": "Top Prosecco",
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:06:24.528Z",
+          "category": "SIGNATURE"
+        },
+        {
+          "id": "sugar-syrup",
+          "name": "Sugar Syrup",
+          "glassware": null,
+          "technique": "Boil Water & Add Sugar",
+          "straining": null,
+          "garnish": null,
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T21:39:20.003Z",
+          "updated_at": "2026-03-01T21:39:20.003Z",
+          "category": "INGREDIENTS"
+        },
+        {
+          "id": "rhubarb-syrup",
+          "name": "Rhubarb Syrup",
+          "glassware": null,
+          "technique": "1:1 sugar syrup and rhubarb. Stew rhubarb in sugar syrup until soft, keep the rhubarb kompot for texture.",
+          "straining": null,
+          "garnish": null,
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T21:49:00.699Z",
+          "updated_at": "2026-03-01T21:49:00.699Z",
+          "category": "INGREDIENTS"
+        },
+        {
+          "id": "spice-mix",
+          "name": "Spice Mix",
+          "glassware": null,
+          "technique": "12 cut chilli + 1l honey + 1l sugar syrup + 15g sichuan pepper + 45g black pepper. Blend for 1 minute, mill for 1 minute, strain 5-6 times.",
+          "straining": null,
+          "garnish": null,
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T21:49:00.699Z",
+          "updated_at": "2026-03-01T21:49:00.699Z",
+          "category": "INGREDIENTS"
+        },
+        {
+          "id": "ernst-cardamom-syrup",
+          "name": "Ernst Cardamom Syrup",
+          "glassware": null,
+          "technique": "10 lightly crushed cardamom pods per 1l sugar syrup. Simmer for 10 minutes, steep for 20 minutes off heat, then strain.",
+          "straining": null,
+          "garnish": null,
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T21:49:00.699Z",
+          "updated_at": "2026-03-01T21:49:00.699Z",
+          "category": "INGREDIENTS"
+        },
+        {
+          "id": "honey-syrup",
+          "name": "Honey Syrup",
+          "glassware": null,
+          "technique": "1:1 honey and sugar syrup. Mix together, no heating required.",
+          "straining": null,
+          "garnish": null,
+          "is_batched": true,
+          "serve_extras": null,
+          "created_at": "2026-03-01T21:49:00.699Z",
+          "updated_at": "2026-03-01T21:49:00.699Z",
+          "category": "INGREDIENTS"
+        }
+      ]
+    },
+    "premix_recipe_items": {
+      "rowCount": 48,
+      "rows": [
+        {
+          "id": "172",
+          "premix_id": "sugar-syrup",
+          "ingredient_name": "Sugar",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:46:21.936Z"
+        },
+        {
+          "id": "173",
+          "premix_id": "sugar-syrup",
+          "ingredient_name": "Water",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:46:21.936Z"
+        },
+        {
+          "id": "174",
+          "premix_id": "honey-syrup",
+          "ingredient_name": "Honey",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:46:22.162Z"
+        },
+        {
+          "id": "175",
+          "premix_id": "honey-syrup",
+          "ingredient_name": "Sugar Syrup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:46:22.162Z"
+        },
+        {
+          "id": "176",
+          "premix_id": "spice-mix",
+          "ingredient_name": "Chilli (cut)",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              12
+            ]
+          },
+          "unit": "pieces",
+          "created_at": "2026-03-01T20:46:22.281Z"
+        },
+        {
+          "id": "177",
+          "premix_id": "spice-mix",
+          "ingredient_name": "Honey",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "l",
+          "created_at": "2026-03-01T20:46:22.281Z"
+        },
+        {
+          "id": "178",
+          "premix_id": "spice-mix",
+          "ingredient_name": "Sugar Syrup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "l",
+          "created_at": "2026-03-01T20:46:22.281Z"
+        },
+        {
+          "id": "181",
+          "premix_id": "rhubarb-syrup",
+          "ingredient_name": "Sugar Syrup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:46:22.422Z"
+        },
+        {
+          "id": "182",
+          "premix_id": "rhubarb-syrup",
+          "ingredient_name": "Rhubarb",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "kg",
+          "created_at": "2026-03-01T20:46:22.422Z"
+        },
+        {
+          "id": "183",
+          "premix_id": "ernst-cardamom-syrup",
+          "ingredient_name": "Cardamom Pods (lightly crushed)",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "unit": "pods",
+          "created_at": "2026-03-01T20:46:22.542Z"
+        },
+        {
+          "id": "184",
+          "premix_id": "ernst-cardamom-syrup",
+          "ingredient_name": "Sugar Syrup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "l",
+          "created_at": "2026-03-01T20:46:22.542Z"
+        },
+        {
+          "id": "137",
+          "premix_id": "victor-spritz",
+          "ingredient_name": "Lillet Rouge",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              3
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "138",
+          "premix_id": "victor-spritz",
+          "ingredient_name": "Cointreau",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "139",
+          "premix_id": "victor-spritz",
+          "ingredient_name": "St. Germain",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "140",
+          "premix_id": "spicy-margarita",
+          "ingredient_name": "Altos Plata",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              4
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "141",
+          "premix_id": "spicy-margarita",
+          "ingredient_name": "Cointreau",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "142",
+          "premix_id": "spicy-margarita",
+          "ingredient_name": "Spice Mix",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "143",
+          "premix_id": "flor-de-mynte",
+          "ingredient_name": "Midori",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              3
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "144",
+          "premix_id": "flor-de-mynte",
+          "ingredient_name": "St. Germain",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "145",
+          "premix_id": "flor-de-mynte",
+          "ingredient_name": "Sugar Syrup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "146",
+          "premix_id": "belle-amour",
+          "ingredient_name": "Cointreau",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              3
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "147",
+          "premix_id": "belle-amour",
+          "ingredient_name": "Beefeater 24",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "148",
+          "premix_id": "belle-amour",
+          "ingredient_name": "Sugar Syrup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "149",
+          "premix_id": "belle-amour",
+          "ingredient_name": "Grenadine",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "150",
+          "premix_id": "island-nectar",
+          "ingredient_name": "Fiji Rum",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              5
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "151",
+          "premix_id": "island-nectar",
+          "ingredient_name": "Honey Syrup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "152",
+          "premix_id": "nutcrackers-sour",
+          "ingredient_name": "Martell VS",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              3
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "153",
+          "premix_id": "nutcrackers-sour",
+          "ingredient_name": "Cardamom Syrup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              3
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "154",
+          "premix_id": "nutcrackers-sour",
+          "ingredient_name": "Amaretto",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "155",
+          "premix_id": "nutcrackers-sour",
+          "ingredient_name": "Cointreau",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "156",
+          "premix_id": "naughty-and-nice",
+          "ingredient_name": "Havana 7yr",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              4
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "157",
+          "premix_id": "naughty-and-nice",
+          "ingredient_name": "Cherry Heering",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "158",
+          "premix_id": "naughty-and-nice",
+          "ingredient_name": "Cinnamon Syrup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "159",
+          "premix_id": "wonderland",
+          "ingredient_name": "Havana 7yr",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              4
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "160",
+          "premix_id": "wonderland",
+          "ingredient_name": "Pimento Dram",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "161",
+          "premix_id": "wonderland",
+          "ingredient_name": "Crème de mure",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "162",
+          "premix_id": "wonderland",
+          "ingredient_name": "White chocolate",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "163",
+          "premix_id": "maverick",
+          "ingredient_name": "Vanilla Vodka",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              3
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "165",
+          "premix_id": "maverick",
+          "ingredient_name": "Lemon Juice",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "166",
+          "premix_id": "maverick",
+          "ingredient_name": "Passionfruit Puree",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "167",
+          "premix_id": "smackery",
+          "ingredient_name": "Havana 3",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "168",
+          "premix_id": "smackery",
+          "ingredient_name": "Sugar Surup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "169",
+          "premix_id": "smackery",
+          "ingredient_name": "Lime Juice",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "170",
+          "premix_id": "smackery",
+          "ingredient_name": "Still Water",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "171",
+          "premix_id": "espresso-martini",
+          "ingredient_name": "Espresso Martini",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              12
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "164",
+          "premix_id": "maverick",
+          "ingredient_name": "Sugar Syrup",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "unit": "parts",
+          "created_at": "2026-03-01T20:06:24.528Z"
+        },
+        {
+          "id": "179",
+          "premix_id": "spice-mix",
+          "ingredient_name": "Sichuan Pepper",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              15
+            ]
+          },
+          "unit": "corns",
+          "created_at": "2026-03-01T20:46:22.281Z"
+        },
+        {
+          "id": "180",
+          "premix_id": "spice-mix",
+          "ingredient_name": "Black Pepper",
+          "amount_per_batch": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              45
+            ]
+          },
+          "unit": "corns",
+          "created_at": "2026-03-01T20:46:22.281Z"
+        }
+      ]
+    },
+    "premixes": {
+      "rowCount": 16,
+      "rows": [
+        {
+          "premix_id": "belle-amour",
+          "name": "Belle Amour",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              7
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              14
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T21:26:48.221Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "espresso-martini",
+          "name": "Espresso Martini",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              90
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 2,
+            "d": [
+              102
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T21:26:48.273Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "maverick",
+          "name": "Maverick",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              14
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              21
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T21:26:48.321Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "spicy-margarita",
+          "name": "Victor's Spicy Margarita",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              17
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T21:26:48.369Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "victor-spritz",
+          "name": "Victor Spritz",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              7
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              12
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T21:26:48.413Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "nutcrackers-sour",
+          "name": "The Nutcrackers Sour",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              7
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              15
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T21:26:48.461Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "wonderland",
+          "name": "Wonderland",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              7
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              16
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T21:26:48.505Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "flor-de-mynte",
+          "name": "Flor de Mynte",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              7
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              14
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T21:26:48.549Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "naughty-and-nice",
+          "name": "Naughty and Nice",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              7
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              14
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T21:26:48.593Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "island-nectar",
+          "name": "Island Nectar",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              7
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              14
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T21:26:48.641Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "smackery",
+          "name": "Smackery",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              10
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              12
+            ]
+          },
+          "created_at": "2026-03-01T20:06:24.528Z",
+          "updated_at": "2026-03-01T20:21:09.639Z",
+          "preparation_notes": null
+        },
+        {
+          "premix_id": "spice-mix",
+          "name": "Spice Mix",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              4
+            ]
+          },
+          "created_at": "2026-03-01T20:46:22.281Z",
+          "updated_at": "2026-03-01T20:59:16.102Z",
+          "preparation_notes": "12 cut chilli + 1l honey + 1l sugar syrup + 15g sichuan pepper + 45g black pepper. Blend for 1 minute, mill for 1 minute, strain 5-6 times."
+        },
+        {
+          "premix_id": "ernst-cardamom-syrup",
+          "name": "Ernst Cardamom Syrup",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              6
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              12
+            ]
+          },
+          "created_at": "2026-03-01T20:46:22.542Z",
+          "updated_at": "2026-03-01T20:59:16.006Z",
+          "preparation_notes": "10 lightly crushed cardamom pods per 1l sugar syrup. Simmer for 10 minutes, steep for 20 minutes off heat, then strain."
+        },
+        {
+          "premix_id": "honey-syrup",
+          "name": "Honey Syrup",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "created_at": "2026-03-01T20:46:22.162Z",
+          "updated_at": "2026-03-01T21:02:30.350Z",
+          "preparation_notes": "1:1 honey and sugar syrup. Mix together, no heating required."
+        },
+        {
+          "premix_id": "rhubarb-syrup",
+          "name": "Rhubarb Syrup",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              1
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              2
+            ]
+          },
+          "created_at": "2026-03-01T20:46:22.422Z",
+          "updated_at": "2026-03-01T20:59:15.959Z",
+          "preparation_notes": "1:1 sugar syrup and rhubarb. Stew rhubarb in sugar syrup until soft, keep the rhubarb kompot for texture."
+        },
+        {
+          "premix_id": "sugar-syrup",
+          "name": "Sugar Syrup",
+          "current_bottles": {
+            "s": 1,
+            "e": 0,
+            "d": [
+              0
+            ]
+          },
+          "threshold_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              30
+            ]
+          },
+          "target_bottles": {
+            "s": 1,
+            "e": 1,
+            "d": [
+              45
+            ]
+          },
+          "created_at": "2026-03-01T20:46:21.936Z",
+          "updated_at": "2026-03-01T20:59:16.151Z",
+          "preparation_notes": "1:1 sugar and water. Simmer sugar and water until sugar dissolves, cool before use."
+        }
+      ]
+    },
+    "production_logs": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "stock_adjustment_logs": {
+      "rowCount": 0,
+      "rows": []
+    }
+  }
+}
