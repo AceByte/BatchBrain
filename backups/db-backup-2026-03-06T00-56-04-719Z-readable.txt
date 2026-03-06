@@ -1,0 +1,729 @@
+═══════════════════════════════════════════════════════════════
+DATABASE BACKUP - 2026-03-06T00:56:04.719Z
+Schema: public | Tables: 8
+═══════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COCKTAILS (41)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🍹 AMARETTO SOUR
+   ID: amaretto-sour
+   Category: REGULAR
+   Glassware: LowBall/Rocks
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Maraschino cherry
+   Serve Extras: 2 Dashes Angostura bitters
+   Batched: No
+   Ingredients:
+     • Amaretto: 40ml
+     • Bourbon: 10ml
+     • Sugar Syrup: 20ml
+     • Egg White: 20ml
+     • Lemon Juice: 30ml
+
+🍹 CAIPIRINHA
+   ID: caipirinha
+   Category: REGULAR
+   Glassware: LowBall/Rocks
+   Technique: Shake
+   Straining: Dirty Pour
+   Garnish: Lime Wedge
+   Serve Extras: 2 lime wedges cut in half in the glass
+   Batched: No
+   Ingredients:
+     • Cachaça: 50ml
+     • Lime Juice: 20ml
+     • Sugar Syrup: 10ml
+
+🍹 COSMOPOLITAN
+   ID: cosmopolitan
+   Category: REGULAR
+   Glassware: Coupe
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Dehydrated lime wheel
+   Batched: No
+   Ingredients:
+     • Elyx: 40ml
+     • Cointreau: 20ml
+     • Lime Juice: 20ml
+     • Cranberry Juice: 40ml
+
+🍹 DAIQUIRI
+   ID: daiquiri
+   Category: REGULAR
+   Glassware: Nick & Nora
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Dehydrated lime wheel on rim
+   Batched: No
+   Ingredients:
+     • Havana 3 Year: 50ml
+     • Lime Juice: 30ml
+     • Sugar Syrup: 20ml
+
+🍹 GIN FIZZ
+   ID: gin-fizz
+   Category: REGULAR
+   Glassware: Highball
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Lemon slice
+   Serve Extras: Top soda
+   Batched: No
+   Ingredients:
+     • Plymouth: 50ml
+     • Lemon juice: 30ml
+     • Sugar Syrup: 20ml
+     • Eggwhites: 20ml
+
+🍹 GIN MARTINI
+   ID: gin-martini
+   Category: REGULAR
+   Glassware: Nick & Nora
+   Technique: Stir
+   Straining: Strain
+   Garnish: Lemon Twist/Olive
+   Serve Extras: If Dirty Add 1cl Olive brie
+   Batched: No
+   Ingredients:
+     • Plymouth: 40ml
+     • Noilly Prat: 15ml
+
+🍹 MANHATTAN (SWEET)
+   ID: manhattan-sweet
+   Category: REGULAR
+   Glassware: Coupe
+   Technique: Stir
+   Straining: Strain
+   Garnish: Maraschino Cherry
+   Serve Extras: 2 Dashes Angostura Bitters
+   Batched: No
+   Ingredients:
+     • Rittenhouse: 40ml
+     • Martini Rosso: 20ml
+
+🍹 MARGARITA
+   ID: margarita
+   Category: REGULAR
+   Glassware: Coupe
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Salt Rim and dehydrated lime wheel
+   Batched: No
+   Ingredients:
+     • White Tequila: 40ml
+     • Cointreau: 20ml
+     • Lime Juice: 30ml
+     • Sugar Syrup: 20ml
+
+🍹 PORNSTAR MARTINI
+   ID: pornstar-martini
+   Category: REGULAR
+   Glassware: Coupe
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Prosecco Shot on Side
+   Serve Extras: Shot of Prosecco (on side)
+   Batched: No
+   Ingredients:
+     • Absolut vanilla: 50ml
+     • Sugar Syrup: 20ml
+     • Lemon juice: 20ml
+     • Passionfruit Puree: 30ml
+
+🍹 SOUR (BASE)
+   ID: sour-base
+   Category: REGULAR
+   Glassware: LowBall/Rocks
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Various
+   Serve Extras: 3 Dashes Bitters if appropriate
+   Batched: No
+   Ingredients:
+     • Spirit: 50ml
+     • Sugar Syrup: 20ml
+     • Egg White: 20ml
+     • Lemon or Lime Juice: 30ml
+
+🍹 VODKA MARTINI
+   ID: vodka-martini
+   Category: REGULAR
+   Glassware: Nick & Nora
+   Technique: Stir
+   Straining: Strain
+   Garnish: Lemon Twist/Olive
+   Serve Extras: If Dirty Add 1cl Olive brie
+   Batched: No
+   Ingredients:
+     • Elyx: 40ml
+     • Noilly Prat: 20ml
+
+🍹 WHISKY SOUR
+   ID: whisky-sour
+   Category: REGULAR
+   Glassware: LowBall/Rocks
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Orange peel
+   Serve Extras: 3 Dashes Angostura bitters
+   Batched: No
+   Ingredients:
+     • 4 Roses: 50ml
+     • Sugar Syrup: 20ml
+     • Egg White: 20ml
+     • Lemon Juice: 30ml
+
+🍹 MOSCOW MULE
+   ID: moscow-mule
+   Category: REGULAR
+   Glassware: Highball
+   Technique: Build
+   Garnish: Lime Wedge
+   Serve Extras: 2 Dashes Angostura Bitters, Top Ginger beer
+   Batched: No
+   Ingredients:
+     • Elyx: 50ml
+     • Lime Juice: 20ml
+
+🍹 WHITE RUSSIAN
+   ID: white-russian
+   Category: REGULAR
+   Glassware: LowBall/Rocks
+   Technique: Build
+   Serve Extras: Top double cream, Layered
+   Batched: No
+   Ingredients:
+     • Elyx: 40ml
+     • Kahlua: 40ml
+
+🍹 MOJITO
+   ID: mojito
+   Category: REGULAR
+   Glassware: Highball
+   Technique: Build & Churn
+   Garnish: Mint Sprig and lime wedge
+   Serve Extras: 6 Mint Leaves (churned), Top soda
+   Batched: No
+   Ingredients:
+     • Havana 3 Year: 50ml
+     • Lime Juice: 30ml
+     • Sugar Syrup: 20ml
+
+🍹 BRAMBLE
+   ID: bramble
+   Category: REGULAR
+   Glassware: LowBall/Rocks
+   Technique: Build
+   Garnish: Lemon Wedge
+   Serve Extras: Cassis over top of crushed ice
+   Batched: No
+   Ingredients:
+     • Plymouth: 40ml
+     • Lemon Juice: 20ml
+     • Sugar Syrup: 10ml
+     • Cassis: 20ml
+
+🍹 NEGRONI
+   ID: negroni
+   Category: REGULAR
+   Glassware: LowBall/Rocks
+   Technique: Build
+   Garnish: Orange Slice or peel
+   Batched: No
+   Ingredients:
+     • Plymouth: 30ml
+     • Campari: 30ml
+     • Martini Rosso: 30ml
+
+🍹 APEROL SPRITZ
+   ID: aperol-spritz
+   Category: REGULAR
+   Glassware: Wine
+   Technique: Build
+   Garnish: Orange Slice
+   Serve Extras: Top Prosecco/Cava, splash soda
+   Batched: No
+   Ingredients:
+     • Aperol: 50ml
+
+🍹 IRISH COFFEE
+   ID: irish-coffee
+   Category: REGULAR
+   Glassware: Water Glass
+   Technique: Build
+   Garnish: Coffee Bean and Straw
+   Serve Extras: Spoon of brown sugar, Layered Siphon cream
+   Batched: No
+   Ingredients:
+     • Jameson or Tullamore: 30ml
+     • Filter coffee: 100ml
+
+🍹 AMERICANO
+   ID: americano
+   Category: REGULAR
+   Glassware: Highball
+   Technique: Build
+   Garnish: Orange Slice
+   Serve Extras: Top Soda
+   Batched: No
+   Ingredients:
+     • Campari: 30ml
+     • Cocchi Rosso: 30ml
+
+🍹 BOULEVARDIER
+   ID: boulevardier
+   Category: REGULAR
+   Glassware: LowBall/Rocks
+   Technique: Build
+   Garnish: Orange peel
+   Batched: No
+   Ingredients:
+     • 4 Roses: 30ml
+     • Campari: 30ml
+     • Cocchi Rosso: 30ml
+
+🍹 DARK & STORMY
+   ID: dark-and-stormy
+   Category: REGULAR
+   Glassware: Highball
+   Technique: Build
+   Garnish: Lime wedge
+   Serve Extras: 2 Dashes Angostura Bitters, Top Ginger beer
+   Batched: No
+   Ingredients:
+     • Havana 7 Year: 50ml
+     • Lime Juice: 20ml
+
+🍹 OLD FASHIONED
+   ID: old-fashioned
+   Category: REGULAR
+   Glassware: LowBall/Rocks
+   Technique: Build
+   Garnish: Orange slice or peel
+   Serve Extras: 3 dashes Angostura bitters
+   Batched: No
+   Ingredients:
+     • Whisky: 50ml
+     • Sugar syrup: 10ml
+
+🍹 BOBBY BURNS
+   ID: bobby-burns
+   Category: REGULAR
+   Glassware: LowBall/Rocks
+   Technique: Build
+   Garnish: Orange peel
+   Serve Extras: 2 Dashes Peychards
+   Batched: No
+   Ingredients:
+     • 4 Roses: 40ml
+     • Cocchi Rosso: 40ml
+     • Dom Benedictine: 10ml
+
+🍹 ESPRESSO MARTINI
+   ID: espresso-martini
+   Category: REGULAR
+   Glassware: Coupe
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: 3 Coffee Beans
+   Batched: Yes
+   Ingredients:
+     • Absolut vanilla: 40ml
+     • Kahlua: 20ml
+     • Sugar Syrup: 20ml
+     • Coffee: 40ml
+
+🍹 BLOODY MARY
+   ID: bloody-mary
+   Category: REGULAR
+   Glassware: Highball
+   Technique: Throw
+   Straining: Strain
+   Garnish: Cucumber slice on a skewer
+   Serve Extras: 3 dashes Tabasco
+2 shaker twists Pepper
+2 dashes Celery salt
+   Batched: No
+   Ingredients:
+     • Elyx: 50ml
+     • Looza tomat: 100ml
+     • Lemon Juice: 10ml
+     • Worcestershire sauce: 10ml
+
+🍹 MAVERICK
+   ID: maverick
+   Category: SIGNATURE
+   Glassware: Coupe
+   Technique: Shake
+   Straining: Double Strain
+   Serve Extras: Top Prosecco (to top of glass)
+   Batched: Yes
+   Ingredients:
+     • Absolut vanilla: 50ml
+     • Sugar Syrup: 20ml
+     • Passionfruit Puree: 30ml
+     • Lemon Juice: 20ml
+
+🍹 BELLE AMOUR
+   ID: belle-amour
+   Category: SEASONAL
+   Glassware: Nick & Nora
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Gold rim, Flower
+   Batched: Yes
+   Ingredients:
+     • Cointreau: 30ml
+     • Beefeater 24: 20ml
+     • Lemon: 20ml
+     • Sugar Syrup: 10ml
+     • Grenadine: 10ml
+     • Egg Whites: 10ml
+   Premix:
+     • Note: 7cl Premix
+              3cl lemon juice
+              1cl egg whites
+
+🍹 WONDERLAND
+   ID: wonderland
+   Category: SEASONAL
+   Glassware: LowBall/Rocks
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Mint spring with powder
+   Batched: Yes
+   Ingredients:
+     • Havana 7yr: 40ml
+     • Pimento Dram: 10ml
+     • Crème de mure: 20ml
+     • White chocolate: 20ml
+     • Lemon: 20ml
+   Premix:
+     • Note: 9cl Premix
+              2cl lemon juice
+
+🍹 SMACKERY
+   ID: smackery
+   Category: SIGNATURE
+   Glassware: Shot Glass
+   Technique: Pour
+   Batched: Yes
+
+🍹 VICTOR'S SPICY MARGARITA
+   ID: spicy-margarita
+   Category: SIGNATURE
+   Glassware: LowBall/Rocks
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Chili rim
+   Batched: Yes
+   Ingredients:
+     • Spice Mix: 70ml
+     • Lime: 30ml
+   Premix:
+     • Note: 7cl Premix
+              3cl lime juice
+
+🍹 FLOR DE MYNTE
+   ID: flor-de-mynte
+   Category: SEASONAL
+   Glassware: Coupe
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Mint leaf
+   Batched: Yes
+   Ingredients:
+     • Midori: 30ml
+     • St. Germain: 20ml
+     • Lemon: 30ml
+     • Sugar Syrup: 20ml
+     • Egg Whites: 20ml
+   Premix:
+     • Note: 7cl Premix
+              3cl lemon juice
+              2cl egg whites
+
+🍹 NAUGHTY AND NICE
+   ID: naughty-and-nice
+   Category: SEASONAL
+   Glassware: Wine Glass
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Cinnamon rim, Cinnamon stick
+   Serve Extras: Top with Gingerbeer
+   Batched: Yes
+   Ingredients:
+     • Havana 7yr: 40ml
+     • Cherry Heering: 20ml
+     • Pomegranate: 60ml
+     • Lime: 10ml
+     • Cinnamon Syrup: 10ml
+   Premix:
+     • Note: 7cl Premix
+              6cl pomegranate juice
+              1cl lime juice
+
+🍹 THE NUTCRACKERS SOUR
+   ID: nutcrackers-sour
+   Category: SEASONAL
+   Glassware: Coupe
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Cardamom rim
+   Batched: Yes
+   Ingredients:
+     • Martell VS: 30ml
+     • Cardamom Syrup: 30ml
+     • Lemon: 30ml
+     • Amaretto: 10ml
+     • Cointreau: 10ml
+     • Egg Whites: 20ml
+   Premix:
+     • Note: 8cl Premix
+              3cl lemon juice
+              2cl egg whites
+
+🍹 ISLAND NECTAR
+   ID: island-nectar
+   Category: SEASONAL
+   Glassware: Coupe
+   Technique: Shake
+   Straining: Double Strain
+   Garnish: Dehydrated lime
+   Batched: Yes
+   Ingredients:
+     • Fiji Rum: 50ml
+     • Honey Syrup: 20ml
+     • Lime: 30ml
+   Premix:
+     • Note: 7cl Premix
+              3cl lime juice
+
+🍹 VICTOR SPRITZ
+   ID: victor-spritz
+   Category: SIGNATURE
+   Glassware: Wine Glass
+   Technique: Build
+   Garnish: Lemon slice, Umbrella, Straw
+   Serve Extras: Top Prosecco
+   Batched: Yes
+   Ingredients:
+     • Lillet Rouge: 30ml
+     • Cointreau: 10ml
+     • St. Germain: 10ml
+   Premix:
+     • Note: 5cl Premix
+
+🍹 SUGAR SYRUP
+   ID: sugar-syrup
+   Category: INGREDIENTS
+   Technique: Boil Water & Add Sugar
+   Batched: Yes
+   Ingredients:
+     • Sugar: 1ml
+     • Water: 1ml
+
+🍹 RHUBARB SYRUP
+   ID: rhubarb-syrup
+   Category: INGREDIENTS
+   Technique: 1:1 sugar syrup and rhubarb. Stew rhubarb in sugar syrup until soft, keep the rhubarb kompot for texture.
+   Batched: Yes
+   Ingredients:
+     • Sugar Syrup: 1ml
+     • Rhubarb: 1ml
+
+🍹 SPICE MIX
+   ID: spice-mix
+   Category: INGREDIENTS
+   Technique: 12 cut chilli + 1l honey + 1l sugar syrup + 15g sichuan pepper + 45g black pepper. Blend for 1 minute, mill for 1 minute, strain 5-6 times.
+   Batched: Yes
+   Ingredients:
+     • Chilli (cut): 12ml
+     • Honey: 1ml
+     • Sugar Syrup: 1ml
+     • Sichuan Pepper: 15ml
+     • Black Pepper: 45ml
+
+🍹 ERNST CARDAMOM SYRUP
+   ID: ernst-cardamom-syrup
+   Category: INGREDIENTS
+   Technique: 10 lightly crushed cardamom pods per 1l sugar syrup. Simmer for 10 minutes, steep for 20 minutes off heat, then strain.
+   Batched: Yes
+   Ingredients:
+     • Cardamom Pods (lightly crushed): 10ml
+     • Sugar Syrup: 1ml
+
+🍹 HONEY SYRUP
+   ID: honey-syrup
+   Category: INGREDIENTS
+   Technique: 1:1 honey and sugar syrup. Mix together, no heating required.
+   Batched: Yes
+   Ingredients:
+     • Honey: 1ml
+     • Sugar Syrup: 1ml
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PREMIXES (16)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧴 BELLE AMOUR
+   ID: belle-amour
+   Current Bottles: 0
+   Threshold: 7 | Target: 14
+   Recipe:
+     • Cointreau: 3 parts
+     • Beefeater 24: 2 parts
+     • Sugar Syrup: 1 parts
+     • Grenadine: 1 parts
+
+🧴 ESPRESSO MARTINI
+   ID: espresso-martini
+   Current Bottles: 0
+   Threshold: 90 | Target: 102
+   Recipe:
+     • Espresso Martini: 12 parts
+
+🧴 MAVERICK
+   ID: maverick
+   Current Bottles: 0
+   Threshold: 14 | Target: 21
+   Recipe:
+     • Vanilla Vodka: 3 parts
+     • Lemon Juice: 1 parts
+     • Passionfruit Puree: 2 parts
+     • Sugar Syrup: 1 parts
+
+🧴 VICTOR'S SPICY MARGARITA
+   ID: spicy-margarita
+   Current Bottles: 0
+   Threshold: 10 | Target: 17
+   Recipe:
+     • Altos Plata: 4 parts
+     • Cointreau: 1 parts
+     • Spice Mix: 2 parts
+
+🧴 VICTOR SPRITZ
+   ID: victor-spritz
+   Current Bottles: 0
+   Threshold: 7 | Target: 12
+   Recipe:
+     • Lillet Rouge: 3 parts
+     • Cointreau: 1 parts
+     • St. Germain: 1 parts
+
+🧴 THE NUTCRACKERS SOUR
+   ID: nutcrackers-sour
+   Current Bottles: 0
+   Threshold: 7 | Target: 15
+   Recipe:
+     • Martell VS: 3 parts
+     • Cardamom Syrup: 3 parts
+     • Amaretto: 1 parts
+     • Cointreau: 1 parts
+
+🧴 WONDERLAND
+   ID: wonderland
+   Current Bottles: 0
+   Threshold: 7 | Target: 16
+   Recipe:
+     • Havana 7yr: 4 parts
+     • Pimento Dram: 1 parts
+     • Crème de mure: 2 parts
+     • White chocolate: 2 parts
+
+🧴 FLOR DE MYNTE
+   ID: flor-de-mynte
+   Current Bottles: 0
+   Threshold: 7 | Target: 14
+   Recipe:
+     • Midori: 3 parts
+     • St. Germain: 2 parts
+     • Sugar Syrup: 2 parts
+
+🧴 NAUGHTY AND NICE
+   ID: naughty-and-nice
+   Current Bottles: 0
+   Threshold: 7 | Target: 14
+   Recipe:
+     • Havana 7yr: 4 parts
+     • Cherry Heering: 2 parts
+     • Cinnamon Syrup: 1 parts
+
+🧴 ISLAND NECTAR
+   ID: island-nectar
+   Current Bottles: 0
+   Threshold: 7 | Target: 14
+   Recipe:
+     • Fiji Rum: 5 parts
+     • Honey Syrup: 2 parts
+
+🧴 SMACKERY
+   ID: smackery
+   Current Bottles: 0
+   Threshold: 10 | Target: 12
+   Recipe:
+     • Havana 3: 2 parts
+     • Sugar Surup: 1 parts
+     • Lime Juice: 1 parts
+     • Still Water: 1 parts
+
+🧴 SPICE MIX
+   ID: spice-mix
+   Current Bottles: 0
+   Threshold: 2 | Target: 4
+   Recipe:
+     • Chilli (cut): 12 pieces
+     • Honey: 1 l
+     • Sugar Syrup: 1 l
+     • Sichuan Pepper: 15 corns
+     • Black Pepper: 45 corns
+
+🧴 ERNST CARDAMOM SYRUP
+   ID: ernst-cardamom-syrup
+   Current Bottles: 0
+   Threshold: 6 | Target: 12
+   Recipe:
+     • Cardamom Pods (lightly crushed): 10 pods
+     • Sugar Syrup: 1 l
+
+🧴 HONEY SYRUP
+   ID: honey-syrup
+   Current Bottles: 0
+   Threshold: 1 | Target: 2
+   Recipe:
+     • Honey: 1 parts
+     • Sugar Syrup: 1 parts
+
+🧴 RHUBARB SYRUP
+   ID: rhubarb-syrup
+   Current Bottles: 0
+   Threshold: 1 | Target: 2
+   Recipe:
+     • Sugar Syrup: 1 parts
+     • Rhubarb: 1 kg
+
+🧴 SUGAR SYRUP
+   ID: sugar-syrup
+   Current Bottles: 0
+   Threshold: 30 | Target: 45
+   Recipe:
+     • Sugar: 1 parts
+     • Water: 1 parts
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APP CONFIG
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+defaultThresholdDays: 3
+defaultTargetDays: 7
+defaultWeeklyDrinksPerCocktail: 10
+enableLowStockAlerts: true
+darkMode: true
+autoSaveDrafts: true
+productionLeadTimeDays: 1
+enableBrowserNotifications: true
+
