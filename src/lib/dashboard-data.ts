@@ -1,6 +1,5 @@
 import { sql } from "@/lib/legacy-db";
 import { getWeeklyUsage } from "@/lib/production";
-import { getConfig } from "@/lib/config";
 
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
@@ -45,25 +44,51 @@ type DbPremix = {
   target_bottles: number | null;
 };
 
-// Load config and production history
+// Load dashboard and archive data
 export async function getDashboardData() {
-  const [config, weeklyUsageFromHistory] = await Promise.all([
-    getConfig(),
-    getWeeklyUsage(4),
-  ]);
+  const weeklyUsageFromHistory = await getWeeklyUsage(4);
 
-  const [cocktails, cocktailSpecs, premixSpecs, recipeRows, premixes] =
+  const [
+    cocktails,
+    cocktailSpecs,
+    premixSpecs,
+    recipeRows,
+    premixes,
+    archivedCocktails,
+    archivedCocktailSpecs,
+    archivedPremixSpecs,
+    archivedRecipeRows,
+    archivedPremixes,
+  ] =
     await Promise.all([
       sql`SELECT id, name, category, glassware, technique, straining, garnish, is_batched, serve_extras FROM cocktails ORDER BY name ASC`,
       sql`SELECT cocktail_id, ingredient, ml FROM cocktail_specs`,
       sql`SELECT cocktail_id, premix_note, batch_note FROM cocktail_premix_specs`,
       sql`SELECT premix_id, ingredient_name, amount_per_batch, unit FROM premix_recipe_items`,
       sql`SELECT premix_id, name, current_bottles, threshold_bottles, target_bottles FROM premixes ORDER BY name ASC`,
-    ]) as [DbCocktail[], DbCocktailSpec[], DbPremixSpec[], DbRecipeItem[], DbPremix[]];
+      sql`SELECT id, name, category, glassware, technique, straining, garnish, is_batched, serve_extras FROM archived_cocktails ORDER BY name ASC`,
+      sql`SELECT cocktail_id, ingredient, ml FROM archived_cocktail_specs`,
+      sql`SELECT cocktail_id, premix_note, batch_note FROM archived_cocktail_premix_specs`,
+      sql`SELECT premix_id, ingredient_name, amount_per_batch, unit FROM archived_premix_recipe_items`,
+      sql`SELECT premix_id, name, current_bottles, threshold_bottles, target_bottles FROM archived_premixes ORDER BY name ASC`,
+    ]) as [
+      DbCocktail[],
+      DbCocktailSpec[],
+      DbPremixSpec[],
+      DbRecipeItem[],
+      DbPremix[],
+      DbCocktail[],
+      DbCocktailSpec[],
+      DbPremixSpec[],
+      DbRecipeItem[],
+      DbPremix[],
+    ];
+
+  const archivedCocktailIdSet = new Set(archivedCocktails.map((row) => row.id));
 
   // Group cocktail specs by cocktail_id
   const specsByCocktailId = new Map<string, DbCocktailSpec[]>();
-  for (const row of cocktailSpecs) {
+  for (const row of [...cocktailSpecs, ...archivedCocktailSpecs]) {
     const key = row.cocktail_id;
     const arr = specsByCocktailId.get(key) ?? [];
     arr.push(row);
@@ -72,13 +97,13 @@ export async function getDashboardData() {
 
   // Map premix specs by cocktail_id
   const premixSpecByCocktailId = new Map<string, DbPremixSpec>();
-  for (const row of premixSpecs) {
+  for (const row of [...premixSpecs, ...archivedPremixSpecs]) {
     premixSpecByCocktailId.set(row.cocktail_id, row);
   }
 
   // Group recipe items by premix_id
   const recipesByPremix = new Map<string, DbRecipeItem[]>();
-  for (const row of recipeRows) {
+  for (const row of [...recipeRows, ...archivedRecipeRows]) {
     const key = row.premix_id;
     const arr = recipesByPremix.get(key) ?? [];
     arr.push(row);
@@ -86,7 +111,7 @@ export async function getDashboardData() {
   }
 
   // Process premixes
-  const premixList = premixes.map((row, index) => {
+  const buildPremixList = (rows: DbPremix[], isArchived: boolean, startIndex: number) => rows.map((row, index) => {
     const recipeRowsForPremix = recipesByPremix.get(row.premix_id) ?? [];
     // Deduplicate recipe items by ingredient name
     const uniqueRecipeMap = new Map<string, { ingredientName: string; amountPerBatch: number; unit: string }>();
@@ -123,9 +148,10 @@ export async function getDashboardData() {
     const batchesToMake = Math.max(0, Math.ceil(bottlesToProduce / batchYieldBottles));
 
     return {
-      id: index + 1,
+      id: startIndex + index + 1,
       sourceCocktailId: row.premix_id,
       name: row.name ?? row.premix_id,
+      isArchived,
       currentBottles,
       thresholdBottles,
       targetBottles,
@@ -138,7 +164,11 @@ export async function getDashboardData() {
     };
   });
 
-  const prepPlan = premixList.map((premix) => ({
+  const activePremixList = buildPremixList(premixes, false, 0);
+  const archivedPremixList = buildPremixList(archivedPremixes, true, activePremixList.length);
+  const premixList = [...activePremixList, ...archivedPremixList];
+
+  const prepPlan = activePremixList.map((premix) => ({
     premixId: premix.id,
     premixName: premix.name,
     currentBottles: round2(premix.currentBottles),
@@ -176,7 +206,9 @@ export async function getDashboardData() {
   return {
     premixes: premixList.map((premix) => ({
       id: premix.id,
+      sourceCocktailId: premix.sourceCocktailId,
       name: premix.name,
+      isArchived: premix.isArchived,
       currentBottles: round2(premix.currentBottles),
       thresholdBottles: round2(premix.thresholdBottles),
       targetBottles: round2(premix.targetBottles),
@@ -187,12 +219,15 @@ export async function getDashboardData() {
         unit: item.unit,
       })),
     })),
-    cocktails: cocktails.map((cocktail, index) => {
+    cocktails: [...cocktails, ...archivedCocktails].map((cocktail, index) => {
       const specs = specsByCocktailId.get(cocktail.id) ?? [];
       const premixSpec = premixSpecByCocktailId.get(cocktail.id);
+      const isArchived = archivedCocktailIdSet.has(cocktail.id);
       return {
         id: index + 1,
+        sourceCocktailId: cocktail.id,
         name: cocktail.name ?? cocktail.id,
+        isArchived,
         category:
           cocktail.category?.toUpperCase() === "SEASONAL"
             ? "SEASONAL"
@@ -201,7 +236,7 @@ export async function getDashboardData() {
               : cocktail.category?.toUpperCase() === "INGREDIENTS"
                 ? "INGREDIENTS"
                 : "REGULAR",
-                
+
         glassware: cocktail.glassware,
         technique: cocktail.technique,
         straining: cocktail.straining,

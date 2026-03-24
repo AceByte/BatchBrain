@@ -9,6 +9,8 @@ export type AppConfig = {
   darkMode: boolean;
   autoSaveDrafts: boolean;
   productionLeadTimeDays: number;
+  archivedPremixIds: string[];
+  archivedCocktailIds: string[];
 };
 
 const DEFAULT_CONFIG: AppConfig = {
@@ -20,6 +22,8 @@ const DEFAULT_CONFIG: AppConfig = {
   darkMode: false,
   autoSaveDrafts: true,
   productionLeadTimeDays: 1,
+  archivedPremixIds: [],
+  archivedCocktailIds: [],
 };
 
 export async function getConfig(): Promise<AppConfig> {

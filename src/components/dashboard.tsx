@@ -8,6 +8,7 @@ type DashboardData = {
     id: number;
     sourceCocktailId: string;
     name: string;
+    isArchived: boolean;
     currentBottles: number;
     thresholdBottles: number;
     targetBottles: number;
@@ -20,7 +21,9 @@ type DashboardData = {
   }>;
   cocktails: Array<{
     id: number;
+    sourceCocktailId: string;
     name: string;
+    isArchived: boolean;
     category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS";
     glassware: string | null;
     technique: string | null;
@@ -94,15 +97,19 @@ export function Dashboard() {
   const [cocktailSearch, setCocktailSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<"ALL" | "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS">("ALL");
   const [premixSortBy, setPremixSortBy] = useState<"name" | "stock" | "urgency">("urgency");
-  const [currentView, setCurrentView] = useState<"cocktails" | "inventory" | "prep">("inventory");
+  const [currentView, setCurrentView] = useState<"cocktails" | "inventory" | "prep" | "archive">("inventory");
+  const [showArchivedPremixes, setShowArchivedPremixes] = useState(false);
+  const [showArchivedSpecs, setShowArchivedSpecs] = useState(false);
+  const [archiveTarget, setArchiveTarget] = useState<string | null>(null);
 
-  const viewOrder: Array<"cocktails" | "inventory" | "prep"> = ["cocktails", "inventory", "prep"];
+  const viewOrder: Array<"cocktails" | "inventory" | "prep" | "archive"> = ["cocktails", "inventory", "prep", "archive"];
   const currentViewIndex = viewOrder.indexOf(currentView);
 
-  const viewTitles: Record<"cocktails" | "inventory" | "prep", string> = {
+  const viewTitles: Record<"cocktails" | "inventory" | "prep" | "archive", string> = {
     cocktails: "🍸 Spec Sheet",
     inventory: "💧 Inventory",
     prep: "📋 Prep List",
+    archive: "📦 Archive",
   };
 
   async function loadData() {
@@ -115,7 +122,20 @@ export function Dashboard() {
         throw new Error("Unable to load dashboard data");
       }
       const json = (await response.json()) as DashboardData;
-      setData(json);
+      const normalized: DashboardData = {
+        ...json,
+        premixes: (json.premixes ?? []).map((premix) => ({
+          ...premix,
+          recipeItems: Array.isArray(premix.recipeItems) ? premix.recipeItems : [],
+        })),
+        cocktails: (json.cocktails ?? []).map((cocktail) => ({
+          ...cocktail,
+          specs: Array.isArray(cocktail.specs) ? cocktail.specs : [],
+        })),
+        prepPlan: json.prepPlan ?? [],
+        ingredientTotals: json.ingredientTotals ?? [],
+      };
+      setData(normalized);
       setLastUpdated(new Date());
     } catch (requestError) {
       setError(
@@ -187,6 +207,36 @@ export function Dashboard() {
     }
   }
 
+  async function setArchiveState(
+    type: "premix" | "cocktail",
+    id: string,
+    archived: boolean,
+  ) {
+    setArchiveTarget(`${type}:${id}`);
+    try {
+      const response = await fetch("/api/archive", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, id, archived }),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.error ?? "Failed to update archive state");
+      }
+
+      await loadData();
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Failed to update archive state",
+      );
+    } finally {
+      setArchiveTarget(null);
+    }
+  }
+
   async function savePendingChanges() {
     if (pendingChanges.size === 0) return;
     
@@ -246,7 +296,9 @@ export function Dashboard() {
   }
 
   function selectAllPremixes() {
-    setSelectedPremixes(new Set(data?.premixes.map(p => p.id) ?? []));
+    setSelectedPremixes(
+      new Set(data?.premixes.filter((p) => !p.isArchived).map((p) => p.id) ?? []),
+    );
   }
 
   function clearSelection() {
@@ -280,7 +332,7 @@ export function Dashboard() {
   const filteredCocktails = useMemo(() => {
     if (!data) return [];
     
-    let filtered = data.cocktails;
+    let filtered = data.cocktails.filter((cocktail) => !cocktail.isArchived);
     
     // Apply category filter
     if (categoryFilter !== "ALL") {
@@ -319,6 +371,14 @@ export function Dashboard() {
       return estimateHeight(b) - estimateHeight(a); // Descending (tallest first)
     });
   }, [data, categoryFilter, cocktailSearch]);
+
+  const archivedCocktails = useMemo(() => {
+    if (!data) return [];
+
+    return data.cocktails
+      .filter((cocktail) => cocktail.isArchived)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [data]);
   
   const sortedPremixes = useMemo(() => {
     if (!data) return [];
@@ -345,6 +405,16 @@ export function Dashboard() {
         return premixes;
     }
   }, [data, premixSortBy, pendingChanges]);
+
+  const activePremixes = useMemo(
+    () => sortedPremixes.filter((premix) => !premix.isArchived),
+    [sortedPremixes],
+  );
+
+  const archivedPremixes = useMemo(
+    () => sortedPremixes.filter((premix) => premix.isArchived),
+    [sortedPremixes],
+  );
 
   const premixSpecsByName = useMemo(() => {
     const premixMap = new Map<string, DashboardData["premixes"][number]>();
@@ -503,11 +573,13 @@ export function Dashboard() {
         <div className={`grid gap-2 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4`}>
           <div className={`group rounded-lg bg-gradient-to-br from-slate-800 to-slate-700 shadow-md ring-1 ring-slate-600 transition-all hover:shadow-lg ${isMobile ? "p-2" : "p-3"}`}>
             <p className={`font-semibold uppercase tracking-wider text-slate-400 text-xs`}>Total Premixes</p>
-            <p className={`mt-0.5 font-extrabold text-white ${isMobile ? "text-lg" : "text-xl"}`}>{data?.premixes.length ?? 0}</p>
+            <p className={`mt-0.5 font-extrabold text-white ${isMobile ? "text-lg" : "text-xl"}`}>{activePremixes.length}</p>
+            <p className="text-xs font-semibold text-slate-400">Archived: {archivedPremixes.length}</p>
           </div>
           <div className={`group rounded-lg bg-gradient-to-br from-slate-800 to-slate-700 shadow-md ring-1 ring-slate-600 transition-all hover:shadow-lg ${isMobile ? "p-2" : "p-3"}`}>
             <p className={`font-semibold uppercase tracking-wider text-slate-400 text-xs`}>Total Cocktails</p>
-            <p className={`mt-0.5 font-extrabold text-white ${isMobile ? "text-lg" : "text-xl"}`}>{data?.cocktails.length ?? 0}</p>
+            <p className={`mt-0.5 font-extrabold text-white ${isMobile ? "text-lg" : "text-xl"}`}>{data.cocktails.length - archivedCocktails.length}</p>
+            <p className="text-xs font-semibold text-slate-400">Archived: {archivedCocktails.length}</p>
           </div>
           <div className={`group rounded-lg bg-gradient-to-br from-blue-900 to-indigo-900 shadow-md ring-1 ring-blue-700 transition-all hover:shadow-lg ${isMobile ? "p-2" : "p-3"}`}>
             <p className={`font-semibold uppercase tracking-wider text-blue-300 text-xs`}>Batches Needed</p>
@@ -618,7 +690,7 @@ export function Dashboard() {
         )}
 
         <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
-            {sortedPremixes.map((premix) => {
+          {activePremixes.map((premix) => {
                 const isLow = premix.currentBottles < premix.thresholdBottles;
                 const isCritical = premix.currentBottles < premix.thresholdBottles * 0.5;
                 const hasChange = pendingChanges.has(premix.id);
@@ -646,7 +718,17 @@ export function Dashboard() {
                           {isLow && !isCritical && <span className="text-lg">🟡</span>}
                           {hasChange && <span className="text-lg">✏️</span>}
                           <div className="flex-1">
-                            <p className="font-semibold text-white text-sm">{premix.name}</p>
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="font-semibold text-white text-sm">{premix.name}</p>
+                              <button
+                                onClick={() => setArchiveState("premix", premix.sourceCocktailId, true)}
+                                disabled={archiveTarget === `premix:${premix.sourceCocktailId}`}
+                                className="rounded bg-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600 disabled:opacity-50"
+                                title="Move to archived premixes"
+                              >
+                                Archive
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -732,6 +814,7 @@ export function Dashboard() {
                 );
               })}
           </div>
+
       </section>
       )}
 
@@ -765,7 +848,7 @@ export function Dashboard() {
           </div>
         </div>
         <div className={`font-medium text-slate-400 ${isMobile ? "text-xs mt-2" : "text-sm mt-2"}`}>
-          Showing {filteredCocktails.length} of {data?.cocktails.length ?? 0} cocktails
+          Showing {filteredCocktails.length} of {data.cocktails.length - archivedCocktails.length} active cocktails
         </div>
         {filteredCocktails.length === 0 ? (
           <div className="mt-6 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 p-10 text-center ring-1 ring-slate-600">
@@ -839,6 +922,14 @@ export function Dashboard() {
                           Batched
                         </div>
                       )}
+                      <button
+                        onClick={() => setArchiveState("cocktail", cocktail.sourceCocktailId, true)}
+                        disabled={archiveTarget === `cocktail:${cocktail.sourceCocktailId}`}
+                        className="ml-auto rounded bg-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600 disabled:opacity-50"
+                        title="Move this spec to archived specs"
+                      >
+                        Archive
+                      </button>
                     </div>
                     
                     {/* Cocktail Details (Glass, Technique, Garnish) */}
@@ -945,6 +1036,7 @@ export function Dashboard() {
           })}
         </div>
         )}
+
       </section>
       )}
 
@@ -1146,12 +1238,136 @@ export function Dashboard() {
         </div>
       </section>
       )}
+
+      {currentView === "archive" && (
+      <section className={`rounded-3xl bg-slate-800 shadow-2xl ring-1 ring-slate-700 ${isMobile ? "p-4" : "p-8"}`}>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h2 className={`font-bold text-white ${isMobile ? "text-lg" : "text-2xl"}`}>📦 Archive</h2>
+          <p className="text-sm font-medium text-slate-400">
+            Manage old premixes and specs. Restore any item to make it active again.
+          </p>
+        </div>
+
+        <div className="mt-6 rounded-xl bg-slate-900/40 p-4 ring-1 ring-slate-700">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-sm font-bold text-slate-200">Archived Premixes ({archivedPremixes.length})</h3>
+            <button
+              onClick={() => setShowArchivedPremixes((value) => !value)}
+              className="rounded bg-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600"
+            >
+              {showArchivedPremixes ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          {showArchivedPremixes && (
+            archivedPremixes.length === 0 ? (
+              <p className="mt-3 text-sm font-medium text-slate-400">No archived premixes yet.</p>
+            ) : (
+              <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+                {archivedPremixes.map((premix) => (
+                  <div key={`archived-${premix.id}`} className="rounded-lg bg-slate-900/60 p-3 ring-1 ring-slate-700">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-semibold text-slate-200 text-sm">{premix.name}</p>
+                      <button
+                        onClick={() => setArchiveState("premix", premix.sourceCocktailId, false)}
+                        disabled={archiveTarget === `premix:${premix.sourceCocktailId}`}
+                        className="rounded bg-blue-700 px-2 py-0.5 text-xs font-semibold text-blue-100 transition-colors hover:bg-blue-600 disabled:opacity-50"
+                        title="Restore premix to active inventory"
+                      >
+                        Restore
+                      </button>
+                    </div>
+                    <p className="mt-2 text-xs font-medium text-slate-400">
+                      Stock {premix.currentBottles.toFixed(2)} / Threshold {premix.thresholdBottles.toFixed(2)}
+                    </p>
+                    {premix.recipeItems.length > 0 && (
+                      <div className="mt-2 rounded-md bg-slate-800/70 p-2 ring-1 ring-slate-700/70">
+                        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-300">Recipe</p>
+                        <ul className="space-y-1">
+                          {premix.recipeItems.map((item, idx) => (
+                            <li key={`${premix.id}-archived-recipe-${idx}`} className="flex items-center justify-between text-xs">
+                              <span className="font-semibold text-slate-200">{item.ingredientName}</span>
+                              <span className="font-bold text-blue-300">{item.amountPerBatch}{item.unit}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )
+          )}
+        </div>
+
+        <div className="mt-6 rounded-xl bg-slate-900/40 p-4 ring-1 ring-slate-700">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-sm font-bold text-slate-200">Archived Specs ({archivedCocktails.length})</h3>
+            <button
+              onClick={() => setShowArchivedSpecs((value) => !value)}
+              className="rounded bg-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600"
+            >
+              {showArchivedSpecs ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          {showArchivedSpecs && (
+            archivedCocktails.length === 0 ? (
+              <p className="mt-3 text-sm font-medium text-slate-400">No archived specs yet.</p>
+            ) : (
+              <div className="mt-3 grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {archivedCocktails.map((cocktail) => (
+                  <article key={`archived-cocktail-${cocktail.id}`} className="rounded-lg bg-slate-900/60 p-3 ring-1 ring-slate-700">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-bold text-slate-100">{cocktail.name}</p>
+                        <p className="text-xs font-medium text-slate-400">{formatCategory(cocktail.category)}</p>
+                      </div>
+                      <button
+                        onClick={() => setArchiveState("cocktail", cocktail.sourceCocktailId, false)}
+                        disabled={archiveTarget === `cocktail:${cocktail.sourceCocktailId}`}
+                        className="rounded bg-blue-700 px-2 py-0.5 text-xs font-semibold text-blue-100 transition-colors hover:bg-blue-600 disabled:opacity-50"
+                        title="Restore this spec to active list"
+                      >
+                        Restore
+                      </button>
+                    </div>
+                    <p className="mt-2 text-xs font-medium text-slate-400">
+                      {cocktail.specs.length} ingredient line{cocktail.specs.length === 1 ? "" : "s"}
+                    </p>
+                    {cocktail.specs.length > 0 && (
+                      <div className="mt-2 rounded-md bg-slate-800/70 p-2 ring-1 ring-slate-700/70">
+                        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-300">Ingredients</p>
+                        <ul className="space-y-1">
+                          {cocktail.specs.map((spec, idx) => (
+                            <li key={`${cocktail.id}-archived-spec-${idx}`} className="flex items-center justify-between text-xs">
+                              <span className="font-semibold text-slate-200">{spec.ingredient}</span>
+                              <span className="font-bold text-blue-300">{spec.ml}ml</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {cocktail.isBatched && cocktail.premixNote && (
+                      <div className="mt-2 rounded-md bg-slate-800/70 p-2 ring-1 ring-slate-700/70">
+                        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-300">Premix Note</p>
+                        <p className="whitespace-pre-line text-xs font-medium text-slate-300">{cocktail.premixNote}</p>
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )
+          )}
+        </div>
+      </section>
+      )}
       </div>
 
       {/* Production Form Modal */}
       {showProductionForm && data && (
         <ProductionForm
-          premixes={data.premixes.map(p => ({
+          premixes={data.premixes.filter((p) => !p.isArchived).map(p => ({
             id: p.sourceCocktailId,
             name: p.name,
             batchYield: p.batchYieldBottles,
