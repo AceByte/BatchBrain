@@ -8,6 +8,7 @@ Premix inventory, cocktail specs, and weekly prep planning — built for profess
 - **Prep Planning**: automatically calculates what to batch and the ingredient totals needed
 - **Logging & Audit Trail**: production logs + stock adjustment history (notes)
 - **Analytics**: production and stock history with CSV export
+- **Print Reports**: generate printer-friendly reports (specs, prep plans, inventory snapshots, changelog) with configurable paper sizes and scaling
 
 ## 🧱 Tech Stack
 - Next.js 16.1.6 (App Router) + React 19
@@ -19,6 +20,7 @@ Premix inventory, cocktail specs, and weekly prep planning — built for profess
 ## 🗂️ Pages
 - `/` — Dashboard (Inventory / Prep / Spec Sheet)
 - `/analytics` — Production + stock adjustment history (CSV export)
+- `/print` — Generate and preview printer-friendly reports (specs, prep plans, inventory, changelog)
 - `/settings` — Configuration (currently disabled and redirects to `/`)
 
 ## 🚦 Status colors
@@ -32,6 +34,13 @@ Premix inventory, cocktail specs, and weekly prep planning — built for profess
 - `Esc` — discard pending changes (with confirmation)
 - `F5` — refresh data
 
+## 🖨️ Print Features
+- Multiple report types: cocktail specs, prep specs, inventory snapshot, change log, combined
+- Paper sizes: A3, A4, Letter, Legal, A5
+- Scale options: 80%, 90%, 100%, 110%, 120%
+- Mobile-responsive design with fit-to-screen preview
+- Live preview with exact print layout matching
+
 ## 🔄 Data flow (high level)
 - Config controls thresholds and forecasts
 - Production logs feed weekly usage calculations
@@ -43,6 +52,12 @@ Premix inventory, cocktail specs, and weekly prep planning — built for profess
 ```bash
 npm install
 npm run dev
+```
+
+### Environment Setup
+Create a `.env.local` file in the root directory:
+```
+DATABASE_URL=your_neon_database_url_here
 ```
 
 Open:

@@ -163,6 +163,59 @@ export function SpecSheetReport({ data }: { data: DashboardData }) {
     )
     .sort(sortByCategoryThenName);
 
+  const espressoMartini = mainBatchedRows.find(
+    (cocktail) => cocktail.name.trim().toLowerCase() === "espresso martini",
+  );
+
+  const topRows = mainBatchedRows.filter(
+    (cocktail) =>
+      cocktail.category === "SIGNATURE" || cocktail.category === "SEASONAL",
+  );
+
+  const regularBatchedRows = mainBatchedRows.filter(
+    (cocktail) =>
+      cocktail.category === "REGULAR",
+  );
+
+  const regularNoPremixRows = noPremixCocktailRows.filter(
+    (cocktail) => cocktail.category === "REGULAR",
+  );
+
+  const regularRowsWithoutEspresso = [...regularBatchedRows, ...regularNoPremixRows].filter(
+    (cocktail) => cocktail.sourceCocktailId !== espressoMartini?.sourceCocktailId,
+  );
+
+  const regularRows = [
+    ...regularRowsWithoutEspresso,
+    ...(espressoMartini ? [espressoMartini] : []),
+  ];
+
+  const renderCocktailRow = (cocktail: (typeof allCocktails)[number], showPremixFallback: boolean) => (
+    <tr key={cocktail.sourceCocktailId}>
+      <td className="border border-black p-2 align-top whitespace-pre-line">
+        <div className="font-bold">{cocktail.name}</div>
+        <div>Garnish: {cocktail.garnish?.trim() || "-"}</div>
+        <div>&nbsp;</div>
+        <div>{cocktail.glassware?.trim() || "-"}</div>
+      </td>
+      <td className="border border-black p-2 align-bottom">
+        <div className="min-h-[80px] whitespace-pre-line flex items-end">
+          {cocktail.specs && cocktail.specs.length > 0
+            ? cocktail.specs.map((spec) => `${spec.ml} ml ${spec.ingredient}`).join("\n")
+            : "-"}
+        </div>
+      </td>
+      <td className="border border-black p-2 align-top whitespace-pre-line">
+        {[cocktail.technique?.trim(), cocktail.straining?.trim()]
+          .filter((value): value is string => Boolean(value && value.length > 0))
+          .join("\n") || "-"}
+      </td>
+      <td className="border border-black p-2 align-top whitespace-pre-line">
+        {cocktail.isBatched ? renderLines(cocktail.premixNote) : showPremixFallback ? "-" : ""}
+      </td>
+    </tr>
+  );
+
   const renderLines = (value?: string | null) => {
     if (!value || value.trim().length === 0) return "-";
     return value
@@ -183,66 +236,24 @@ export function SpecSheetReport({ data }: { data: DashboardData }) {
             <th className="border border-black p-2 text-left font-normal w-[23%]">premix</th>
           </tr>
         </thead>
-        <tbody>
-          {mainBatchedRows.map((cocktail) => (
-            <tr key={cocktail.sourceCocktailId}>
-              <td className="border border-black p-2 align-top whitespace-pre-line">
-                <div className="font-bold">{cocktail.name}</div>
-                <div>Garnish: {cocktail.garnish?.trim() || "-"}</div>
-                <div>&nbsp;</div>
-                <div>{cocktail.glassware?.trim() || "-"}</div>
-              </td>
-              <td className="border border-black p-2 align-bottom">
-                <div className="min-h-[80px] whitespace-pre-line flex items-end">
-                  {cocktail.specs && cocktail.specs.length > 0
-                    ? cocktail.specs.map((spec) => `${spec.ml} ml ${spec.ingredient}`).join("\n")
-                    : "-"}
-                </div>
-              </td>
-              <td className="border border-black p-2 align-top whitespace-pre-line">
-                {[cocktail.technique?.trim(), cocktail.straining?.trim()]
-                  .filter((value): value is string => Boolean(value && value.length > 0))
-                  .join("\n") || "-"}
-              </td>
-              <td className="border border-black p-2 align-top whitespace-pre-line">
-                {renderLines(cocktail.premixNote)}
-              </td>
-            </tr>
-          ))}
-
-          {noPremixCocktailRows.length > 0 && (
-            <tr>
-              <td colSpan={4} className="border border-black bg-gray-100 px-2 py-1 text-center">
-                
-              </td>
-            </tr>
-          )}
-
-          {noPremixCocktailRows.map((cocktail) => (
-            <tr key={cocktail.sourceCocktailId}>
-              <td className="border border-black p-2 align-top whitespace-pre-line">
-                <div className="font-bold">{cocktail.name}</div>
-                <div>Garnish: {cocktail.garnish?.trim() || "-"}</div>
-                <div>&nbsp;</div>
-                <div>{cocktail.glassware?.trim() || "-"}</div>
-              </td>
-              <td className="border border-black p-2 align-bottom">
-                <div className="min-h-[80px] whitespace-pre-line flex items-end">
-                  {cocktail.specs && cocktail.specs.length > 0
-                    ? cocktail.specs.map((spec) => `${spec.ml} ml ${spec.ingredient}`).join("\n")
-                    : "-"}
-                </div>
-              </td>
-              <td className="border border-black p-2 align-top whitespace-pre-line">
-                {[cocktail.technique?.trim(), cocktail.straining?.trim()]
-                  .filter((value): value is string => Boolean(value && value.length > 0))
-                  .join("\n") || "-"}
-              </td>
-              <td className="border border-black p-2 align-top">-</td>
-            </tr>
-          ))}
-        </tbody>
+        <tbody>{topRows.map((cocktail) => renderCocktailRow(cocktail, false))}</tbody>
       </table>
+
+      {regularRows.length > 0 && <div className="page-break h-0" />}
+
+      {regularRows.length > 0 && (
+        <table className="w-full border-collapse border-2 border-black table-fixed">
+          <thead>
+            <tr>
+              <th className="border border-black p-2 text-left font-normal w-[22%]">Cafe Victor Menu {menuYear}</th>
+              <th className="border border-black p-2 text-left font-normal w-[31%]">recipe</th>
+              <th className="border border-black p-2 text-left font-normal w-[24%]">method</th>
+              <th className="border border-black p-2 text-left font-normal w-[23%]">premix</th>
+            </tr>
+          </thead>
+          <tbody>{regularRows.map((cocktail) => renderCocktailRow(cocktail, true))}</tbody>
+        </table>
+      )}
     </div>
   );
 }
