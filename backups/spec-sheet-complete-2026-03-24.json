@@ -1,0 +1,1933 @@
+{
+  "exportedAt": "2026-03-24T23:51:15.483Z",
+  "summary": {
+    "activeCocktails": 40,
+    "archivedCocktails": 4,
+    "activePremixes": 15,
+    "archivedPremixes": 4
+  },
+  "cocktails": {
+    "active": [
+      {
+        "id": "amaretto-sour",
+        "name": "Amaretto Sour",
+        "category": "REGULAR",
+        "glassware": "LowBall/Rocks",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Maraschino cherry",
+        "isBatched": false,
+        "serveExtras": "2 Dashes Angostura bitters",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Amaretto",
+            "ml": 40
+          },
+          {
+            "ingredient": "Whisky",
+            "ml": 10
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Egg White",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lemon Juice",
+            "ml": 30
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "americano",
+        "name": "Americano",
+        "category": "REGULAR",
+        "glassware": "Highball",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Orange Slice",
+        "isBatched": false,
+        "serveExtras": "Top Soda",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Campari",
+            "ml": 30
+          },
+          {
+            "ingredient": "Cocchi Rosso",
+            "ml": 30
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "aperol-spritz",
+        "name": "Aperol Spritz",
+        "category": "REGULAR",
+        "glassware": "Wine",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Orange Slice",
+        "isBatched": false,
+        "serveExtras": "Top Prosecco/Cava, splash soda",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Aperol",
+            "ml": 50
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "belle-amour",
+        "name": "Belle Amour",
+        "category": "SEASONAL",
+        "glassware": "Nick & Nora",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Gold rim, Flower",
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Cointreau",
+            "ml": 30
+          },
+          {
+            "ingredient": "Gin",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lemon Juice",
+            "ml": 20
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 10
+          },
+          {
+            "ingredient": "Grenadine",
+            "ml": 10
+          },
+          {
+            "ingredient": "Egg White",
+            "ml": 10
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "belle-amour",
+          "premix_note": "7cl Premix\n3cl Lemon Juice\n1cl Egg White",
+          "batch_note": null,
+          "created_at": "2026-02-28T01:08:03.939Z",
+          "updated_at": "2026-02-28T01:15:33.903Z"
+        }
+      },
+      {
+        "id": "bloody-mary",
+        "name": "Bloody Mary",
+        "category": "REGULAR",
+        "glassware": "Highball",
+        "technique": "Throw",
+        "straining": "Strain",
+        "garnish": "Cucumber slice on a skewer",
+        "isBatched": false,
+        "serveExtras": "3 dashes Tabasco\n2 shaker twists Pepper\n2 dashes Celery salt",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Vodka",
+            "ml": 50
+          },
+          {
+            "ingredient": "Looza tomat",
+            "ml": 100
+          },
+          {
+            "ingredient": "Lemon Juice",
+            "ml": 10
+          },
+          {
+            "ingredient": "Worcestershire sauce",
+            "ml": 10
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "bobby-burns",
+        "name": "Bobby Burns",
+        "category": "REGULAR",
+        "glassware": "LowBall/Rocks",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Orange peel",
+        "isBatched": false,
+        "serveExtras": "2 Dashes Peychards",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Whisky",
+            "ml": 40
+          },
+          {
+            "ingredient": "Cocchi Rosso",
+            "ml": 40
+          },
+          {
+            "ingredient": "Dom Benedictine",
+            "ml": 10
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "boulevardier",
+        "name": "Boulevardier",
+        "category": "REGULAR",
+        "glassware": "LowBall/Rocks",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Orange peel",
+        "isBatched": false,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Whisky",
+            "ml": 30
+          },
+          {
+            "ingredient": "Campari",
+            "ml": 30
+          },
+          {
+            "ingredient": "Cocchi Rosso",
+            "ml": 30
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "bramble",
+        "name": "Bramble",
+        "category": "REGULAR",
+        "glassware": "LowBall/Rocks",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Lemon Wedge",
+        "isBatched": false,
+        "serveExtras": "Cassis over top of crushed ice",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Gin",
+            "ml": 40
+          },
+          {
+            "ingredient": "Lemon Juice",
+            "ml": 20
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 10
+          },
+          {
+            "ingredient": "Cassis",
+            "ml": 20
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "caipirinha",
+        "name": "Caipirinha",
+        "category": "REGULAR",
+        "glassware": "LowBall/Rocks",
+        "technique": "Shake",
+        "straining": "Dirty Pour",
+        "garnish": "Lime Wedge",
+        "isBatched": false,
+        "serveExtras": "2 lime wedges cut in half in the glass",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Cachaça",
+            "ml": 50
+          },
+          {
+            "ingredient": "Lime Juice",
+            "ml": 20
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 10
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "cosgroni",
+        "name": "Cosgroni",
+        "category": "SEASONAL",
+        "glassware": "Coupe glass",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Dried lime",
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-24T00:59:20.816Z",
+        "updatedAt": "2026-03-24T00:59:20.816Z",
+        "specs": [
+          {
+            "ingredient": "Gin",
+            "ml": 30
+          },
+          {
+            "ingredient": "Campari",
+            "ml": 20
+          },
+          {
+            "ingredient": "Cranberry Juice",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lime Juice",
+            "ml": 20
+          },
+          {
+            "ingredient": "Sugar syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Egg White",
+            "ml": 20
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "cosgroni",
+          "premix_note": "7cl Premix\n2cl Cranberry Juice\n2cl Lime Juice\n2cl Egg Whites",
+          "batch_note": null,
+          "created_at": "2026-03-24T00:59:20.816Z",
+          "updated_at": "2026-03-24T01:00:30.125Z"
+        }
+      },
+      {
+        "id": "cosmopolitan",
+        "name": "Cosmopolitan",
+        "category": "REGULAR",
+        "glassware": "Coupe",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Dehydrated lime wheel",
+        "isBatched": false,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Vodka",
+            "ml": 40
+          },
+          {
+            "ingredient": "Cointreau",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lime Juice",
+            "ml": 20
+          },
+          {
+            "ingredient": "Cranberry Juice",
+            "ml": 40
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "daiquiri",
+        "name": "Daiquiri",
+        "category": "REGULAR",
+        "glassware": "Nick & Nora",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Dehydrated lime wheel on rim",
+        "isBatched": false,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Havana 3 Year",
+            "ml": 50
+          },
+          {
+            "ingredient": "Lime Juice",
+            "ml": 30
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "dark-and-stormy",
+        "name": "Dark & Stormy",
+        "category": "REGULAR",
+        "glassware": "Highball",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Lime wedge",
+        "isBatched": false,
+        "serveExtras": "2 Dashes Angostura Bitters, Top Ginger beer",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Havana 7 Year",
+            "ml": 50
+          },
+          {
+            "ingredient": "Lime Juice",
+            "ml": 20
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "dolce-vita",
+        "name": "Dolce Vita",
+        "category": "SEASONAL",
+        "glassware": "Coupe glass",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Pistachio rim",
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-24T00:59:20.816Z",
+        "updatedAt": "2026-03-24T01:00:30.125Z",
+        "specs": [
+          {
+            "ingredient": "Vodka",
+            "ml": 40
+          },
+          {
+            "ingredient": "Frangelico",
+            "ml": 20
+          },
+          {
+            "ingredient": "Licorr 43",
+            "ml": 15
+          },
+          {
+            "ingredient": "Pistachio syrup",
+            "ml": 25
+          },
+          {
+            "ingredient": "Cream",
+            "ml": 30
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "dolce-vita",
+          "premix_note": "10cl Premix\n3cl Cream",
+          "batch_note": null,
+          "created_at": "2026-03-24T00:59:20.816Z",
+          "updated_at": "2026-03-24T01:00:30.125Z"
+        }
+      },
+      {
+        "id": "espresso-martini",
+        "name": "Espresso Martini",
+        "category": "REGULAR",
+        "glassware": "Coupe",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "3 Coffee Beans",
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Vanilla Vodka",
+            "ml": 40
+          },
+          {
+            "ingredient": "Kahlua",
+            "ml": 20
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Coffee",
+            "ml": 40
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "flor-de-mynte",
+        "name": "Flor de Mynte",
+        "category": "SEASONAL",
+        "glassware": "Coupe",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Mint leaf",
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Midori",
+            "ml": 30
+          },
+          {
+            "ingredient": "St. Germain",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lemon Juice",
+            "ml": 30
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Egg White",
+            "ml": 20
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "flor-de-mynte",
+          "premix_note": "7cl Premix\n3cl Lemon Juice\n2cl Egg White",
+          "batch_note": null,
+          "created_at": "2026-02-28T01:08:03.875Z",
+          "updated_at": "2026-02-28T01:15:33.843Z"
+        }
+      },
+      {
+        "id": "gin-fizz",
+        "name": "Gin Fizz",
+        "category": "REGULAR",
+        "glassware": "Highball",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Lemon slice",
+        "isBatched": false,
+        "serveExtras": "Top soda",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Gin",
+            "ml": 50
+          },
+          {
+            "ingredient": "Lemon Juice",
+            "ml": 30
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Egg White",
+            "ml": 20
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "gin-martini",
+        "name": "Gin Martini",
+        "category": "REGULAR",
+        "glassware": "Nick & Nora",
+        "technique": "Stir",
+        "straining": "Strain",
+        "garnish": "Lemon Twist/Olive",
+        "isBatched": false,
+        "serveExtras": "If Dirty Add 1cl Olive brie",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Gin",
+            "ml": 40
+          },
+          {
+            "ingredient": "Noilly Prat",
+            "ml": 15
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "honey-syrup",
+        "name": "Honey Syrup",
+        "category": "INGREDIENTS",
+        "glassware": null,
+        "technique": "1:1 honey and sugar syrup. Mix together, no heating required.",
+        "straining": null,
+        "garnish": null,
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T20:49:00.699Z",
+        "updatedAt": "2026-03-01T20:49:00.699Z",
+        "specs": [
+          {
+            "ingredient": "Honey",
+            "ml": 1
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 1
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "irish-coffee",
+        "name": "Irish Coffee",
+        "category": "REGULAR",
+        "glassware": "Water Glass",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Coffee Bean and Straw",
+        "isBatched": false,
+        "serveExtras": "Spoon of brown sugar, Layered Siphon cream",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Jameson or Tullamore",
+            "ml": 30
+          },
+          {
+            "ingredient": "Filter coffee",
+            "ml": 100
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "island-nectar",
+        "name": "Island Nectar",
+        "category": "SEASONAL",
+        "glassware": "Coupe",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Dehydrated lime",
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Fiji Rum",
+            "ml": 50
+          },
+          {
+            "ingredient": "Honey Syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lime Juice",
+            "ml": 30
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "island-nectar",
+          "premix_note": "7cl Premix\n3cl Lime Juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T01:08:04.002Z",
+          "updated_at": "2026-02-28T01:15:33.967Z"
+        }
+      },
+      {
+        "id": "manhattan-sweet",
+        "name": "Manhattan (Sweet)",
+        "category": "REGULAR",
+        "glassware": "Coupe",
+        "technique": "Stir",
+        "straining": "Strain",
+        "garnish": "Maraschino Cherry",
+        "isBatched": false,
+        "serveExtras": "2 Dashes Angostura Bitters",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Rittenhouse",
+            "ml": 40
+          },
+          {
+            "ingredient": "Martini Rosso",
+            "ml": 20
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "margarita",
+        "name": "Margarita",
+        "category": "REGULAR",
+        "glassware": "Coupe",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Salt Rim and dehydrated lime wheel",
+        "isBatched": false,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "White Tequila",
+            "ml": 40
+          },
+          {
+            "ingredient": "Cointreau",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lime Juice",
+            "ml": 30
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "maverick",
+        "name": "Maverick",
+        "category": "SIGNATURE",
+        "glassware": "Coupe",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": null,
+        "isBatched": true,
+        "serveExtras": "Top Prosecco (to top of glass)",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Vanilla Vodka",
+            "ml": 50
+          },
+          {
+            "ingredient": "Lemon Juice",
+            "ml": 20
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Passionfruit Puree",
+            "ml": 30
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "mojito",
+        "name": "Mojito",
+        "category": "REGULAR",
+        "glassware": "Highball",
+        "technique": "Build & Churn",
+        "straining": null,
+        "garnish": "Mint Sprig and lime wedge",
+        "isBatched": false,
+        "serveExtras": "6 Mint Leaves (churned), Top soda",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Havana 3 Year",
+            "ml": 50
+          },
+          {
+            "ingredient": "Lime Juice",
+            "ml": 30
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "moscow-mule",
+        "name": "Moscow Mule",
+        "category": "REGULAR",
+        "glassware": "Highball",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Lime Wedge",
+        "isBatched": false,
+        "serveExtras": "2 Dashes Angostura Bitters, Top Ginger beer",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Vodka",
+            "ml": 50
+          },
+          {
+            "ingredient": "Lime Juice",
+            "ml": 20
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "negroni",
+        "name": "Negroni",
+        "category": "REGULAR",
+        "glassware": "LowBall/Rocks",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Orange Slice or peel",
+        "isBatched": false,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Gin",
+            "ml": 30
+          },
+          {
+            "ingredient": "Campari",
+            "ml": 30
+          },
+          {
+            "ingredient": "Martini Rosso",
+            "ml": 30
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "old-fashioned",
+        "name": "Old Fashioned",
+        "category": "REGULAR",
+        "glassware": "LowBall/Rocks",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Orange slice or peel",
+        "isBatched": false,
+        "serveExtras": "3 dashes Angostura bitters",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Whisky",
+            "ml": 50
+          },
+          {
+            "ingredient": "Sugar syrup",
+            "ml": 10
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "pornstar-martini",
+        "name": "Pornstar Martini",
+        "category": "REGULAR",
+        "glassware": "Coupe",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Prosecco Shot on Side",
+        "isBatched": false,
+        "serveExtras": "Shot of Prosecco (on side)",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Vanilla Vodka",
+            "ml": 50
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lemon Juice",
+            "ml": 20
+          },
+          {
+            "ingredient": "Passionfruit Puree",
+            "ml": 30
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "rhubarb-syrup",
+        "name": "Rhubarb Syrup",
+        "category": "INGREDIENTS",
+        "glassware": null,
+        "technique": "1:1 sugar syrup and rhubarb. Stew rhubarb in sugar syrup until soft, keep the rhubarb kompot for texture.",
+        "straining": null,
+        "garnish": null,
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T20:49:00.699Z",
+        "updatedAt": "2026-03-01T20:49:00.699Z",
+        "specs": [
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 1
+          },
+          {
+            "ingredient": "Rhubarb",
+            "ml": 1
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "sour-base",
+        "name": "Sour (Base)",
+        "category": "REGULAR",
+        "glassware": "LowBall/Rocks",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Various",
+        "isBatched": false,
+        "serveExtras": "3 Dashes Bitters if appropriate",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Spirit",
+            "ml": 50
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Egg White",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lemon or Lime Juice",
+            "ml": 30
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "spice-mix",
+        "name": "Spice Mix",
+        "category": "INGREDIENTS",
+        "glassware": null,
+        "technique": "12 cut chilli + 1l honey + 1l sugar syrup + 15g sichuan pepper + 45g black pepper. Blend for 1 minute, mill for 1 minute, strain 5-6 times.",
+        "straining": null,
+        "garnish": null,
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T20:49:00.699Z",
+        "updatedAt": "2026-03-01T20:49:00.699Z",
+        "specs": [
+          {
+            "ingredient": "Chilli (cut)",
+            "ml": 12
+          },
+          {
+            "ingredient": "Honey",
+            "ml": 1
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 1
+          },
+          {
+            "ingredient": "Sichuan Pepper",
+            "ml": 15
+          },
+          {
+            "ingredient": "Black Pepper",
+            "ml": 45
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "sugar-syrup",
+        "name": "Sugar Syrup",
+        "category": "INGREDIENTS",
+        "glassware": null,
+        "technique": "Boil Water & Add Sugar",
+        "straining": null,
+        "garnish": null,
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T20:39:20.003Z",
+        "updatedAt": "2026-03-01T20:39:20.003Z",
+        "specs": [
+          {
+            "ingredient": "Sugar",
+            "ml": 1
+          },
+          {
+            "ingredient": "Water",
+            "ml": 1
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "velvet_reve",
+        "name": "Velvet Reve",
+        "category": "SIGNATURE",
+        "glassware": "Nick and Nora glass",
+        "technique": "Stirred with ice, strained, served without ice",
+        "straining": null,
+        "garnish": null,
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-24T22:38:51.428Z",
+        "updatedAt": "2026-03-24T22:38:51.428Z",
+        "specs": [
+          {
+            "ingredient": "Non Alcoholic Amaretto",
+            "ml": 40
+          },
+          {
+            "ingredient": "Rhubarb Syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Arensbak Red",
+            "ml": 20
+          },
+          {
+            "ingredient": "Versjus",
+            "ml": 30
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "velvet_reve",
+          "premix_note": "11cl Premix",
+          "batch_note": "4 parts non alcoholic amaretto\n2 parts rhubarb syrup\n2 parts arensbak red\n3 parts versjus",
+          "created_at": "2026-03-24T22:38:51.428Z",
+          "updated_at": "2026-03-24T22:38:51.428Z"
+        }
+      },
+      {
+        "id": "victor-spritz",
+        "name": "Victor Spritz",
+        "category": "SIGNATURE",
+        "glassware": "Wine Glass",
+        "technique": "Build",
+        "straining": null,
+        "garnish": "Lemon slice, Umbrella, Straw",
+        "isBatched": true,
+        "serveExtras": "Top Prosecco",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Lillet Rouge",
+            "ml": 30
+          },
+          {
+            "ingredient": "Cointreau",
+            "ml": 10
+          },
+          {
+            "ingredient": "St. Germain",
+            "ml": 10
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "victor-spritz",
+          "premix_note": "5cl Premix",
+          "batch_note": null,
+          "created_at": "2026-02-28T01:08:03.738Z",
+          "updated_at": "2026-02-28T01:15:33.719Z"
+        }
+      },
+      {
+        "id": "spicy-margarita",
+        "name": "Victor's Spicy Margarita",
+        "category": "SIGNATURE",
+        "glassware": "LowBall/Rocks",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Chili rim",
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Spice Mix",
+            "ml": 70
+          },
+          {
+            "ingredient": "Lime Juice",
+            "ml": 30
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "spicy-margarita",
+          "premix_note": "7cl Premix\n3cl Lime Juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T01:08:03.807Z",
+          "updated_at": "2026-02-28T01:15:33.780Z"
+        }
+      },
+      {
+        "id": "vodka-martini",
+        "name": "Vodka Martini",
+        "category": "REGULAR",
+        "glassware": "Nick & Nora",
+        "technique": "Stir",
+        "straining": "Strain",
+        "garnish": "Lemon Twist/Olive",
+        "isBatched": false,
+        "serveExtras": "If Dirty Add 1cl Olive brie",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Vodka",
+            "ml": 40
+          },
+          {
+            "ingredient": "Noilly Prat",
+            "ml": 20
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "whisky-sour",
+        "name": "Whisky Sour",
+        "category": "REGULAR",
+        "glassware": "LowBall/Rocks",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Orange peel",
+        "isBatched": false,
+        "serveExtras": "3 Dashes Angostura bitters",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Whisky",
+            "ml": 50
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 20
+          },
+          {
+            "ingredient": "Egg White",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lemon Juice",
+            "ml": 30
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "white-russian",
+        "name": "White Russian",
+        "category": "REGULAR",
+        "glassware": "LowBall/Rocks",
+        "technique": "Build",
+        "straining": null,
+        "garnish": null,
+        "isBatched": false,
+        "serveExtras": "Top double cream, Layered",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Vodka",
+            "ml": 40
+          },
+          {
+            "ingredient": "Kahlua",
+            "ml": 40
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "wonderland",
+        "name": "Wonderland",
+        "category": "SEASONAL",
+        "glassware": "LowBall/Rocks",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Mint spring with powder",
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Havana 7yr",
+            "ml": 40
+          },
+          {
+            "ingredient": "Pimento Dram",
+            "ml": 10
+          },
+          {
+            "ingredient": "Crème de mure",
+            "ml": 20
+          },
+          {
+            "ingredient": "White chocolate",
+            "ml": 20
+          },
+          {
+            "ingredient": "Lemon Juice",
+            "ml": 20
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "wonderland",
+          "premix_note": "9cl Premix\n2cl Lemon Juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T01:08:04.147Z",
+          "updated_at": "2026-02-28T01:15:34.108Z"
+        }
+      }
+    ],
+    "archived": [
+      {
+        "id": "ernst-cardamom-syrup",
+        "name": "Ernst Cardamom Syrup",
+        "category": "INGREDIENTS",
+        "glassware": null,
+        "technique": "10 lightly crushed cardamom pods per 1l sugar syrup. Simmer for 10 minutes, steep for 20 minutes off heat, then strain.",
+        "straining": null,
+        "garnish": null,
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T20:49:00.699Z",
+        "updatedAt": "2026-03-01T20:49:00.699Z",
+        "specs": [
+          {
+            "ingredient": "Cardamom Pods (lightly crushed)",
+            "ml": 10
+          },
+          {
+            "ingredient": "Sugar Syrup",
+            "ml": 1
+          }
+        ],
+        "premixSpec": null
+      },
+      {
+        "id": "naughty-and-nice",
+        "name": "Naughty and Nice",
+        "category": "SEASONAL",
+        "glassware": "Wine Glass",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Cinnamon rim, Cinnamon stick",
+        "isBatched": true,
+        "serveExtras": "Top with Gingerbeer",
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Havana 7yr",
+            "ml": 40
+          },
+          {
+            "ingredient": "Cherry Heering",
+            "ml": 20
+          },
+          {
+            "ingredient": "Pomegranate",
+            "ml": 60
+          },
+          {
+            "ingredient": "Lime",
+            "ml": 10
+          },
+          {
+            "ingredient": "Cinnamon Syrup",
+            "ml": 10
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "naughty-and-nice",
+          "premix_note": "7cl Premix\n6cl pomegranate juice\n1cl lime juice",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:08:04.083Z",
+          "updated_at": "2026-02-28T02:15:34.047Z"
+        }
+      },
+      {
+        "id": "smackery",
+        "name": "Smackery",
+        "category": "SIGNATURE",
+        "glassware": "Shot Glass",
+        "technique": "Pour",
+        "straining": null,
+        "garnish": null,
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [],
+        "premixSpec": null
+      },
+      {
+        "id": "nutcrackers-sour",
+        "name": "The Nutcrackers Sour",
+        "category": "SEASONAL",
+        "glassware": "Coupe",
+        "technique": "Shake",
+        "straining": "Double Strain",
+        "garnish": "Cardamom rim",
+        "isBatched": true,
+        "serveExtras": null,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-01T19:06:24.528Z",
+        "specs": [
+          {
+            "ingredient": "Martell VS",
+            "ml": 30
+          },
+          {
+            "ingredient": "Cardamom Syrup",
+            "ml": 30
+          },
+          {
+            "ingredient": "Lemon",
+            "ml": 30
+          },
+          {
+            "ingredient": "Amaretto",
+            "ml": 10
+          },
+          {
+            "ingredient": "Cointreau",
+            "ml": 10
+          },
+          {
+            "ingredient": "Egg Whites",
+            "ml": 20
+          }
+        ],
+        "premixSpec": {
+          "cocktail_id": "nutcrackers-sour",
+          "premix_note": "8cl Premix\n3cl lemon juice\n2cl egg whites",
+          "batch_note": null,
+          "created_at": "2026-02-28T02:13:34.345Z",
+          "updated_at": "2026-02-28T02:13:34.345Z"
+        }
+      }
+    ]
+  },
+  "premixes": {
+    "active": [
+      {
+        "premixId": "belle-amour",
+        "name": "Belle Amour",
+        "currentBottles": 7,
+        "thresholdBottles": 7,
+        "targetBottles": 14,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-19T15:14:08.409Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Cointreau",
+            "amountPerBatch": 3,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Gin",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Sugar Syrup",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Grenadine",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      },
+      {
+        "premixId": "cosgroni",
+        "name": "Cosgroni",
+        "currentBottles": 7,
+        "thresholdBottles": 2,
+        "targetBottles": 6,
+        "createdAt": "2026-03-24T00:59:20.816Z",
+        "updatedAt": "2026-03-24T21:01:07.195Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Gin",
+            "amountPerBatch": 3,
+            "unit": "parts",
+            "createdAt": "2026-03-24T00:59:20.816Z"
+          },
+          {
+            "ingredientName": "Campari",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-24T00:59:20.816Z"
+          },
+          {
+            "ingredientName": "Sugar syrup",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-24T00:59:20.816Z"
+          }
+        ]
+      },
+      {
+        "premixId": "dolce-vita",
+        "name": "Dolce Vita",
+        "currentBottles": 10,
+        "thresholdBottles": 2,
+        "targetBottles": 6,
+        "createdAt": "2026-03-24T00:59:20.816Z",
+        "updatedAt": "2026-03-24T21:01:07.106Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Vodka",
+            "amountPerBatch": 4,
+            "unit": "parts",
+            "createdAt": "2026-03-24T00:59:20.816Z"
+          },
+          {
+            "ingredientName": "Frangelico",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-24T00:59:20.816Z"
+          },
+          {
+            "ingredientName": "Licor 43",
+            "amountPerBatch": 1.5,
+            "unit": "parts",
+            "createdAt": "2026-03-24T00:59:20.816Z"
+          },
+          {
+            "ingredientName": "Pistachio syrup",
+            "amountPerBatch": 2.5,
+            "unit": "parts",
+            "createdAt": "2026-03-24T00:59:20.816Z"
+          }
+        ]
+      },
+      {
+        "premixId": "espresso-martini",
+        "name": "Espresso Martini",
+        "currentBottles": 45,
+        "thresholdBottles": 90,
+        "targetBottles": 102,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-24T19:39:42.151Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Espresso Martini",
+            "amountPerBatch": 12,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      },
+      {
+        "premixId": "flor-de-mynte",
+        "name": "Flor de Mynte",
+        "currentBottles": 8,
+        "thresholdBottles": 7,
+        "targetBottles": 14,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-19T15:14:08.804Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Midori",
+            "amountPerBatch": 3,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "St. Germain",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Sugar Syrup",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      },
+      {
+        "premixId": "honey-syrup",
+        "name": "Honey Syrup",
+        "currentBottles": 4,
+        "thresholdBottles": 1,
+        "targetBottles": 2,
+        "createdAt": "2026-03-01T19:46:22.162Z",
+        "updatedAt": "2026-03-12T15:22:58.424Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Honey",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:46:22.162Z"
+          },
+          {
+            "ingredientName": "Sugar Syrup",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:46:22.162Z"
+          }
+        ]
+      },
+      {
+        "premixId": "island-nectar",
+        "name": "Island Nectar",
+        "currentBottles": 10,
+        "thresholdBottles": 7,
+        "targetBottles": 14,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-12T15:22:58.614Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Fiji Rum",
+            "amountPerBatch": 5,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Honey Syrup",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      },
+      {
+        "premixId": "maverick",
+        "name": "Maverick",
+        "currentBottles": 14,
+        "thresholdBottles": 14,
+        "targetBottles": 21,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-19T15:14:08.997Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Vanilla Vodka",
+            "amountPerBatch": 3,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Sugar Syrup",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Lemon Juice",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Passionfruit Puree",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      },
+      {
+        "premixId": "rhubarb-syrup",
+        "name": "Rhubarb Syrup",
+        "currentBottles": 2,
+        "thresholdBottles": 1,
+        "targetBottles": 2,
+        "createdAt": "2026-03-01T19:46:22.422Z",
+        "updatedAt": "2026-03-12T15:22:59.185Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Sugar Syrup",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:46:22.422Z"
+          },
+          {
+            "ingredientName": "Rhubarb",
+            "amountPerBatch": 1,
+            "unit": "kg",
+            "createdAt": "2026-03-01T19:46:22.422Z"
+          }
+        ]
+      },
+      {
+        "premixId": "spice-mix",
+        "name": "Spice Mix",
+        "currentBottles": 4,
+        "thresholdBottles": 2,
+        "targetBottles": 4,
+        "createdAt": "2026-03-01T19:46:22.281Z",
+        "updatedAt": "2026-03-12T15:22:59.565Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Chilli (cut)",
+            "amountPerBatch": 12,
+            "unit": "pieces",
+            "createdAt": "2026-03-01T19:46:22.281Z"
+          },
+          {
+            "ingredientName": "Honey",
+            "amountPerBatch": 1,
+            "unit": "l",
+            "createdAt": "2026-03-01T19:46:22.281Z"
+          },
+          {
+            "ingredientName": "Sugar Syrup",
+            "amountPerBatch": 1,
+            "unit": "l",
+            "createdAt": "2026-03-01T19:46:22.281Z"
+          },
+          {
+            "ingredientName": "Sichuan Pepper",
+            "amountPerBatch": 15,
+            "unit": "corns",
+            "createdAt": "2026-03-01T19:46:22.281Z"
+          },
+          {
+            "ingredientName": "Black Pepper",
+            "amountPerBatch": 45,
+            "unit": "corns",
+            "createdAt": "2026-03-01T19:46:22.281Z"
+          }
+        ]
+      },
+      {
+        "premixId": "sugar-syrup",
+        "name": "Sugar Syrup",
+        "currentBottles": 7,
+        "thresholdBottles": 30,
+        "targetBottles": 45,
+        "createdAt": "2026-03-01T19:46:21.936Z",
+        "updatedAt": "2026-03-19T15:14:09.189Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Sugar",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:46:21.936Z"
+          },
+          {
+            "ingredientName": "Water",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:46:21.936Z"
+          }
+        ]
+      },
+      {
+        "premixId": "velvet_reve",
+        "name": "Velvet Reve",
+        "currentBottles": 0,
+        "thresholdBottles": 2,
+        "targetBottles": 6,
+        "createdAt": "2026-03-24T22:38:51.428Z",
+        "updatedAt": "2026-03-24T22:38:51.428Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Non Alcoholic Amaretto",
+            "amountPerBatch": 4,
+            "unit": "parts",
+            "createdAt": "2026-03-24T22:38:51.428Z"
+          },
+          {
+            "ingredientName": "Rhubarb Syrup",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-24T22:38:51.428Z"
+          },
+          {
+            "ingredientName": "Arensbak Red",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-24T22:38:51.428Z"
+          },
+          {
+            "ingredientName": "Versjus",
+            "amountPerBatch": 3,
+            "unit": "parts",
+            "createdAt": "2026-03-24T22:38:51.428Z"
+          }
+        ]
+      },
+      {
+        "premixId": "victor-spritz",
+        "name": "Victor Spritz",
+        "currentBottles": 5,
+        "thresholdBottles": 7,
+        "targetBottles": 12,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-19T15:14:09.381Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Lillet Rouge",
+            "amountPerBatch": 3,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Cointreau",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "St. Germain",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      },
+      {
+        "premixId": "spicy-margarita",
+        "name": "Victor's Spicy Margarita",
+        "currentBottles": 18,
+        "thresholdBottles": 10,
+        "targetBottles": 17,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-24T19:17:47.923Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Altos Plata",
+            "amountPerBatch": 4,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Cointreau",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Spice Mix",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      },
+      {
+        "premixId": "wonderland",
+        "name": "Wonderland",
+        "currentBottles": 7,
+        "thresholdBottles": 7,
+        "targetBottles": 16,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-12T15:23:00.516Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Havana 7yr",
+            "amountPerBatch": 4,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Pimento Dram",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Crème de mure",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "White chocolate",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      }
+    ],
+    "archived": [
+      {
+        "premixId": "ernst-cardamom-syrup",
+        "name": "Ernst Cardamom Syrup",
+        "currentBottles": 0,
+        "thresholdBottles": 6,
+        "targetBottles": 12,
+        "createdAt": "2026-03-01T19:46:22.542Z",
+        "updatedAt": "2026-03-01T19:59:16.006Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Cardamom Pods (lightly crushed)",
+            "amountPerBatch": 10,
+            "unit": "pods",
+            "createdAt": "2026-03-01T19:46:22.542Z"
+          },
+          {
+            "ingredientName": "Sugar Syrup",
+            "amountPerBatch": 1,
+            "unit": "l",
+            "createdAt": "2026-03-01T19:46:22.542Z"
+          }
+        ]
+      },
+      {
+        "premixId": "naughty-and-nice",
+        "name": "Naughty and Nice",
+        "currentBottles": 10,
+        "thresholdBottles": 7,
+        "targetBottles": 14,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-12T15:22:58.994Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Havana 7yr",
+            "amountPerBatch": 4,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Cherry Heering",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Cinnamon Syrup",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      },
+      {
+        "premixId": "smackery",
+        "name": "Smackery",
+        "currentBottles": 5,
+        "thresholdBottles": 10,
+        "targetBottles": 12,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-14T23:43:10.594Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Havana 3",
+            "amountPerBatch": 2,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Sugar Surup",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Lime Juice",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Still Water",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      },
+      {
+        "premixId": "nutcrackers-sour",
+        "name": "The Nutcrackers Sour",
+        "currentBottles": 7,
+        "thresholdBottles": 7,
+        "targetBottles": 15,
+        "createdAt": "2026-03-01T19:06:24.528Z",
+        "updatedAt": "2026-03-12T15:22:59.947Z",
+        "recipeItems": [
+          {
+            "ingredientName": "Martell VS",
+            "amountPerBatch": 3,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Cardamom Syrup",
+            "amountPerBatch": 3,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Amaretto",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          },
+          {
+            "ingredientName": "Cointreau",
+            "amountPerBatch": 1,
+            "unit": "parts",
+            "createdAt": "2026-03-01T19:06:24.528Z"
+          }
+        ]
+      }
+    ]
+  }
+}

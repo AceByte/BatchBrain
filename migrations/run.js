@@ -18,7 +18,6 @@ async function runMigrations() {
         old_value REAL NOT NULL,
         new_value REAL NOT NULL,  
         delta REAL NOT NULL,
-        reason TEXT,
         notes TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
@@ -118,6 +117,14 @@ async function runMigrations() {
     
     await sql`CREATE INDEX IF NOT EXISTS idx_cocktail_premix_spec_cocktail_id ON cocktail_premix_spec(cocktail_id)`;
     console.log('✓ Migration 004: Indexes created');
+
+    // Migration 005: Remove legacy reason columns from stock adjustment tables
+    await sql`
+      ALTER TABLE IF EXISTS stock_adjustment_logs DROP COLUMN IF EXISTS reason;
+      ALTER TABLE IF EXISTS archived_stock_adjustment_logs DROP COLUMN IF EXISTS reason;
+      ALTER TABLE IF EXISTS stock_adjustment_history DROP COLUMN IF EXISTS reason;
+    `;
+    console.log('✓ Migration 005: reason columns removed from stock adjustment tables');
     
     console.log('✓ All migrations complete!');
   } catch (error) {

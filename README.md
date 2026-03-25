@@ -6,7 +6,7 @@ Premix inventory, cocktail specs, and weekly prep planning — built for profess
 - **Inventory**: track premix stock with urgency color states and quick adjustments
 - **Spec Sheet**: manage cocktail specs (regular/seasonal/signature) and batched vs. non-batched recipes
 - **Prep Planning**: automatically calculates what to batch and the ingredient totals needed
-- **Logging & Audit Trail**: production logs + stock adjustment history (reasons/notes)
+- **Logging & Audit Trail**: production logs + stock adjustment history (notes)
 - **Analytics**: production and stock history with CSV export
 
 ## 🧱 Tech Stack
@@ -36,7 +36,7 @@ Premix inventory, cocktail specs, and weekly prep planning — built for profess
 - Config controls thresholds and forecasts
 - Production logs feed weekly usage calculations
 - Weekly usage drives prep plan recommendations
-- Stock adjustments are saved with contextual reasons/notes
+- Stock adjustments are saved with contextual notes
 
 ## 📦 Quickstart
 

@@ -6,8 +6,10 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const cocktailId = searchParams.get("cocktailId") || undefined;
     const limit = parseInt(searchParams.get("limit") || "100");
+    const daysParam = parseInt(searchParams.get("days") || "0");
+    const days = Number.isFinite(daysParam) && daysParam > 0 ? daysParam : undefined;
 
-    const history = await getStockAdjustmentHistory(cocktailId, limit);
+    const history = await getStockAdjustmentHistory(cocktailId, limit, days);
     return NextResponse.json(history);
   } catch (error) {
     console.error("Stock history GET error:", error);

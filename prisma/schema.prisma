@@ -102,7 +102,6 @@ model StockAdjustmentLog {
   oldValue   Decimal  @db.Decimal(10, 2) @map("old_value")
   newValue   Decimal  @db.Decimal(10, 2) @map("new_value")
   delta      Decimal  @db.Decimal(10, 2)
-  reason     String?
   notes      String?
   createdAt  DateTime @default(now()) @map("created_at")
   premix     Premix   @relation(fields: [premixId], references: [premixId], onDelete: Restrict)

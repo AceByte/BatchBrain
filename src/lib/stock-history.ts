@@ -7,7 +7,6 @@ export type StockAdjustment = {
   oldValue: number;
   newValue: number;
   delta: number;
-  reason: string | null;
   notes: string | null;
   createdAt: Date;
 };
@@ -17,38 +16,64 @@ export async function logStockAdjustment(params: {
   premixName: string;
   oldValue: number;
   newValue: number;
-  reason?: string;
   notes?: string;
 }): Promise<void> {
   const delta = params.newValue - params.oldValue;
   
   await sql`
     INSERT INTO stock_adjustment_logs
-      (premix_id, premix_name, old_value, new_value, delta, reason, notes)
+      (premix_id, premix_name, old_value, new_value, delta, notes)
     VALUES 
       (${params.cocktailId}, ${params.premixName}, ${params.oldValue}, 
-       ${params.newValue}, ${delta}, ${params.reason || null}, ${params.notes || null})
+       ${params.newValue}, ${delta}, ${params.notes || null})
   `;
 }
 
 export async function getStockAdjustmentHistory(
   cocktailId?: string,
-  limit: number = 100
+  limit: number = 100,
+  days?: number
 ): Promise<StockAdjustment[]> {
-  const rows = (cocktailId
-    ? await sql`
-        SELECT id, premix_id, premix_name, old_value, new_value, delta, reason, notes, created_at
-        FROM stock_adjustment_logs
-        WHERE premix_id = ${cocktailId}
-        ORDER BY created_at DESC
-        LIMIT ${limit}
-      `
-    : await sql`
-        SELECT id, premix_id, premix_name, old_value, new_value, delta, reason, notes, created_at
-        FROM stock_adjustment_logs
-        ORDER BY created_at DESC
-        LIMIT ${limit}
-      `) as any[];
+  const safeDays =
+    typeof days === "number" && Number.isFinite(days) && days > 0
+      ? Math.floor(days)
+      : undefined;
+  const cutoffDate = safeDays
+    ? new Date(Date.now() - safeDays * 24 * 60 * 60 * 1000)
+    : null;
+
+  const rows = (
+    cocktailId && cutoffDate
+      ? await sql`
+          SELECT id, premix_id, premix_name, old_value, new_value, delta, notes, created_at
+          FROM stock_adjustment_logs
+          WHERE premix_id = ${cocktailId} AND created_at >= ${cutoffDate.toISOString()}
+          ORDER BY created_at DESC
+          LIMIT ${limit}
+        `
+      : cocktailId
+        ? await sql`
+            SELECT id, premix_id, premix_name, old_value, new_value, delta, notes, created_at
+            FROM stock_adjustment_logs
+            WHERE premix_id = ${cocktailId}
+            ORDER BY created_at DESC
+            LIMIT ${limit}
+          `
+        : cutoffDate
+          ? await sql`
+              SELECT id, premix_id, premix_name, old_value, new_value, delta, notes, created_at
+              FROM stock_adjustment_logs
+              WHERE created_at >= ${cutoffDate.toISOString()}
+              ORDER BY created_at DESC
+              LIMIT ${limit}
+            `
+          : await sql`
+              SELECT id, premix_id, premix_name, old_value, new_value, delta, notes, created_at
+              FROM stock_adjustment_logs
+              ORDER BY created_at DESC
+              LIMIT ${limit}
+            `
+  ) as any[];
 
   return rows.map((row: any) => ({
     id: row.id,
@@ -57,7 +82,6 @@ export async function getStockAdjustmentHistory(
     oldValue: Number(row.old_value),
     newValue: Number(row.new_value),
     delta: Number(row.delta),
-    reason: row.reason,
     notes: row.notes,
     createdAt: new Date(row.created_at),
   }));

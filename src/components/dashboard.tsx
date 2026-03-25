@@ -65,6 +65,108 @@ function formatCategory(category: DashboardData["cocktails"][number]["category"]
   return category.charAt(0) + category.slice(1).toLowerCase();
 }
 
+type EditingCocktail = {
+  id: number;
+  sourceCocktailId: string;
+  name: string;
+  category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS";
+  glassware: string | null;
+  technique: string | null;
+  straining: string | null;
+  garnish: string | null;
+  isBatched: boolean;
+  serveExtras: string | null;
+  premixNote: string | null;
+  batchNote: string | null;
+  specs: Array<{
+    ingredient: string;
+    ml: number;
+  }>;
+};
+
+type EditingPremix = {
+  id: number;
+  sourceCocktailId: string;
+  name: string;
+  currentBottles: number;
+  thresholdBottles: number;
+  targetBottles: number;
+  batchYieldBottles: number;
+  recipeItems: Array<{
+    ingredientName: string;
+    amountPerBatch: number;
+    unit: string;
+  }>;
+};
+
+type AddCocktailForm = {
+  name: string;
+  category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS";
+  glassware: string;
+  technique: string;
+  straining: string;
+  garnish: string;
+  isBatched: boolean;
+  serveExtras: string;
+  premixNote: string;
+  batchNote: string;
+  specs: Array<{
+    ingredient: string;
+    ml: number;
+  }>;
+  createPremix: boolean;
+  premixCurrentBottles: number;
+  premixThresholdBottles: number;
+  premixTargetBottles: number;
+  premixRecipeItems: Array<{
+    ingredientName: string;
+    amountPerBatch: number;
+    unit: string;
+  }>;
+};
+
+type Toast = {
+  id: number;
+  kind: "success" | "error" | "info";
+  message: string;
+};
+
+type UndoAdjustment = {
+  expiresAt: number;
+  changes: Array<{
+    id: number;
+    oldValue: number;
+    newValue: number;
+  }>;
+};
+
+const CURRENT_VIEW_KEY = "batchbrain.currentView";
+const COCKTAIL_SEARCH_KEY = "batchbrain.cocktailSearch";
+const PREMIX_SEARCH_KEY = "batchbrain.premixSearch";
+const CATEGORY_FILTER_KEY = "batchbrain.categoryFilter";
+const PREMIX_SORT_KEY = "batchbrain.premixSort";
+
+function createEmptyAddCocktailForm(): AddCocktailForm {
+  return {
+    name: "",
+    category: "REGULAR",
+    glassware: "",
+    technique: "",
+    straining: "",
+    garnish: "",
+    isBatched: false,
+    serveExtras: "",
+    premixNote: "",
+    batchNote: "",
+    specs: [{ ingredient: "", ml: 0 }],
+    createPremix: false,
+    premixCurrentBottles: 0,
+    premixThresholdBottles: 2,
+    premixTargetBottles: 6,
+    premixRecipeItems: [{ ingredientName: "", amountPerBatch: 0, unit: "parts" }],
+  };
+}
+
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -88,19 +190,74 @@ export function Dashboard() {
   // Draft/edit mode
   const [pendingChanges, setPendingChanges] = useState<Map<number, number>>(new Map());
   const [isSaving, setIsSaving] = useState(false);
-  const [adjustmentReason, setAdjustmentReason] = useState("Manual adjustment");
   const [adjustmentNotes, setAdjustmentNotes] = useState("");
   const [showProductionForm, setShowProductionForm] = useState(false);
   const [selectedPremixes, setSelectedPremixes] = useState<Set<number>>(new Set());
+  const [selectedArchivedPremixes, setSelectedArchivedPremixes] = useState<Set<number>>(new Set());
+  const [selectedCocktails, setSelectedCocktails] = useState<Set<number>>(new Set());
+  const [selectedArchivedCocktails, setSelectedArchivedCocktails] = useState<Set<number>>(new Set());
   
   // UI state
-  const [cocktailSearch, setCocktailSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<"ALL" | "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS">("ALL");
-  const [premixSortBy, setPremixSortBy] = useState<"name" | "stock" | "urgency">("urgency");
-  const [currentView, setCurrentView] = useState<"cocktails" | "inventory" | "prep" | "archive">("inventory");
+  const [cocktailSearch, setCocktailSearch] = useState(() => {
+    if (typeof window === "undefined") {
+      return "";
+    }
+    return window.localStorage.getItem(COCKTAIL_SEARCH_KEY) ?? "";
+  });
+  const [premixSearch, setPremixSearch] = useState(() => {
+    if (typeof window === "undefined") {
+      return "";
+    }
+    return window.localStorage.getItem(PREMIX_SEARCH_KEY) ?? "";
+  });
+  const [categoryFilter, setCategoryFilter] = useState<"ALL" | "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS">(() => {
+    if (typeof window === "undefined") {
+      return "ALL";
+    }
+    const saved = window.localStorage.getItem(CATEGORY_FILTER_KEY);
+    if (saved === "ALL" || saved === "REGULAR" || saved === "SEASONAL" || saved === "SIGNATURE" || saved === "INGREDIENTS") {
+      return saved;
+    }
+    return "ALL";
+  });
+  const [premixSortBy, setPremixSortBy] = useState<"name" | "stock" | "urgency">(() => {
+    if (typeof window === "undefined") {
+      return "urgency";
+    }
+    const saved = window.localStorage.getItem(PREMIX_SORT_KEY);
+    if (saved === "name" || saved === "stock" || saved === "urgency") {
+      return saved;
+    }
+    return "urgency";
+  });
+  const [currentView, setCurrentView] = useState<"cocktails" | "inventory" | "prep" | "archive">(() => {
+    if (typeof window === "undefined") {
+      return "inventory";
+    }
+
+    const saved = window.localStorage.getItem(CURRENT_VIEW_KEY);
+    if (saved === "cocktails" || saved === "inventory" || saved === "prep" || saved === "archive") {
+      return saved;
+    }
+
+    return "inventory";
+  });
   const [showArchivedPremixes, setShowArchivedPremixes] = useState(false);
   const [showArchivedSpecs, setShowArchivedSpecs] = useState(false);
   const [archiveTarget, setArchiveTarget] = useState<string | null>(null);
+  const [undoAdjustment, setUndoAdjustment] = useState<UndoAdjustment | null>(null);
+  const [undoSecondsLeft, setUndoSecondsLeft] = useState(0);
+  
+  // Edit modal state
+  const [editingCocktail, setEditingCocktail] = useState<EditingCocktail | null>(null);
+  const [editingPremix, setEditingPremix] = useState<EditingPremix | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [editSaving, setEditSaving] = useState(false);
+  const [showAddCocktailModal, setShowAddCocktailModal] = useState(false);
+  const [addCocktailForm, setAddCocktailForm] = useState<AddCocktailForm>(createEmptyAddCocktailForm());
+  const [addCocktailSaving, setAddCocktailSaving] = useState(false);
+  const [addCocktailError, setAddCocktailError] = useState<string | null>(null);
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
   const viewOrder: Array<"cocktails" | "inventory" | "prep" | "archive"> = ["cocktails", "inventory", "prep", "archive"];
   const currentViewIndex = viewOrder.indexOf(currentView);
@@ -111,6 +268,22 @@ export function Dashboard() {
     prep: "📋 Prep List",
     archive: "📦 Archive",
   };
+
+  function pushToast(kind: Toast["kind"], message: string) {
+    const id = Date.now() + Math.floor(Math.random() * 1000);
+    setToasts((prev) => [...prev, { id, kind, message }]);
+    window.setTimeout(() => {
+      setToasts((prev) => prev.filter((toast) => toast.id !== id));
+    }, 3400);
+  }
+
+  function shouldIgnoreCardToggle(target: EventTarget | null) {
+    if (!(target instanceof HTMLElement)) {
+      return false;
+    }
+
+    return Boolean(target.closest("button, input, textarea, select, a, [data-no-card-toggle='true']"));
+  }
 
   async function loadData() {
     setLoading(true);
@@ -151,6 +324,45 @@ export function Dashboard() {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(CURRENT_VIEW_KEY, currentView);
+  }, [currentView]);
+
+  useEffect(() => {
+    window.localStorage.setItem(COCKTAIL_SEARCH_KEY, cocktailSearch);
+  }, [cocktailSearch]);
+
+  useEffect(() => {
+    window.localStorage.setItem(PREMIX_SEARCH_KEY, premixSearch);
+  }, [premixSearch]);
+
+  useEffect(() => {
+    window.localStorage.setItem(CATEGORY_FILTER_KEY, categoryFilter);
+  }, [categoryFilter]);
+
+  useEffect(() => {
+    window.localStorage.setItem(PREMIX_SORT_KEY, premixSortBy);
+  }, [premixSortBy]);
+
+  useEffect(() => {
+    if (!undoAdjustment) {
+      setUndoSecondsLeft(0);
+      return;
+    }
+
+    const tick = () => {
+      const seconds = Math.max(0, Math.ceil((undoAdjustment.expiresAt - Date.now()) / 1000));
+      setUndoSecondsLeft(seconds);
+      if (seconds <= 0) {
+        setUndoAdjustment(null);
+      }
+    };
+
+    tick();
+    const interval = window.setInterval(tick, 250);
+    return () => window.clearInterval(interval);
+  }, [undoAdjustment]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -226,12 +438,16 @@ export function Dashboard() {
       }
 
       await loadData();
+      pushToast("success", archived ? `Archived ${type} (and linked item)` : `Restored ${type} (and linked item)`);
     } catch (requestError) {
-      setError(
+      const message =
         requestError instanceof Error
           ? requestError.message
-          : "Failed to update archive state",
+          : "Failed to update archive state";
+      setError(
+        message,
       );
+      pushToast("error", message);
     } finally {
       setArchiveTarget(null);
     }
@@ -256,7 +472,6 @@ export function Dashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           changes,
-          reason: adjustmentReason,
           notes: adjustmentNotes,
         }),
       });
@@ -267,15 +482,26 @@ export function Dashboard() {
       }
 
       setPendingChanges(new Map());
-      setAdjustmentReason("Manual adjustment");
       setAdjustmentNotes("");
+      setUndoAdjustment({
+        expiresAt: Date.now() + 10000,
+        changes: changes.map((change) => ({
+          id: change.id,
+          oldValue: change.newValue - change.deltaBottles,
+          newValue: change.newValue,
+        })),
+      });
       await loadData();
+      pushToast("success", "Saved stock adjustments");
     } catch (requestError) {
-      setError(
+      const message =
         requestError instanceof Error
           ? requestError.message
-          : "Failed to save changes",
+          : "Failed to save changes";
+      setError(
+        message,
       );
+      pushToast("error", message);
     } finally {
       setIsSaving(false);
     }
@@ -283,6 +509,217 @@ export function Dashboard() {
 
   function discardPendingChanges() {
     setPendingChanges(new Map());
+  }
+
+  async function undoLastAdjustment() {
+    if (!undoAdjustment || isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/premix/batch-adjust", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          changes: undoAdjustment.changes.map((change) => ({
+            id: change.id,
+            newValue: change.oldValue,
+            deltaBottles: change.oldValue - change.newValue,
+          })),
+          notes: "Undo previous adjustment",
+        }),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.error ?? "Failed to undo adjustment");
+      }
+
+      setUndoAdjustment(null);
+      await loadData();
+      pushToast("success", "Reverted last adjustment");
+    } catch (requestError) {
+      const message =
+        requestError instanceof Error ? requestError.message : "Failed to undo adjustment";
+      pushToast("error", message);
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function saveEditingCocktail() {
+    if (!editingCocktail) return;
+
+    setEditSaving(true);
+    setEditError(null);
+    try {
+      const response = await fetch("/api/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "cocktail",
+          id: editingCocktail.sourceCocktailId,
+          data: {
+            name: editingCocktail.name,
+            category: editingCocktail.category,
+            glassware: editingCocktail.glassware || null,
+            technique: editingCocktail.technique || null,
+            straining: editingCocktail.straining || null,
+            garnish: editingCocktail.garnish || null,
+            isBatched: editingCocktail.isBatched,
+            serveExtras: editingCocktail.serveExtras || null,
+            premixNote: editingCocktail.premixNote || null,
+            batchNote: editingCocktail.batchNote || null,
+            specs: editingCocktail.specs,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error ?? "Failed to save cocktail");
+      }
+
+      setEditingCocktail(null);
+      await loadData();
+      pushToast("success", "Cocktail saved");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to save cocktail";
+      setEditError(message);
+      pushToast("error", message);
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
+  async function saveEditingPremix() {
+    if (!editingPremix) return;
+
+    setEditSaving(true);
+    setEditError(null);
+    try {
+      const response = await fetch("/api/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "premix",
+          id: editingPremix.sourceCocktailId,
+          data: {
+            name: editingPremix.name,
+            currentBottles: editingPremix.currentBottles,
+            thresholdBottles: editingPremix.thresholdBottles,
+            targetBottles: editingPremix.targetBottles,
+            batchYieldBottles: editingPremix.batchYieldBottles,
+            recipeItems: editingPremix.recipeItems,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error ?? "Failed to save premix");
+      }
+
+      setEditingPremix(null);
+      await loadData();
+      pushToast("success", "Premix saved");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to save premix";
+      setEditError(message);
+      pushToast("error", message);
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
+  function openAddCocktailModal() {
+    setAddCocktailForm(createEmptyAddCocktailForm());
+    setAddCocktailError(null);
+    setShowAddCocktailModal(true);
+  }
+
+  async function createCocktail() {
+    if (!addCocktailForm.name.trim()) {
+      setAddCocktailError("Cocktail name is required");
+      pushToast("error", "Cocktail name is required");
+      return;
+    }
+
+    const validSpecs = addCocktailForm.specs
+      .map((item) => ({ ingredient: item.ingredient.trim(), ml: Number(item.ml) || 0 }))
+      .filter((item) => item.ingredient.length > 0);
+
+    if (validSpecs.length === 0) {
+      setAddCocktailError("Add at least one ingredient line in Specs");
+      pushToast("error", "Add at least one ingredient line in Specs");
+      return;
+    }
+
+    const validPremixRecipeItems = addCocktailForm.premixRecipeItems
+      .map((item) => ({
+        ingredientName: item.ingredientName.trim(),
+        amountPerBatch: Number(item.amountPerBatch) || 0,
+        unit: (item.unit || "parts").trim() || "parts",
+      }))
+      .filter((item) => item.ingredientName.length > 0);
+
+    if (addCocktailForm.createPremix && validPremixRecipeItems.length === 0) {
+      setAddCocktailError("Premix recipe needs at least one ingredient when Create as premix is enabled");
+      pushToast("error", "Premix recipe needs at least one ingredient when Create as premix is enabled");
+      return;
+    }
+
+    setAddCocktailSaving(true);
+    setAddCocktailError(null);
+
+    try {
+      const response = await fetch("/api/cocktails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: addCocktailForm.name.trim(),
+          category: addCocktailForm.category,
+          glassware: addCocktailForm.glassware.trim() || null,
+          technique: addCocktailForm.technique.trim() || null,
+          straining: addCocktailForm.straining.trim() || null,
+          garnish: addCocktailForm.garnish.trim() || null,
+          isBatched: addCocktailForm.isBatched,
+          serveExtras: addCocktailForm.serveExtras.trim() || null,
+          premixNote: addCocktailForm.premixNote.trim() || null,
+          batchNote: addCocktailForm.batchNote.trim() || null,
+          specs: validSpecs,
+          createPremix: addCocktailForm.createPremix,
+          premix: addCocktailForm.createPremix
+            ? {
+                currentBottles: Number(addCocktailForm.premixCurrentBottles) || 0,
+                thresholdBottles: Number(addCocktailForm.premixThresholdBottles) || 0,
+                targetBottles: Number(addCocktailForm.premixTargetBottles) || 0,
+                recipeItems: validPremixRecipeItems,
+              }
+            : null,
+        }),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.error ?? "Failed to create cocktail");
+      }
+
+      setShowAddCocktailModal(false);
+      setAddCocktailForm(createEmptyAddCocktailForm());
+      await loadData();
+      pushToast("success", addCocktailForm.createPremix ? "Cocktail and premix created" : "Cocktail created");
+    } catch (requestError) {
+      const message =
+        requestError instanceof Error
+          ? requestError.message
+          : "Failed to create cocktail";
+      setAddCocktailError(
+        message,
+      );
+      pushToast("error", message);
+    } finally {
+      setAddCocktailSaving(false);
+    }
   }
 
   function togglePremixSelection(id: number) {
@@ -296,13 +733,49 @@ export function Dashboard() {
   }
 
   function selectAllPremixes() {
-    setSelectedPremixes(
-      new Set(data?.premixes.filter((p) => !p.isArchived).map((p) => p.id) ?? []),
-    );
+    setSelectedPremixes(new Set(visibleActivePremixes.map((p) => p.id)));
+    pushToast("info", "Selected all active premixes");
   }
 
   function clearSelection() {
     setSelectedPremixes(new Set());
+    pushToast("info", "Selection cleared");
+  }
+
+  function toggleCocktailSelection(id: number) {
+    setSelectedCocktails((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function toggleArchivedPremixSelection(id: number) {
+    setSelectedArchivedPremixes((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function toggleArchivedCocktailSelection(id: number) {
+    setSelectedArchivedCocktails((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   }
 
   function applyBulkAdjustment(delta: number) {
@@ -319,6 +792,120 @@ export function Dashboard() {
     });
     
     clearSelection();
+  }
+
+  async function bulkArchiveOrRestorePremixes(ids: Set<number>, archived: boolean) {
+    if (!data || ids.size === 0) return;
+
+    const targetPremixes = data.premixes.filter((premix) => ids.has(premix.id));
+    if (targetPremixes.length === 0) return;
+
+    setArchiveTarget("bulk:premix");
+    try {
+      for (const premix of targetPremixes) {
+        const response = await fetch("/api/archive", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "premix", id: premix.sourceCocktailId, archived }),
+        });
+
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.error ?? "Bulk premix archive update failed");
+        }
+      }
+
+      setSelectedPremixes(new Set());
+      setSelectedArchivedPremixes(new Set());
+      await loadData();
+      pushToast("success", archived ? `Archived ${targetPremixes.length} premix items` : `Restored ${targetPremixes.length} premix items`);
+    } catch (requestError) {
+      const message = requestError instanceof Error ? requestError.message : "Bulk premix action failed";
+      pushToast("error", message);
+    } finally {
+      setArchiveTarget(null);
+    }
+  }
+
+  async function bulkArchiveOrRestoreCocktails(ids: Set<number>, archived: boolean) {
+    if (!data || ids.size === 0) return;
+
+    const targetCocktails = data.cocktails.filter((cocktail) => ids.has(cocktail.id));
+    if (targetCocktails.length === 0) return;
+
+    setArchiveTarget("bulk:cocktail");
+    try {
+      for (const cocktail of targetCocktails) {
+        const response = await fetch("/api/archive", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "cocktail", id: cocktail.sourceCocktailId, archived }),
+        });
+
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.error ?? "Bulk cocktail archive update failed");
+        }
+      }
+
+      setSelectedCocktails(new Set());
+      setSelectedArchivedCocktails(new Set());
+      await loadData();
+      pushToast("success", archived ? `Archived ${targetCocktails.length} cocktails` : `Restored ${targetCocktails.length} cocktails`);
+    } catch (requestError) {
+      const message = requestError instanceof Error ? requestError.message : "Bulk cocktail action failed";
+      pushToast("error", message);
+    } finally {
+      setArchiveTarget(null);
+    }
+  }
+
+  async function bulkEditCocktailCategory(category: DashboardData["cocktails"][number]["category"]) {
+    if (!data || selectedCocktails.size === 0) return;
+
+    const targetCocktails = data.cocktails.filter((cocktail) => selectedCocktails.has(cocktail.id));
+    if (targetCocktails.length === 0) return;
+
+    setEditSaving(true);
+    try {
+      for (const cocktail of targetCocktails) {
+        const response = await fetch("/api/config", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "cocktail",
+            id: cocktail.sourceCocktailId,
+            data: {
+              name: cocktail.name,
+              category,
+              glassware: cocktail.glassware,
+              technique: cocktail.technique,
+              straining: cocktail.straining,
+              garnish: cocktail.garnish,
+              isBatched: cocktail.isBatched,
+              serveExtras: cocktail.serveExtras,
+              premixNote: cocktail.premixNote,
+              batchNote: cocktail.batchNote,
+              specs: cocktail.specs,
+            },
+          }),
+        });
+
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.error ?? "Bulk category update failed");
+        }
+      }
+
+      setSelectedCocktails(new Set());
+      await loadData();
+      pushToast("success", `Updated category for ${targetCocktails.length} cocktails`);
+    } catch (requestError) {
+      const message = requestError instanceof Error ? requestError.message : "Bulk category update failed";
+      pushToast("error", message);
+    } finally {
+      setEditSaving(false);
+    }
   }
 
   const lowPremixCount = useMemo(
@@ -411,6 +998,21 @@ export function Dashboard() {
     [sortedPremixes],
   );
 
+  const visibleActivePremixes = useMemo(() => {
+    const query = premixSearch.trim().toLowerCase();
+    if (!query) {
+      return activePremixes;
+    }
+
+    return activePremixes.filter((premix) => {
+      if (premix.name.toLowerCase().includes(query)) {
+        return true;
+      }
+
+      return premix.recipeItems.some((item) => item.ingredientName.toLowerCase().includes(query));
+    });
+  }, [activePremixes, premixSearch]);
+
   const archivedPremixes = useMemo(
     () => sortedPremixes.filter((premix) => premix.isArchived),
     [sortedPremixes],
@@ -431,10 +1033,16 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
-        <div className="text-center">
-          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600 shadow-lg"></div>
-          <p className="mt-6 text-sm font-bold text-slate-700">Loading BatchBrain data...</p>
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
+        <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-28 right-10 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
+
+        <div className="relative w-full max-w-sm rounded-3xl bg-slate-900/65 p-7 text-center shadow-2xl ring-1 ring-slate-600/70 backdrop-blur-xl">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-800/80 ring-1 ring-slate-600">
+            <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-slate-500 border-t-emerald-300" />
+          </div>
+          <p className="mt-5 text-base font-bold tracking-wide text-slate-100">Loading BatchBrain data...</p>
+          <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-slate-400">Syncing cocktails, premixes, and prep</p>
         </div>
       </div>
     );
@@ -462,7 +1070,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className={`mx-auto flex w-full flex-col gap-4 ${isMobile ? "p-2 pb-20 md:p-6 lg:p-8" : "p-4 md:p-6 lg:p-8"}`}>
+      <div className={`mx-auto flex w-full flex-col gap-4 ${isMobile ? "p-2 pb-36 md:p-6 lg:p-8" : "p-4 md:p-6 lg:p-8"}`}>
         {/* Top Toolbar */}
         <div className={`flex flex-wrap items-center justify-between gap-2 print:hidden ${isMobile ? "gap-2" : "gap-4"}`}>
           <div className={`flex items-center gap-2 ${isMobile ? "w-full" : ""}`}>
@@ -480,22 +1088,36 @@ export function Dashboard() {
               </span>
             )}
           </div>
-          <a
-            href="/analytics"
-            className={`rounded-xl bg-slate-800 text-white shadow-lg ring-1 ring-slate-700 transition-all hover:bg-slate-700 hover:shadow-xl font-semibold ${isMobile ? "px-2 py-1.5 text-xs" : "px-5 py-2.5 text-sm"}`}
-          >
-            📊 {isMobile ? "Analytics" : "Analytics"}
-          </a>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={openAddCocktailModal}
+              className={`rounded-xl bg-emerald-700 text-white shadow-lg ring-1 ring-emerald-600 transition-all hover:bg-emerald-600 hover:shadow-xl font-semibold ${isMobile ? "px-2 py-1.5 text-xs" : "px-5 py-2.5 text-sm"}`}
+            >
+              ➕ {isMobile ? "Add" : "Add Cocktail"}
+            </button>
+            <a
+              href="/analytics"
+              className={`rounded-xl bg-slate-800 text-white shadow-lg ring-1 ring-slate-700 transition-all hover:bg-slate-700 hover:shadow-xl font-semibold ${isMobile ? "px-2 py-1.5 text-xs" : "px-5 py-2.5 text-sm"}`}
+            >
+              📊 {isMobile ? "Analytics" : "Analytics"}
+            </a>
+            <a
+              href="/print"
+              className={`rounded-xl bg-slate-800 text-white shadow-lg ring-1 ring-slate-700 transition-all hover:bg-slate-700 hover:shadow-xl font-semibold ${isMobile ? "px-2 py-1.5 text-xs" : "px-5 py-2.5 text-sm"}`}
+            >
+              🖨️ {isMobile ? "Print" : "Print & Export"}
+            </a>
+          </div>
         </div>
 
-        <header className={`relative overflow-hidden rounded-lg bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 shadow-lg print:border-slate-300 print:bg-white print:text-slate-900 ${isMobile ? "p-2" : "p-3"}`}>
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+        <header className={`relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/90 via-blue-950/70 to-slate-900/90 shadow-xl ring-1 ring-slate-700/70 backdrop-blur-sm print:border-slate-300 print:bg-white print:text-slate-900 ${isMobile ? "p-2" : "p-3"}`}>
+          <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-transparent to-indigo-500/10"></div>
           <div className="relative flex flex-wrap items-start justify-between gap-4">
             <div>
               <h1 className={`font-extrabold tracking-tight text-white print:text-slate-900 ${isMobile ? "text-xl" : "text-2xl"}`}>BatchBrain</h1>
               {lowPremixCount > 0 && (
-                <div className="mt-1 inline-flex items-center gap-0.5 rounded px-2 py-0.5 bg-red-500 text-[12px] font-semibold text-white">
-                  <span>⚠️</span>
+                <div className="mt-1 inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-amber-200 backdrop-blur-sm">
+                  <span className="text-[10px]">⚠</span>
                   <span>{lowPremixCount} item{lowPremixCount !== 1 ? 's' : ''} low</span>
                 </div>
               )}
@@ -507,12 +1129,12 @@ export function Dashboard() {
               )}
             </div>
             <div className="flex flex-col gap-1 sm:flex-row">
-              {pendingChanges.size > 0 && (
+              {!isMobile && pendingChanges.size > 0 && (
                 <>
                   <button
                     onClick={savePendingChanges}
                     disabled={isSaving}
-                    className="rounded-lg border-2 border-white bg-green-500 px-4 py-2 font-semibold text-white transition-all hover:border-green-300 hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50 print:hidden"
+                    className="rounded-xl bg-emerald-600 px-4 py-2 font-semibold text-white shadow-lg ring-1 ring-emerald-400/40 transition-all hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 print:hidden"
                     title="Save changes (Ctrl+S)"
                   >
                     {isSaving ? "Saving..." : "💾 Save"}
@@ -524,7 +1146,7 @@ export function Dashboard() {
                       }
                     }}
                     disabled={isSaving}
-                    className="rounded-lg border-2 border-white bg-red-500 px-4 py-2 font-semibold text-white transition-all hover:border-red-300 hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50 print:hidden"
+                    className="rounded-xl bg-rose-600 px-4 py-2 font-semibold text-white shadow-lg ring-1 ring-rose-400/40 transition-all hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-50 print:hidden"
                     title="Discard changes (Esc)"
                   >
                     ✕ Discard
@@ -534,27 +1156,10 @@ export function Dashboard() {
             </div>
           </div>
 
-          {pendingChanges.size > 0 && (
-            <div className="mt-6 grid gap-4 rounded-2xl bg-white/20 p-5 backdrop-blur-md sm:grid-cols-2 print:hidden">
+          {!isMobile && pendingChanges.size > 0 && (
+            <div className="mt-4 grid gap-4 rounded-2xl border border-white/10 bg-slate-900/45 p-4 backdrop-blur-lg ring-1 ring-slate-700/60 print:hidden">
               <div>
-                <label className="mb-2 block text-sm font-semibold text-white">
-                  Reason for adjustment:
-                </label>
-                <select
-                  value={adjustmentReason}
-                  onChange={(e) => setAdjustmentReason(e.target.value)}
-                  className="w-full rounded-xl bg-white px-4 py-2.5 text-sm text-slate-800 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
-                >
-                  <option value="Manual adjustment">Manual adjustment</option>
-                  <option value="Stock recount">Stock recount</option>
-                  <option value="Spillage">Spillage</option>
-                  <option value="Product damage">Product damage</option>
-                  <option value="Inventory correction">Inventory correction</option>
-                  <option value="Production batch completed">Production batch completed</option>
-                </select>
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-white">
+                <label className="mb-2 block text-sm font-semibold text-slate-100">
                   Notes (optional):
                 </label>
                 <input
@@ -562,12 +1167,73 @@ export function Dashboard() {
                   value={adjustmentNotes}
                   onChange={(e) => setAdjustmentNotes(e.target.value)}
                   placeholder="Additional details..."
-                  className="w-full rounded-xl bg-white px-4 py-2.5 text-sm text-slate-800 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-white/50"
+                  className="w-full rounded-xl border border-slate-600 bg-slate-800/90 px-4 py-2.5 text-sm text-slate-100 shadow-sm transition-all placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/60"
                 />
               </div>
             </div>
           )}
         </header>
+
+        {isMobile && (
+          <div className="sticky top-2 z-40 rounded-2xl border border-white/10 bg-slate-900/90 p-2 shadow-xl ring-1 ring-slate-700/70 backdrop-blur-xl print:hidden">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-sm font-extrabold text-white">{viewTitles[currentView]}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tab Controls</p>
+            </div>
+
+            {currentView === "inventory" && (
+              <div className="grid grid-cols-1 gap-2">
+                <input
+                  type="text"
+                  value={premixSearch}
+                  onChange={(e) => setPremixSearch(e.target.value)}
+                  placeholder="Search premixes or ingredients..."
+                  className="w-full rounded-lg bg-slate-800 px-3 py-2 text-xs text-white ring-1 ring-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <select
+                    value={premixSortBy}
+                    onChange={(e) => setPremixSortBy(e.target.value as "name" | "stock" | "urgency")}
+                    className="rounded-lg bg-slate-800 px-2 py-2 text-xs font-semibold text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="urgency">Urgency</option>
+                    <option value="name">Name</option>
+                    <option value="stock">Stock</option>
+                  </select>
+                  <button
+                    onClick={() => setShowProductionForm(true)}
+                    className="rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 px-2 py-2 text-xs font-bold text-white"
+                  >
+                    📦 Log Production
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {currentView === "cocktails" && (
+              <div className="grid grid-cols-1 gap-2">
+                <input
+                  type="text"
+                  value={cocktailSearch}
+                  onChange={(e) => setCocktailSearch(e.target.value)}
+                  placeholder="Search cocktails..."
+                  className="w-full rounded-lg bg-slate-800 px-3 py-2 text-xs text-white ring-1 ring-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value as "ALL" | "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS")}
+                  className="rounded-lg bg-slate-800 px-3 py-2 text-xs font-semibold text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="ALL">All Categories</option>
+                  <option value="REGULAR">Regular</option>
+                  <option value="SEASONAL">Seasonal</option>
+                  <option value="SIGNATURE">Signature</option>
+                  <option value="INGREDIENTS">Ingredients</option>
+                </select>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Quick Stats */}
         <div className={`grid gap-2 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4`}>
@@ -603,30 +1269,115 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className={`flex items-center justify-between rounded-lg bg-slate-800/80 shadow-md ring-1 ring-slate-700 print:hidden ${isMobile ? "fixed bottom-2 left-2 right-2 z-50 p-2 backdrop-blur-lg bg-slate-800/95" : "p-1.5"}`}>
-          <button
-            onClick={() => setCurrentView(viewOrder[(currentViewIndex - 1 + viewOrder.length) % viewOrder.length])}
-            className={`rounded-lg bg-slate-700 text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600 font-semibold ${isMobile ? "px-3 py-2 text-sm" : "px-2 py-1 text-sm"}`}
-          >
-            ←
-          </button>
-          <div className="text-center">
-            <p className="font-semibold uppercase tracking-wider text-slate-400 text-xs">View</p>
-            <p className={`font-extrabold text-white ${isMobile ? "text-sm" : "text-sm"}`}>{viewTitles[currentView]}</p>
+        {isMobile && pendingChanges.size > 0 && (
+          <div className="fixed bottom-16 left-2 right-2 z-50 rounded-xl border border-amber-400/40 bg-slate-900/95 p-2 shadow-xl ring-1 ring-amber-300/30 backdrop-blur-lg print:hidden">
+            <div className="mb-1 flex items-center justify-between">
+              <p className="text-xs font-bold text-amber-200">{pendingChanges.size} unsaved changes</p>
+              <p className="text-[11px] font-semibold text-slate-400">Sticky quick actions</p>
+            </div>
+            <div className="mb-2">
+              <input
+                type="text"
+                value={adjustmentNotes}
+                onChange={(e) => setAdjustmentNotes(e.target.value)}
+                placeholder="Notes (optional)..."
+                className="w-full rounded-lg border border-slate-600 bg-slate-800/90 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/60"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={savePendingChanges}
+                disabled={isSaving}
+                className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+              >
+                {isSaving ? "Saving..." : "Save"}
+              </button>
+              <button
+                onClick={() => {
+                  if (confirm(`Discard ${pendingChanges.size} pending change(s)?`)) {
+                    discardPendingChanges();
+                  }
+                }}
+                disabled={isSaving}
+                className="rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+              >
+                Discard
+              </button>
+            </div>
           </div>
-          <button
-            onClick={() => setCurrentView(viewOrder[(currentViewIndex + 1) % viewOrder.length])}
-            className={`rounded-lg bg-slate-700 text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600 font-semibold ${isMobile ? "px-3 py-2 text-sm" : "px-2 py-1 text-sm"}`}
-          >
-            →
-          </button>
-        </div>
+        )}
+
+        {undoAdjustment && undoSecondsLeft > 0 && (
+          <div className="fixed bottom-28 left-2 right-2 z-50 rounded-xl border border-blue-400/40 bg-slate-900/95 p-2 shadow-xl ring-1 ring-blue-300/30 backdrop-blur-lg print:hidden sm:left-auto sm:right-4 sm:w-80">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-blue-100">Adjustment saved. Undo available for {undoSecondsLeft}s.</p>
+              <button
+                onClick={undoLastAdjustment}
+                disabled={isSaving}
+                className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+              >
+                Undo
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isMobile ? (
+          <nav className="fixed bottom-2 left-2 right-2 z-50 rounded-2xl border border-white/10 bg-slate-900/95 p-1.5 shadow-xl ring-1 ring-slate-700/80 backdrop-blur-lg print:hidden">
+            <div className="grid grid-cols-4 gap-1">
+              {viewOrder.map((view) => {
+                const isActive = currentView === view;
+                return (
+                  <button
+                    key={`mobile-tab-${view}`}
+                    onClick={() => setCurrentView(view)}
+                    className={`rounded-xl px-1 py-2 text-[11px] font-bold transition-all ${
+                      isActive
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                    }`}
+                  >
+                    <span className="block text-xs">{viewTitles[view].split(" ")[0]}</span>
+                    <span className="block mt-0.5 leading-none">{viewTitles[view].replace(/^\S+\s*/, "")}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        ) : (
+          <div className="flex items-center justify-between rounded-lg bg-slate-800/80 p-1.5 shadow-md ring-1 ring-slate-700 print:hidden">
+            <button
+              onClick={() => setCurrentView(viewOrder[(currentViewIndex - 1 + viewOrder.length) % viewOrder.length])}
+              className="rounded-lg bg-slate-700 px-2 py-1 text-sm font-semibold text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600"
+            >
+              ←
+            </button>
+            <div className="text-center">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">View</p>
+              <p className="text-sm font-extrabold text-white">{viewTitles[currentView]}</p>
+            </div>
+            <button
+              onClick={() => setCurrentView(viewOrder[(currentViewIndex + 1) % viewOrder.length])}
+              className="rounded-lg bg-slate-700 px-2 py-1 text-sm font-semibold text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600"
+            >
+              →
+            </button>
+          </div>
+        )}
 
       {currentView === "inventory" && (
       <section className={`rounded-3xl bg-slate-800 shadow-2xl ring-1 ring-slate-700 ${isMobile ? "p-4" : "p-8"}`}>
         <div className={`flex flex-wrap items-center justify-between gap-2 ${isMobile ? "gap-2" : "gap-4"}`}>
           <h2 className={`font-bold text-white ${isMobile ? "text-lg" : "text-2xl"}`}>💧 Premix Inventory</h2>
+          {!isMobile && (
           <div className={`flex items-center gap-2 ${isMobile ? "w-full flex-wrap" : "gap-3"}`}>
+            <input
+              type="text"
+              value={premixSearch}
+              onChange={(e) => setPremixSearch(e.target.value)}
+              placeholder="Search premixes or ingredients..."
+              className={`rounded-xl bg-slate-700 text-white ring-1 ring-slate-600 transition-all placeholder:text-slate-400 focus:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 ${isMobile ? "w-full px-3 py-1.5 text-xs" : "w-72 px-4 py-2.5 text-sm"}`}
+            />
             <button
               onClick={() => setShowProductionForm(true)}
               className={`rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md transition-all hover:shadow-lg print:hidden font-semibold ${isMobile ? "px-2 py-1.5 text-xs" : "px-5 py-2.5 text-sm"}`}
@@ -644,7 +1395,11 @@ export function Dashboard() {
               <option value="stock">Stock Level</option>
             </select>
           </div>
+          )}
         </div>
+        <p className={`mt-2 font-medium text-slate-400 ${isMobile ? "text-xs" : "text-sm"}`}>
+          Showing {visibleActivePremixes.length} of {activePremixes.length} active premixes
+        </p>
 
         {/* Bulk operations toolbar */}
         {selectedPremixes.size > 0 && (
@@ -671,6 +1426,13 @@ export function Dashboard() {
               >
                 +2 Batches
               </button>
+              <button
+                onClick={() => bulkArchiveOrRestorePremixes(selectedPremixes, true)}
+                disabled={archiveTarget === "bulk:premix"}
+                className="rounded-xl bg-slate-700 px-4 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:bg-slate-600 disabled:opacity-50"
+              >
+                Archive Selected
+              </button>
             </div>
             <div className="ml-auto flex gap-3">
               <button
@@ -690,10 +1452,11 @@ export function Dashboard() {
         )}
 
         <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
-          {activePremixes.map((premix) => {
+          {visibleActivePremixes.map((premix) => {
                 const isLow = premix.currentBottles < premix.thresholdBottles;
                 const isCritical = premix.currentBottles < premix.thresholdBottles * 0.5;
                 const hasChange = pendingChanges.has(premix.id);
+                const isSelected = selectedPremixes.has(premix.id);
                 const originalValue = data?.premixes.find(p => p.id === premix.id)?.currentBottles ?? 0;
                 const cardClass = isCritical 
                   ? 'bg-red-900/30 border-l-4 border-red-500' 
@@ -704,30 +1467,59 @@ export function Dashboard() {
                   : 'bg-slate-900/50 border-l-4 border-transparent';
                 
                 return (
-                  <div key={premix.id} className={`rounded-lg p-3 ring-1 ring-slate-700 transition-all hover:bg-slate-700/50 ${cardClass}`}>
+                  <div
+                    key={premix.id}
+                    role="checkbox"
+                    aria-checked={isSelected}
+                    tabIndex={0}
+                    onClick={(e) => {
+                      if (shouldIgnoreCardToggle(e.target)) {
+                        return;
+                      }
+                      togglePremixSelection(premix.id);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.target !== e.currentTarget) {
+                        return;
+                      }
+                      if (e.key === " " || e.key === "Enter") {
+                        e.preventDefault();
+                        togglePremixSelection(premix.id);
+                      }
+                    }}
+                    className={`rounded-lg p-3 ring-1 transition-all hover:bg-slate-700/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300/70 ${cardClass} ${isSelected ? "ring-emerald-400/90 shadow-[0_0_0_1px_rgba(16,185,129,0.35)]" : "ring-slate-700"}`}
+                  >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-start gap-2 flex-1">
-                        <input
-                          type="checkbox"
-                          checked={selectedPremixes.has(premix.id)}
-                          onChange={() => togglePremixSelection(premix.id)}
-                          className="mt-1 h-4 w-4 rounded border-slate-600 print:hidden"
-                        />
                         <div className="flex items-start gap-2 flex-1">
+                          {isSelected && (
+                            <span className="inline-flex items-center rounded-full bg-emerald-500/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-emerald-200 ring-1 ring-emerald-400/40">
+                              Selected
+                            </span>
+                          )}
                           {isCritical && <span className="text-lg">🔴</span>}
                           {isLow && !isCritical && <span className="text-lg">🟡</span>}
                           {hasChange && <span className="text-lg">✏️</span>}
                           <div className="flex-1">
                             <div className="flex items-center justify-between gap-2">
                               <p className="font-semibold text-white text-sm">{premix.name}</p>
-                              <button
-                                onClick={() => setArchiveState("premix", premix.sourceCocktailId, true)}
-                                disabled={archiveTarget === `premix:${premix.sourceCocktailId}`}
-                                className="rounded bg-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600 disabled:opacity-50"
-                                title="Move to archived premixes"
-                              >
-                                Archive
-                              </button>
+                              <div className="ml-auto flex gap-1">
+                                <button
+                                  onClick={() => setEditingPremix({...premix})}
+                                  className="rounded bg-blue-700 px-2 py-0.5 text-xs font-semibold text-blue-100 transition-colors hover:bg-blue-600"
+                                  title="Edit this premix"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => setArchiveState("premix", premix.sourceCocktailId, true)}
+                                  disabled={archiveTarget === `premix:${premix.sourceCocktailId}`}
+                                  className="rounded bg-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600 disabled:opacity-50"
+                                  title="Move to archived premixes"
+                                >
+                                  Archive
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -752,28 +1544,31 @@ export function Dashboard() {
                         </div>
                       )}
 
-                      <div className={`grid grid-cols-2 gap-2 text-sm ${premix.recipeItems.length === 0 ? 'md:col-span-2' : ''}`}>
-                        <div className="rounded-md bg-slate-800/80 p-1.5">
-                          <p className="text-sm font-bold text-slate-400">Current</p>
-                          <p className={`text-sm font-bold ${isCritical ? 'text-red-400' : isLow ? 'text-amber-400' : 'text-slate-200'}`}>
-                            {premix.currentBottles.toFixed(2)}
-                            {hasChange && (
-                              <span className="text-sm text-slate-500 ml-1">({originalValue.toFixed(2)})</span>
-                            )}
-                          </p>
-                        </div>
-                        <div className="rounded-md bg-slate-800/80 p-1.5">
-                          <p className="text-sm font-bold text-slate-400">Threshold</p>
-                          <p className="text-sm font-bold text-slate-300">{premix.thresholdBottles.toFixed(2)}</p>
-                        </div>
-                        <div className="rounded-md bg-slate-800/80 p-1.5">
-                          <p className="text-sm font-bold text-slate-400">Target</p>
-                          <p className="text-sm font-bold text-slate-300">{premix.targetBottles.toFixed(2)}</p>
-                        </div>
-                        <div className="rounded-md bg-slate-800/80 p-1.5">
-                          <p className="text-sm font-bold text-slate-400">Batch Yield</p>
-                          <p className="text-sm font-bold text-slate-300">{premix.batchYieldBottles.toFixed(2)}</p>
-                        </div>
+                      <div className={`rounded bg-slate-900/70 p-1.5 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm ${premix.recipeItems.length === 0 ? 'md:col-span-2' : ''}`}>
+                        <p className="mb-1 text-sm font-bold uppercase tracking-wider text-slate-300">Stats:</p>
+                        <ul className="space-y-0.5">
+                          <li className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-sm leading-5">
+                            <span className="font-semibold text-slate-100">Current</span>
+                            <span className={`font-extrabold ${isCritical ? 'text-red-400' : isLow ? 'text-amber-400' : 'text-blue-300'}`}>
+                              {premix.currentBottles.toFixed(2)}
+                              {hasChange && (
+                                <span className="ml-1 text-slate-500">({originalValue.toFixed(2)})</span>
+                              )}
+                            </span>
+                          </li>
+                          <li className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-sm leading-5">
+                            <span className="font-semibold text-slate-100">Threshold</span>
+                            <span className="font-extrabold text-blue-300">{premix.thresholdBottles.toFixed(2)}</span>
+                          </li>
+                          <li className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-sm leading-5">
+                            <span className="font-semibold text-slate-100">Target</span>
+                            <span className="font-extrabold text-blue-300">{premix.targetBottles.toFixed(2)}</span>
+                          </li>
+                          <li className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-sm leading-5">
+                            <span className="font-semibold text-slate-100">Batch Yield</span>
+                            <span className="font-extrabold text-blue-300">{premix.batchYieldBottles.toFixed(2)}</span>
+                          </li>
+                        </ul>
                       </div>
                     </div>
                     
@@ -814,6 +1609,12 @@ export function Dashboard() {
                 );
               })}
           </div>
+          {visibleActivePremixes.length === 0 && (
+            <div className="mt-4 rounded-2xl bg-slate-900/60 p-6 text-center ring-1 ring-slate-700/70">
+              <p className="text-sm font-bold text-slate-200">No premixes match your search</p>
+              <p className="mt-1 text-xs font-medium text-slate-400">Try a different name or ingredient keyword</p>
+            </div>
+          )}
 
       </section>
       )}
@@ -823,6 +1624,7 @@ export function Dashboard() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className={`font-bold text-white ${isMobile ? "text-lg" : "text-2xl"}`}>🍸 Cocktail Specsheet</h2>
         </div>
+        {!isMobile && (
         <div className={`flex flex-wrap gap-2 ${isMobile ? "gap-2 mt-4" : "mt-6 gap-3"}`}>
           <input
             type="text"
@@ -847,9 +1649,50 @@ export function Dashboard() {
             ))}
           </div>
         </div>
+        )}
         <div className={`font-medium text-slate-400 ${isMobile ? "text-xs mt-2" : "text-sm mt-2"}`}>
           Showing {filteredCocktails.length} of {data.cocktails.length - archivedCocktails.length} active cocktails
         </div>
+
+        {selectedCocktails.size > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl bg-gradient-to-br from-blue-900 to-indigo-900 p-4 shadow-inner ring-1 ring-blue-700 print:hidden">
+            <span className="text-sm font-bold text-blue-100">{selectedCocktails.size} cocktails selected</span>
+            <button
+              onClick={() => bulkArchiveOrRestoreCocktails(selectedCocktails, true)}
+              disabled={archiveTarget === "bulk:cocktail"}
+              className="rounded-lg bg-slate-700 px-3 py-2 text-xs font-bold text-white hover:bg-slate-600 disabled:opacity-50"
+            >
+              Archive Selected
+            </button>
+            <div className="flex gap-2">
+              {(["REGULAR", "SEASONAL", "SIGNATURE", "INGREDIENTS"] as const).map((category) => (
+                <button
+                  key={`bulk-cat-${category}`}
+                  onClick={() => bulkEditCocktailCategory(category)}
+                  disabled={editSaving}
+                  className="rounded-lg bg-blue-700 px-3 py-2 text-xs font-bold text-blue-100 hover:bg-blue-600 disabled:opacity-50"
+                >
+                  Set {category}
+                </button>
+              ))}
+            </div>
+            <div className="ml-auto flex gap-2">
+              <button
+                onClick={() => setSelectedCocktails(new Set(filteredCocktails.map((cocktail) => cocktail.id)))}
+                className="text-xs font-semibold text-blue-200 hover:text-blue-100"
+              >
+                Select All
+              </button>
+              <button
+                onClick={() => setSelectedCocktails(new Set())}
+                className="text-xs font-semibold text-blue-200 hover:text-blue-100"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        )}
+
         {filteredCocktails.length === 0 ? (
           <div className="mt-6 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 p-10 text-center ring-1 ring-slate-600">
             <p className="text-base font-bold text-slate-300">No cocktails found</p>
@@ -879,6 +1722,7 @@ export function Dashboard() {
               return getContentLength(b) - getContentLength(a); // Descending (most content first)
             })
             .map((cocktail) => {
+            const isSelected = selectedCocktails.has(cocktail.id);
             const categoryColors = {
               REGULAR: 'bg-gradient-to-r from-blue-900/40 to-blue-800/20 ring-blue-700/50',
               SEASONAL: 'bg-gradient-to-r from-purple-900/40 to-purple-800/20 ring-purple-700/50',
@@ -905,12 +1749,35 @@ export function Dashboard() {
             return (
               <article 
                 key={cocktail.id} 
-                className={`group rounded-lg ${categoryColors[cocktail.category]} p-2.5 shadow-md ring-1 transition-all hover:shadow-lg`}
+                role="checkbox"
+                aria-checked={isSelected}
+                tabIndex={0}
+                onClick={(e) => {
+                  if (shouldIgnoreCardToggle(e.target)) {
+                    return;
+                  }
+                  toggleCocktailSelection(cocktail.id);
+                }}
+                onKeyDown={(e) => {
+                  if (e.target !== e.currentTarget) {
+                    return;
+                  }
+                  if (e.key === " " || e.key === "Enter") {
+                    e.preventDefault();
+                    toggleCocktailSelection(cocktail.id);
+                  }
+                }}
+                className={`group rounded-lg ${categoryColors[cocktail.category]} p-2.5 shadow-md ring-1 transition-all hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300/70 ${isSelected ? "ring-2 !ring-emerald-300 shadow-[0_0_0_2px_rgba(16,185,129,0.55)]" : ""}`}
               >
                 <div className="grid gap-2 grid-cols-1">
                   {/* Left column: Name and category */}
                   <div className="space-y-1.5">
                     <div className="flex flex-wrap items-center gap-1.5">
+                      {isSelected && (
+                        <span className="inline-flex items-center rounded-full bg-emerald-500/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-emerald-200 ring-1 ring-emerald-400/40">
+                          Selected
+                        </span>
+                      )}
                       <h3 className="text-sm font-extrabold text-white">{cocktail.name}</h3>
                       <span className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-xs font-bold ${categoryBadgeColors[cocktail.category]}`}>
                         <span>{categoryEmoji[cocktail.category]}</span>
@@ -922,14 +1789,23 @@ export function Dashboard() {
                           Batched
                         </div>
                       )}
-                      <button
-                        onClick={() => setArchiveState("cocktail", cocktail.sourceCocktailId, true)}
-                        disabled={archiveTarget === `cocktail:${cocktail.sourceCocktailId}`}
-                        className="ml-auto rounded bg-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600 disabled:opacity-50"
-                        title="Move this spec to archived specs"
-                      >
-                        Archive
-                      </button>
+                      <div className="ml-auto flex gap-1">
+                        <button
+                          onClick={() => setEditingCocktail({...cocktail})}
+                          className="rounded bg-blue-700 px-2 py-0.5 text-xs font-semibold text-blue-100 transition-colors hover:bg-blue-600"
+                          title="Edit this cocktail spec"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => setArchiveState("cocktail", cocktail.sourceCocktailId, true)}
+                          disabled={archiveTarget === `cocktail:${cocktail.sourceCocktailId}`}
+                          className="rounded bg-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600 disabled:opacity-50"
+                          title="Move this spec to archived specs"
+                        >
+                          Archive
+                        </button>
+                      </div>
                     </div>
                     
                     {/* Cocktail Details (Glass, Technique, Garnish) */}
@@ -1101,7 +1977,7 @@ export function Dashboard() {
                         Critical - {criticalItems.length} item{criticalItems.length !== 1 ? 's' : ''}
                       </h3>
                     </div>
-                    <div className="p-4 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="p-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
                       {criticalItems.map((item) => (
                         <div key={item.premixId} className="rounded-lg bg-slate-900/50 p-3 hover:bg-slate-900/70 transition-all">
                           <div className="flex items-center justify-between gap-3 mb-2">
@@ -1141,7 +2017,7 @@ export function Dashboard() {
                         Urgent - {urgentItems.length} item{urgentItems.length !== 1 ? 's' : ''}
                       </h3>
                     </div>
-                    <div className="p-4 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="p-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
                       {urgentItems.map((item) => (
                         <div key={item.premixId} className="rounded-lg bg-slate-900/50 p-3 hover:bg-slate-900/70 transition-all">
                           <div className="flex items-center justify-between gap-3 mb-2">
@@ -1181,7 +2057,7 @@ export function Dashboard() {
                         Regular - {normalItems.length} item{normalItems.length !== 1 ? 's' : ''}
                       </h3>
                     </div>
-                    <div className="p-4 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="p-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))]">
                       {normalItems.map((item) => (
                         <div key={item.premixId} className="rounded-lg bg-slate-900/50 p-3 hover:bg-slate-900/70 transition-all">
                           <div className="flex items-center justify-between gap-3 mb-2">
@@ -1251,12 +2127,31 @@ export function Dashboard() {
         <div className="mt-6 rounded-xl bg-slate-900/40 p-4 ring-1 ring-slate-700">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-sm font-bold text-slate-200">Archived Premixes ({archivedPremixes.length})</h3>
-            <button
-              onClick={() => setShowArchivedPremixes((value) => !value)}
-              className="rounded bg-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600"
-            >
-              {showArchivedPremixes ? "Hide" : "Show"}
-            </button>
+            <div className="flex items-center gap-2">
+              {selectedArchivedPremixes.size > 0 && (
+                <>
+                  <button
+                    onClick={() => bulkArchiveOrRestorePremixes(selectedArchivedPremixes, false)}
+                    disabled={archiveTarget === "bulk:premix"}
+                    className="rounded bg-blue-700 px-3 py-1 text-xs font-semibold text-blue-100 transition-colors hover:bg-blue-600 disabled:opacity-50"
+                  >
+                    Restore Selected ({selectedArchivedPremixes.size})
+                  </button>
+                  <button
+                    onClick={() => setSelectedArchivedPremixes(new Set())}
+                    className="rounded bg-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600"
+                  >
+                    Clear
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setShowArchivedPremixes((value) => !value)}
+                className="rounded bg-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600"
+              >
+                {showArchivedPremixes ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           {showArchivedPremixes && (
@@ -1264,37 +2159,98 @@ export function Dashboard() {
               <p className="mt-3 text-sm font-medium text-slate-400">No archived premixes yet.</p>
             ) : (
               <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
-                {archivedPremixes.map((premix) => (
-                  <div key={`archived-${premix.id}`} className="rounded-lg bg-slate-900/60 p-3 ring-1 ring-slate-700">
+                {archivedPremixes.map((premix) => {
+                  const isSelected = selectedArchivedPremixes.has(premix.id);
+                  return (
+                  <div
+                    key={`archived-${premix.id}`}
+                    role="checkbox"
+                    aria-checked={isSelected}
+                    tabIndex={0}
+                    onClick={(e) => {
+                      if (shouldIgnoreCardToggle(e.target)) {
+                        return;
+                      }
+                      toggleArchivedPremixSelection(premix.id);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.target !== e.currentTarget) {
+                        return;
+                      }
+                      if (e.key === " " || e.key === "Enter") {
+                        e.preventDefault();
+                        toggleArchivedPremixSelection(premix.id);
+                      }
+                    }}
+                    className={`rounded-lg bg-slate-900/60 p-3 ring-1 transition-all hover:bg-slate-900/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300/70 ${isSelected ? "ring-emerald-400/90 shadow-[0_0_0_1px_rgba(16,185,129,0.35)]" : "ring-slate-700"}`}
+                  >
                     <div className="flex items-start justify-between gap-2">
+                      {isSelected && (
+                        <span className="inline-flex items-center rounded-full bg-emerald-500/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-emerald-200 ring-1 ring-emerald-400/40">
+                          Selected
+                        </span>
+                      )}
                       <p className="font-semibold text-slate-200 text-sm">{premix.name}</p>
-                      <button
-                        onClick={() => setArchiveState("premix", premix.sourceCocktailId, false)}
-                        disabled={archiveTarget === `premix:${premix.sourceCocktailId}`}
-                        className="rounded bg-blue-700 px-2 py-0.5 text-xs font-semibold text-blue-100 transition-colors hover:bg-blue-600 disabled:opacity-50"
-                        title="Restore premix to active inventory"
-                      >
-                        Restore
-                      </button>
+                      <div className="ml-auto flex gap-1">
+                        <button
+                          onClick={() => setEditingPremix({...premix})}
+                          className="rounded bg-amber-700 px-2 py-0.5 text-xs font-semibold text-amber-100 transition-colors hover:bg-amber-600"
+                          title="Edit this archived premix"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => setArchiveState("premix", premix.sourceCocktailId, false)}
+                          disabled={archiveTarget === `premix:${premix.sourceCocktailId}`}
+                          className="rounded bg-blue-700 px-2 py-0.5 text-xs font-semibold text-blue-100 transition-colors hover:bg-blue-600 disabled:opacity-50"
+                          title="Restore premix to active inventory"
+                        >
+                          Restore
+                        </button>
+                      </div>
                     </div>
-                    <p className="mt-2 text-xs font-medium text-slate-400">
-                      Stock {premix.currentBottles.toFixed(2)} / Threshold {premix.thresholdBottles.toFixed(2)}
-                    </p>
-                    {premix.recipeItems.length > 0 && (
-                      <div className="mt-2 rounded-md bg-slate-800/70 p-2 ring-1 ring-slate-700/70">
-                        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-300">Recipe</p>
-                        <ul className="space-y-1">
-                          {premix.recipeItems.map((item, idx) => (
-                            <li key={`${premix.id}-archived-recipe-${idx}`} className="flex items-center justify-between text-xs">
-                              <span className="font-semibold text-slate-200">{item.ingredientName}</span>
-                              <span className="font-bold text-blue-300">{item.amountPerBatch}{item.unit}</span>
-                            </li>
-                          ))}
+                    <div className="mt-2 grid gap-2 md:grid-cols-2 md:items-start">
+                      {premix.recipeItems.length > 0 && (
+                        <div className="rounded bg-slate-900/70 p-1.5 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
+                          <p className="mb-1 text-sm font-bold uppercase tracking-wider text-slate-300">Ingredients:</p>
+                          <ul className="space-y-0.5">
+                            {premix.recipeItems.map((item, idx) => (
+                              <li
+                                key={`${premix.id}-archived-recipe-${idx}`}
+                                className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-sm leading-5"
+                              >
+                                <span className="font-semibold text-slate-100">{item.ingredientName}</span>
+                                <span className="font-extrabold text-blue-300">{item.amountPerBatch}{item.unit}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      <div className={`rounded bg-slate-900/70 p-1.5 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm ${premix.recipeItems.length === 0 ? 'md:col-span-2' : ''}`}>
+                        <p className="mb-1 text-sm font-bold uppercase tracking-wider text-slate-300">Stats:</p>
+                        <ul className="space-y-0.5">
+                          <li className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-sm leading-5">
+                            <span className="font-semibold text-slate-100">Current</span>
+                            <span className="font-extrabold text-blue-300">{premix.currentBottles.toFixed(2)}</span>
+                          </li>
+                          <li className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-sm leading-5">
+                            <span className="font-semibold text-slate-100">Threshold</span>
+                            <span className="font-extrabold text-blue-300">{premix.thresholdBottles.toFixed(2)}</span>
+                          </li>
+                          <li className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-sm leading-5">
+                            <span className="font-semibold text-slate-100">Target</span>
+                            <span className="font-extrabold text-blue-300">{premix.targetBottles.toFixed(2)}</span>
+                          </li>
+                          <li className="flex items-center justify-between rounded bg-slate-800/60 px-1.5 py-0.5 text-sm leading-5">
+                            <span className="font-semibold text-slate-100">Batch Yield</span>
+                            <span className="font-extrabold text-blue-300">{premix.batchYieldBottles.toFixed(2)}</span>
+                          </li>
                         </ul>
                       </div>
-                    )}
+                    </div>
                   </div>
-                ))}
+                )})}
               </div>
             )
           )}
@@ -1303,12 +2259,31 @@ export function Dashboard() {
         <div className="mt-6 rounded-xl bg-slate-900/40 p-4 ring-1 ring-slate-700">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-sm font-bold text-slate-200">Archived Specs ({archivedCocktails.length})</h3>
-            <button
-              onClick={() => setShowArchivedSpecs((value) => !value)}
-              className="rounded bg-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600"
-            >
-              {showArchivedSpecs ? "Hide" : "Show"}
-            </button>
+            <div className="flex items-center gap-2">
+              {selectedArchivedCocktails.size > 0 && (
+                <>
+                  <button
+                    onClick={() => bulkArchiveOrRestoreCocktails(selectedArchivedCocktails, false)}
+                    disabled={archiveTarget === "bulk:cocktail"}
+                    className="rounded bg-blue-700 px-3 py-1 text-xs font-semibold text-blue-100 transition-colors hover:bg-blue-600 disabled:opacity-50"
+                  >
+                    Restore Selected ({selectedArchivedCocktails.size})
+                  </button>
+                  <button
+                    onClick={() => setSelectedArchivedCocktails(new Set())}
+                    className="rounded bg-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600"
+                  >
+                    Clear
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setShowArchivedSpecs((value) => !value)}
+                className="rounded bg-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-600"
+              >
+                {showArchivedSpecs ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           {showArchivedSpecs && (
@@ -1316,46 +2291,178 @@ export function Dashboard() {
               <p className="mt-3 text-sm font-medium text-slate-400">No archived specs yet.</p>
             ) : (
               <div className="mt-3 grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                {archivedCocktails.map((cocktail) => (
-                  <article key={`archived-cocktail-${cocktail.id}`} className="rounded-lg bg-slate-900/60 p-3 ring-1 ring-slate-700">
+                {archivedCocktails.map((cocktail) => {
+                  const isSelected = selectedArchivedCocktails.has(cocktail.id);
+                  return (
+                  <article
+                    key={`archived-cocktail-${cocktail.id}`}
+                    role="checkbox"
+                    aria-checked={isSelected}
+                    tabIndex={0}
+                    onClick={(e) => {
+                      if (shouldIgnoreCardToggle(e.target)) {
+                        return;
+                      }
+                      toggleArchivedCocktailSelection(cocktail.id);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.target !== e.currentTarget) {
+                        return;
+                      }
+                      if (e.key === " " || e.key === "Enter") {
+                        e.preventDefault();
+                        toggleArchivedCocktailSelection(cocktail.id);
+                      }
+                    }}
+                    className={`rounded-lg bg-slate-900/60 p-3 ring-1 transition-all hover:bg-slate-900/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300/70 ${isSelected ? "ring-emerald-400/90 shadow-[0_0_0_1px_rgba(16,185,129,0.35)]" : "ring-slate-700"}`}
+                  >
                     <div className="flex items-start justify-between gap-2">
+                      {isSelected && (
+                        <span className="inline-flex items-center rounded-full bg-emerald-500/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-emerald-200 ring-1 ring-emerald-400/40">
+                          Selected
+                        </span>
+                      )}
                       <div>
                         <p className="text-sm font-bold text-slate-100">{cocktail.name}</p>
                         <p className="text-xs font-medium text-slate-400">{formatCategory(cocktail.category)}</p>
                       </div>
-                      <button
-                        onClick={() => setArchiveState("cocktail", cocktail.sourceCocktailId, false)}
-                        disabled={archiveTarget === `cocktail:${cocktail.sourceCocktailId}`}
-                        className="rounded bg-blue-700 px-2 py-0.5 text-xs font-semibold text-blue-100 transition-colors hover:bg-blue-600 disabled:opacity-50"
-                        title="Restore this spec to active list"
-                      >
-                        Restore
-                      </button>
+                      <div className="ml-auto flex gap-1">
+                        <button
+                          onClick={() => setEditingCocktail({...cocktail})}
+                          className="rounded bg-amber-700 px-2 py-0.5 text-xs font-semibold text-amber-100 transition-colors hover:bg-amber-600"
+                          title="Edit this archived cocktail spec"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => setArchiveState("cocktail", cocktail.sourceCocktailId, false)}
+                          disabled={archiveTarget === `cocktail:${cocktail.sourceCocktailId}`}
+                          className="rounded bg-blue-700 px-2 py-0.5 text-xs font-semibold text-blue-100 transition-colors hover:bg-blue-600 disabled:opacity-50"
+                          title="Restore this spec to active list"
+                        >
+                          Restore
+                        </button>
+                      </div>
                     </div>
                     <p className="mt-2 text-xs font-medium text-slate-400">
                       {cocktail.specs.length} ingredient line{cocktail.specs.length === 1 ? "" : "s"}
                     </p>
+
+                    {(cocktail.glassware || cocktail.technique || cocktail.straining || cocktail.garnish) && (
+                      <div className="mt-2 rounded-md bg-slate-900/70 p-2 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
+                        <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-300">Details</p>
+                        <ul className="space-y-1">
+                          {cocktail.glassware && (
+                            <li className="rounded-md bg-slate-800/70 px-2 py-1">
+                              <div className="flex items-center justify-between text-xs leading-5">
+                                <span className="font-semibold text-slate-100">Glass</span>
+                                <span className="ml-2 font-extrabold text-blue-300">{cocktail.glassware}</span>
+                              </div>
+                            </li>
+                          )}
+                          {cocktail.technique && (
+                            <li className="rounded-md bg-slate-800/70 px-2 py-1">
+                              <div className="flex items-center justify-between text-xs leading-5">
+                                <span className="font-semibold text-slate-100">Technique</span>
+                                <span className="ml-5 font-extrabold text-blue-300">{cocktail.technique}</span>
+                              </div>
+                            </li>
+                          )}
+                          {cocktail.straining && (
+                            <li className="rounded-md bg-slate-800/70 px-2 py-1">
+                              <div className="flex items-center justify-between text-xs leading-5">
+                                <span className="font-semibold text-slate-100">Straining</span>
+                                <span className="ml-2 font-extrabold text-blue-300">{cocktail.straining}</span>
+                              </div>
+                            </li>
+                          )}
+                          {cocktail.garnish && (
+                            <li className="rounded-md bg-slate-800/70 px-2 py-1">
+                              <div className="flex items-center justify-between text-xs leading-5">
+                                <span className="font-semibold text-slate-100">Garnish</span>
+                                <span className="ml-2 font-extrabold text-blue-300">{cocktail.garnish}</span>
+                              </div>
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
+
+                    {cocktail.isBatched && cocktail.premixNote && (
+                      <div className="mt-2 rounded-md bg-slate-900/70 p-2 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
+                        <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-300">Premix</p>
+                        <ul className="space-y-1">
+                          {cocktail.premixNote.split('\n').map((line, idx) => {
+                            const match = line.match(/^([0-9.]+\s*[a-zA-Z]+)\s+(.+)$/);
+                            const amount = match ? match[1].trim() : '';
+                            const ingredient = match ? match[2].trim() : line;
+
+                            return (
+                              <li
+                                key={`${cocktail.id}-archived-premix-line-${idx}`}
+                                className="rounded-md bg-slate-800/70 px-2 py-1"
+                              >
+                                <div className="flex items-center justify-between text-xs leading-5">
+                                  <span className="font-semibold text-slate-100">{ingredient}</span>
+                                  {amount && <span className="font-extrabold text-blue-300">{amount}</span>}
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+
                     {cocktail.specs.length > 0 && (
-                      <div className="mt-2 rounded-md bg-slate-800/70 p-2 ring-1 ring-slate-700/70">
+                      <div className="mt-2 rounded-md bg-slate-900/70 p-2 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
                         <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-300">Ingredients</p>
                         <ul className="space-y-1">
                           {cocktail.specs.map((spec, idx) => (
-                            <li key={`${cocktail.id}-archived-spec-${idx}`} className="flex items-center justify-between text-xs">
-                              <span className="font-semibold text-slate-200">{spec.ingredient}</span>
-                              <span className="font-bold text-blue-300">{spec.ml}ml</span>
+                            <li
+                              key={`${cocktail.id}-archived-spec-${idx}`}
+                              className="rounded-md bg-slate-800/70 px-2 py-1"
+                            >
+                              <div className="flex items-center justify-between text-xs leading-5">
+                                <span className="font-semibold text-slate-100">{spec.ingredient}</span>
+                                <span className="font-extrabold text-blue-300">{spec.ml}ml</span>
+                              </div>
                             </li>
                           ))}
                         </ul>
                       </div>
                     )}
-                    {cocktail.isBatched && cocktail.premixNote && (
-                      <div className="mt-2 rounded-md bg-slate-800/70 p-2 ring-1 ring-slate-700/70">
-                        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-300">Premix Note</p>
-                        <p className="whitespace-pre-line text-xs font-medium text-slate-300">{cocktail.premixNote}</p>
+
+                    {cocktail.serveExtras && (
+                      <div className="mt-2 rounded-md bg-slate-900/70 p-2 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
+                        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-300">Serve Extras</p>
+                        <ul className="space-y-1">
+                          {cocktail.serveExtras
+                            .split(/[\n,]/)
+                            .map((extra) => extra.trim())
+                            .filter(Boolean)
+                            .map((extra, idx) => (
+                              <li
+                                key={`${cocktail.id}-archived-extra-${idx}`}
+                                className="rounded-md bg-slate-800/70 px-2 py-1"
+                              >
+                                <div className="flex items-center justify-between text-xs leading-5">
+                                  <span className="font-semibold text-slate-100"></span>
+                                  <span className="ml-2 font-extrabold text-blue-300">{extra}</span>
+                                </div>
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {cocktail.batchNote && (
+                      <div className="mt-2 rounded-md bg-slate-900/70 p-2 shadow-inner ring-1 ring-slate-700/60 backdrop-blur-sm">
+                        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-300">Batch Note</p>
+                        <p className="whitespace-pre-line text-xs font-medium text-slate-300">{cocktail.batchNote}</p>
                       </div>
                     )}
                   </article>
-                ))}
+                )})}
               </div>
             )
           )}
@@ -1379,6 +2486,656 @@ export function Dashboard() {
           onCancel={() => setShowProductionForm(false)}
         />
       )}
+
+      {toasts.length > 0 && (
+        <div className="pointer-events-none fixed right-4 top-4 z-[70] flex w-full max-w-sm flex-col gap-2">
+          {toasts.map((toast) => {
+            const tone =
+              toast.kind === "success"
+                ? "ring-emerald-500/45 bg-emerald-500/15 text-emerald-100"
+                : toast.kind === "error"
+                  ? "ring-rose-500/45 bg-rose-500/15 text-rose-100"
+                  : "ring-blue-500/45 bg-blue-500/15 text-blue-100";
+
+            return (
+              <div
+                key={toast.id}
+                className={`pointer-events-auto rounded-2xl border border-white/10 px-4 py-3 shadow-2xl backdrop-blur-xl ring-1 ${tone}`}
+              >
+                <p className="text-sm font-semibold">{toast.message}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {showAddCocktailModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-md">
+          <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl backdrop-blur-xl ring-1 ring-slate-700/70">
+            <h2 className="mb-4 text-2xl font-extrabold text-white">Add Cocktail</h2>
+
+            {addCocktailError && (
+              <div className="mb-4 rounded-lg bg-red-900/30 p-3 text-sm font-semibold text-red-200 ring-1 ring-red-700">
+                {addCocktailError}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-300">Cocktail Name</label>
+                  <input
+                    type="text"
+                    value={addCocktailForm.name}
+                    onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, name: e.target.value }))}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="e.g., Naked and Famous"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-300">Category</label>
+                  <select
+                    value={addCocktailForm.category}
+                    onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, category: e.target.value as AddCocktailForm["category"] }))}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="REGULAR">Regular</option>
+                    <option value="SEASONAL">Seasonal</option>
+                    <option value="SIGNATURE">Signature</option>
+                    <option value="INGREDIENTS">Ingredients</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-300">Glassware</label>
+                  <input
+                    type="text"
+                    value={addCocktailForm.glassware}
+                    onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, glassware: e.target.value }))}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="e.g., Coupe"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-300">Garnish</label>
+                  <input
+                    type="text"
+                    value={addCocktailForm.garnish}
+                    onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, garnish: e.target.value }))}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="e.g., Lime twist"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-300">Technique</label>
+                  <textarea
+                    value={addCocktailForm.technique}
+                    onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, technique: e.target.value }))}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    rows={2}
+                    placeholder="e.g., Shake then fine strain"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-300">Straining</label>
+                  <input
+                    type="text"
+                    value={addCocktailForm.straining}
+                    onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, straining: e.target.value }))}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="e.g., Fine"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-semibold text-slate-300">Serve Extras</label>
+                  <textarea
+                    value={addCocktailForm.serveExtras}
+                    onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, serveExtras: e.target.value }))}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    rows={2}
+                    placeholder="Optional serve notes"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-300">
+                    <input
+                      type="checkbox"
+                      checked={addCocktailForm.createPremix}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setAddCocktailForm((prev) => ({
+                          ...prev,
+                          createPremix: checked,
+                          isBatched: checked ? true : prev.isBatched,
+                          premixRecipeItems:
+                            checked && prev.premixRecipeItems.every((item) => item.ingredientName.trim().length === 0)
+                              ? prev.specs
+                                  .filter((s) => s.ingredient.trim().length > 0)
+                                  .map((s) => ({ ingredientName: s.ingredient, amountPerBatch: Number(s.ml) || 0, unit: "parts" }))
+                              : prev.premixRecipeItems,
+                        }));
+                      }}
+                      className="peer sr-only"
+                    />
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-slate-500 bg-slate-900/80 shadow-inner transition-all duration-150 peer-checked:border-emerald-300 peer-checked:bg-emerald-500/25 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-300/70 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-slate-900">
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        className="h-3.5 w-3.5 text-emerald-100 opacity-0 transition-opacity duration-150 peer-checked:opacity-100"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M4.5 10.5L8.5 14.5L15.5 6.5"
+                          stroke="currentColor"
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                    Also add as premix
+                  </label>
+                  <p className="text-xs font-medium text-slate-400">
+                    Turning this on will automatically mark the cocktail as batched.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-slate-300">Specs</label>
+                  <button
+                    onClick={() => setAddCocktailForm((prev) => ({
+                      ...prev,
+                      specs: [...prev.specs, { ingredient: "", ml: 0 }],
+                    }))}
+                    className="rounded bg-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-600"
+                  >
+                    + Line
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {addCocktailForm.specs.map((spec, idx) => (
+                    <div key={`new-spec-${idx}`} className="grid grid-cols-[minmax(0,1fr)_6.5rem_auto] gap-2">
+                      <input
+                        type="text"
+                        value={spec.ingredient}
+                        onChange={(e) => {
+                          const specs = [...addCocktailForm.specs];
+                          specs[idx] = { ...spec, ingredient: e.target.value };
+                          setAddCocktailForm((prev) => ({ ...prev, specs }));
+                        }}
+                        placeholder="Ingredient"
+                        className="min-w-0 rounded-lg bg-slate-800 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                      <input
+                        type="number"
+                        value={spec.ml}
+                        onChange={(e) => {
+                          const specs = [...addCocktailForm.specs];
+                          specs[idx] = { ...spec, ml: Number(e.target.value) || 0 };
+                          setAddCocktailForm((prev) => ({ ...prev, specs }));
+                        }}
+                        placeholder="ml"
+                        step={0.01}
+                        className="rounded-lg bg-slate-800 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                      <button
+                        onClick={() => {
+                          if (addCocktailForm.specs.length <= 1) return;
+                          const specs = addCocktailForm.specs.filter((_, i) => i !== idx);
+                          setAddCocktailForm((prev) => ({ ...prev, specs }));
+                        }}
+                        className="h-10 w-10 rounded bg-red-700 text-xs font-semibold text-white hover:bg-red-600"
+                        title="Remove line"
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {addCocktailForm.createPremix && (
+                <div className="space-y-3 rounded-xl bg-slate-800/60 p-4 ring-1 ring-slate-700">
+                  <h3 className="text-sm font-bold uppercase tracking-wide text-slate-200">Premix Setup</h3>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-300">Current Bottles</label>
+                      <input
+                        type="number"
+                        value={addCocktailForm.premixCurrentBottles}
+                        onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, premixCurrentBottles: Number(e.target.value) || 0 }))}
+                        step={0.01}
+                        className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-300">Threshold Bottles</label>
+                      <input
+                        type="number"
+                        value={addCocktailForm.premixThresholdBottles}
+                        onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, premixThresholdBottles: Number(e.target.value) || 0 }))}
+                        step={0.01}
+                        className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-300">Target Bottles</label>
+                      <input
+                        type="number"
+                        value={addCocktailForm.premixTargetBottles}
+                        onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, premixTargetBottles: Number(e.target.value) || 0 }))}
+                        step={0.01}
+                        className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="text-xs font-semibold text-slate-300">Premix Recipe Items</label>
+                      <button
+                        onClick={() => setAddCocktailForm((prev) => ({
+                          ...prev,
+                          premixRecipeItems: [...prev.premixRecipeItems, { ingredientName: "", amountPerBatch: 0, unit: "parts" }],
+                        }))}
+                        className="rounded bg-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-600"
+                      >
+                        + Line
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {addCocktailForm.premixRecipeItems.map((item, idx) => (
+                        <div key={`new-premix-item-${idx}`} className="grid grid-cols-[minmax(0,1fr)_5rem_4.5rem_auto] gap-2">
+                          <input
+                            type="text"
+                            value={item.ingredientName}
+                            onChange={(e) => {
+                              const premixRecipeItems = [...addCocktailForm.premixRecipeItems];
+                              premixRecipeItems[idx] = { ...item, ingredientName: e.target.value };
+                              setAddCocktailForm((prev) => ({ ...prev, premixRecipeItems }));
+                            }}
+                            placeholder="Ingredient"
+                            className="min-w-0 rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          />
+                          <input
+                            type="number"
+                            value={item.amountPerBatch}
+                            onChange={(e) => {
+                              const premixRecipeItems = [...addCocktailForm.premixRecipeItems];
+                              premixRecipeItems[idx] = { ...item, amountPerBatch: Number(e.target.value) || 0 };
+                              setAddCocktailForm((prev) => ({ ...prev, premixRecipeItems }));
+                            }}
+                            step={0.01}
+                            placeholder="Amount"
+                            className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          />
+                          <input
+                            type="text"
+                            value={item.unit}
+                            onChange={(e) => {
+                              const premixRecipeItems = [...addCocktailForm.premixRecipeItems];
+                              premixRecipeItems[idx] = { ...item, unit: e.target.value };
+                              setAddCocktailForm((prev) => ({ ...prev, premixRecipeItems }));
+                            }}
+                            placeholder="parts"
+                            className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          />
+                          <button
+                            onClick={() => {
+                              if (addCocktailForm.premixRecipeItems.length <= 1) return;
+                              const premixRecipeItems = addCocktailForm.premixRecipeItems.filter((_, i) => i !== idx);
+                              setAddCocktailForm((prev) => ({ ...prev, premixRecipeItems }));
+                            }}
+                            className="h-10 w-10 rounded bg-red-700 text-xs font-semibold text-white hover:bg-red-600"
+                            title="Remove line"
+                          >
+                            X
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-300">Premix Note</label>
+                      <textarea
+                        value={addCocktailForm.premixNote}
+                        onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, premixNote: e.target.value }))}
+                        rows={2}
+                        className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-300">Batch Note</label>
+                      <textarea
+                        value={addCocktailForm.batchNote}
+                        onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, batchNote: e.target.value }))}
+                        rows={2}
+                        className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={createCocktail}
+                  disabled={addCocktailSaving}
+                  className="flex-1 rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-emerald-600 disabled:opacity-50"
+                >
+                  {addCocktailSaving ? "Creating..." : "Create Cocktail"}
+                </button>
+                <button
+                  onClick={() => setShowAddCocktailModal(false)}
+                  disabled={addCocktailSaving}
+                  className="flex-1 rounded-lg bg-slate-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-600 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+        {/* Edit Cocktail Modal */}
+        {editingCocktail && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 backdrop-blur-md">
+            <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl backdrop-blur-xl ring-1 ring-slate-700/70">
+              <h2 className="text-2xl font-extrabold text-white mb-4">Edit Cocktail Spec</h2>
+              {editError && (
+                <div className="mb-4 rounded-lg bg-red-900/30 p-3 text-sm font-semibold text-red-200 ring-1 ring-red-700">
+                  {editError}
+                </div>
+              )}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={editingCocktail.name}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, name: e.target.value})}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1">Category</label>
+                  <select
+                    value={editingCocktail.category}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, category: e.target.value as any})}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="REGULAR">Regular</option>
+                    <option value="SEASONAL">Seasonal</option>
+                    <option value="SIGNATURE">Signature</option>
+                    <option value="INGREDIENTS">Ingredients</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1">Glassware</label>
+                  <input
+                    type="text"
+                    value={editingCocktail.glassware || ""}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, glassware: e.target.value || null})}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Coupe glass"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1">Technique</label>
+                  <textarea
+                    value={editingCocktail.technique || ""}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, technique: e.target.value || null})}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Shake and strain"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1">Straining</label>
+                  <input
+                    type="text"
+                    value={editingCocktail.straining || ""}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, straining: e.target.value || null})}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Fine strain"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1">Garnish</label>
+                  <input
+                    type="text"
+                    value={editingCocktail.garnish || ""}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, garnish: e.target.value || null})}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Orange twist"
+                  />
+                </div>
+                <label htmlFor="isBatched" className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-300">
+                  <input
+                    type="checkbox"
+                    id="isBatched"
+                    checked={editingCocktail.isBatched}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, isBatched: e.target.checked})}
+                    className="peer sr-only"
+                  />
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-slate-500 bg-slate-900/80 shadow-inner transition-all duration-150 peer-checked:border-blue-300 peer-checked:bg-blue-500/25 peer-focus-visible:ring-2 peer-focus-visible:ring-blue-300/70 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-slate-900">
+                    <svg
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      className="h-3.5 w-3.5 text-blue-100 opacity-0 transition-opacity duration-150 peer-checked:opacity-100"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M4.5 10.5L8.5 14.5L15.5 6.5"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  Batched cocktail
+                </label>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1">Serve Extras</label>
+                  <textarea
+                    value={editingCocktail.serveExtras || ""}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, serveExtras: e.target.value || null})}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Fresh mint sprig"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1">Premix Note</label>
+                  <textarea
+                    value={editingCocktail.premixNote || ""}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, premixNote: e.target.value || null})}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Notes about premix usage"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1">Batch Note</label>
+                  <textarea
+                    value={editingCocktail.batchNote || ""}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, batchNote: e.target.value || null})}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Notes about batch preparation"
+                    rows={2}
+                  />
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={saveEditingCocktail}
+                    disabled={editSaving}
+                    className="flex-1 rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+                  >
+                    {editSaving ? "Saving..." : "Save Changes"}
+                  </button>
+                  <button
+                    onClick={() => setEditingCocktail(null)}
+                    disabled={editSaving}
+                    className="flex-1 rounded-lg bg-slate-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-600 disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Premix Modal */}
+        {editingPremix && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 backdrop-blur-md">
+            <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl backdrop-blur-xl ring-1 ring-slate-700/70">
+              <h2 className="text-2xl font-extrabold text-white mb-4">Edit Premix</h2>
+              {editError && (
+                <div className="mb-4 rounded-lg bg-red-900/30 p-3 text-sm font-semibold text-red-200 ring-1 ring-red-700">
+                  {editError}
+                </div>
+              )}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={editingPremix.name}
+                    onChange={(e) => setEditingPremix({...editingPremix, name: e.target.value})}
+                    className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-300 mb-1">Current Bottles</label>
+                    <input
+                      type="number"
+                      value={editingPremix.currentBottles}
+                      onChange={(e) => setEditingPremix({...editingPremix, currentBottles: parseFloat(e.target.value) || 0})}
+                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      step={0.01}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-300 mb-1">Threshold Bottles</label>
+                    <input
+                      type="number"
+                      value={editingPremix.thresholdBottles}
+                      onChange={(e) => setEditingPremix({...editingPremix, thresholdBottles: parseFloat(e.target.value) || 0})}
+                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      step={0.01}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-300 mb-1">Target Bottles</label>
+                    <input
+                      type="number"
+                      value={editingPremix.targetBottles}
+                      onChange={(e) => setEditingPremix({...editingPremix, targetBottles: parseFloat(e.target.value) || 0})}
+                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      step={0.01}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-300 mb-1">Batch Yield Bottles</label>
+                    <input
+                      type="number"
+                      value={editingPremix.batchYieldBottles}
+                      onChange={(e) => setEditingPremix({...editingPremix, batchYieldBottles: parseFloat(e.target.value) || 0})}
+                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      step={0.01}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">Recipe Items</label>
+                  <div className="space-y-2">
+                    {editingPremix.recipeItems.map((item, idx) => (
+                      <div key={idx} className="grid grid-cols-[minmax(0,1fr)_5rem_4.5rem_auto] items-end gap-2">
+                        <input
+                          type="text"
+                          value={item.ingredientName}
+                          onChange={(e) => {
+                            const updated = [...editingPremix.recipeItems];
+                            updated[idx] = {...item, ingredientName: e.target.value};
+                            setEditingPremix({...editingPremix, recipeItems: updated});
+                          }}
+                          placeholder="Ingredient"
+                          className="min-w-0 rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        />
+                        <input
+                          type="number"
+                          value={item.amountPerBatch}
+                          onChange={(e) => {
+                            const updated = [...editingPremix.recipeItems];
+                            updated[idx] = {...item, amountPerBatch: parseFloat(e.target.value) || 0};
+                            setEditingPremix({...editingPremix, recipeItems: updated});
+                          }}
+                          placeholder="Amount"
+                          className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          step={0.01}
+                        />
+                        <input
+                          type="text"
+                          value={item.unit}
+                          onChange={(e) => {
+                            const updated = [...editingPremix.recipeItems];
+                            updated[idx] = {...item, unit: e.target.value};
+                            setEditingPremix({...editingPremix, recipeItems: updated});
+                          }}
+                          placeholder="ml/g"
+                          className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        />
+                        <button
+                          onClick={() => {
+                            const updated = editingPremix.recipeItems.filter((_, i) => i !== idx);
+                            setEditingPremix({...editingPremix, recipeItems: updated});
+                          }}
+                          className="h-10 w-10 rounded bg-red-700 text-xs font-semibold text-white hover:bg-red-600"
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={saveEditingPremix}
+                    disabled={editSaving}
+                    className="flex-1 rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+                  >
+                    {editSaving ? "Saving..." : "Save Changes"}
+                  </button>
+                  <button
+                    onClick={() => setEditingPremix(null)}
+                    disabled={editSaving}
+                    className="flex-1 rounded-lg bg-slate-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-600 disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 }

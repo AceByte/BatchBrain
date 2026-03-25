@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS stock_adjustment_history (
   old_value REAL NOT NULL,
   new_value REAL NOT NULL,  
   delta REAL NOT NULL,
-  reason TEXT,
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );

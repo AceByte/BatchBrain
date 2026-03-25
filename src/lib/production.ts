@@ -33,24 +33,53 @@ export async function logProduction(params: {
 
 export async function getProductionHistory(
   cocktailId?: string,
-  limit: number = 100
+  limit: number = 100,
+  days?: number
 ): Promise<PrepLog[]> {
-  const rows = (cocktailId
-    ? await sql`
-        SELECT p.id, p.production_date, p.premix_id, p.produced_bottles, p.logged_at, p.notes, pm.name as premix_name
-        FROM production_logs p
-        LEFT JOIN premixes pm ON p.premix_id = pm.premix_id
-        WHERE p.premix_id = ${cocktailId}
-        ORDER BY p.logged_at DESC
-        LIMIT ${limit}
-      `
-    : await sql`
-        SELECT p.id, p.production_date, p.premix_id, p.produced_bottles, p.logged_at, p.notes, pm.name as premix_name
-        FROM production_logs p
-        LEFT JOIN premixes pm ON p.premix_id = pm.premix_id
-        ORDER BY p.logged_at DESC
-        LIMIT ${limit}
-      `) as any[];
+  const safeDays =
+    typeof days === "number" && Number.isFinite(days) && days > 0
+      ? Math.floor(days)
+      : undefined;
+  const cutoffDate = safeDays
+    ? new Date(Date.now() - safeDays * 24 * 60 * 60 * 1000)
+    : null;
+
+  const rows = (
+    cocktailId && cutoffDate
+      ? await sql`
+          SELECT p.id, p.production_date, p.premix_id, p.produced_bottles, p.logged_at, p.notes, pm.name as premix_name
+          FROM production_logs p
+          LEFT JOIN premixes pm ON p.premix_id = pm.premix_id
+          WHERE p.premix_id = ${cocktailId} AND p.logged_at >= ${cutoffDate.toISOString()}
+          ORDER BY p.logged_at DESC
+          LIMIT ${limit}
+        `
+      : cocktailId
+        ? await sql`
+            SELECT p.id, p.production_date, p.premix_id, p.produced_bottles, p.logged_at, p.notes, pm.name as premix_name
+            FROM production_logs p
+            LEFT JOIN premixes pm ON p.premix_id = pm.premix_id
+            WHERE p.premix_id = ${cocktailId}
+            ORDER BY p.logged_at DESC
+            LIMIT ${limit}
+          `
+        : cutoffDate
+          ? await sql`
+              SELECT p.id, p.production_date, p.premix_id, p.produced_bottles, p.logged_at, p.notes, pm.name as premix_name
+              FROM production_logs p
+              LEFT JOIN premixes pm ON p.premix_id = pm.premix_id
+              WHERE p.logged_at >= ${cutoffDate.toISOString()}
+              ORDER BY p.logged_at DESC
+              LIMIT ${limit}
+            `
+          : await sql`
+              SELECT p.id, p.production_date, p.premix_id, p.produced_bottles, p.logged_at, p.notes, pm.name as premix_name
+              FROM production_logs p
+              LEFT JOIN premixes pm ON p.premix_id = pm.premix_id
+              ORDER BY p.logged_at DESC
+              LIMIT ${limit}
+            `
+  ) as any[];
 
   return rows.map((row: any) => ({
     id: row.id,

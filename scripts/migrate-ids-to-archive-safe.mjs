@@ -142,7 +142,6 @@ async function ensureArchiveTables(client) {
       old_value NUMERIC(10, 2) NOT NULL,
       new_value NUMERIC(10, 2) NOT NULL,
       delta NUMERIC(10, 2) NOT NULL,
-      reason TEXT,
       notes TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       archived_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

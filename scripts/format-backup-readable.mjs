@@ -109,7 +109,7 @@ premixes.forEach((premix) => {
     adjustments.slice(-3).reverse().forEach(adj => {
       const oldVal = toNumber(adj.old_value);
       const newVal = toNumber(adj.new_value);
-      output.push(`     • ${oldVal} → ${newVal} (${adj.reason || "no reason"})${adj.notes ? `: ${adj.notes}` : ""}`);
+      output.push(`     • ${oldVal} → ${newVal}${adj.notes ? `: ${adj.notes}` : ""}`);
     });
   }
   

@@ -61,13 +61,13 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
   const totalBottles = selectedPremix ? batchesCompleted * selectedPremix.batchYield : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl ring-1 ring-slate-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-md">
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/70 p-8 shadow-2xl backdrop-blur-xl ring-1 ring-slate-700/70">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-3xl font-extrabold text-slate-900">📦 Log Batch Production</h2>
+          <h2 className="text-3xl font-extrabold text-white">📦 Log Batch Production</h2>
           <button
             onClick={onCancel}
-            className="rounded-xl p-2.5 text-slate-400 transition-all hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-xl p-2.5 text-slate-300 transition-all hover:bg-slate-800 hover:text-white"
           >
             ✕
           </button>
@@ -75,13 +75,13 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="mb-2 block text-sm font-bold text-slate-700">
+            <label className="mb-2 block text-sm font-bold text-slate-200">
               Premix Name:
             </label>
             <select
               value={cocktailId}
               onChange={(e) => setCocktailId(e.target.value)}
-              className="w-full rounded-xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200 transition-all focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl bg-slate-800 px-4 py-3 text-white ring-1 ring-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
               <option value="">Select a premix...</option>
@@ -94,7 +94,7 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-bold text-slate-700">
+            <label className="mb-2 block text-sm font-bold text-slate-200">
               Batches Completed:
             </label>
             <input
@@ -103,22 +103,22 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
               max="10"
               value={batchesCompleted}
               onChange={(e) => setBatchesCompleted(Number(e.target.value))}
-              className="w-full rounded-xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200 transition-all focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl bg-slate-800 px-4 py-3 text-white ring-1 ring-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           {selectedPremix && (
-            <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-5 text-center ring-1 ring-blue-200">
-              <p className="text-sm font-bold uppercase tracking-wider text-blue-700">Total Production:</p>
-              <p className="mt-1 text-3xl font-extrabold text-blue-600">
+            <div className="rounded-2xl bg-gradient-to-br from-blue-900/40 to-indigo-900/40 p-5 text-center ring-1 ring-blue-700/50">
+              <p className="text-sm font-bold uppercase tracking-wider text-blue-300">Total Production:</p>
+              <p className="mt-1 text-3xl font-extrabold text-blue-200">
                 {totalBottles.toFixed(2)} bottles
               </p>
             </div>
           )}
 
           <div>
-            <label className="mb-2 block text-sm font-bold text-slate-700">
+            <label className="mb-2 block text-sm font-bold text-slate-200">
               Notes (optional):
             </label>
             <textarea
@@ -126,7 +126,7 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any additional details..."
               rows={3}
-              className="w-full rounded-xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200 transition-all focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl bg-slate-800 px-4 py-3 text-white ring-1 ring-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -140,7 +140,7 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 rounded-xl bg-slate-100 px-5 py-3 font-bold text-slate-700 ring-1 ring-slate-200 transition-all hover:bg-slate-200"
+              className="flex-1 rounded-xl bg-slate-700 px-5 py-3 font-bold text-slate-100 ring-1 ring-slate-600 transition-all hover:bg-slate-600"
             >
               Cancel
             </button>

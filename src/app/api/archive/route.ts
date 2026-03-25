@@ -44,6 +44,16 @@ const PREMIX_TABLES = {
     sourceKey: "premix_id",
     targetTable: "archived_premix_recipe_items",
   },
+  productionLogs: {
+    sourceTable: "production_logs",
+    sourceKey: "premix_id",
+    targetTable: "archived_production_logs",
+  },
+  stockAdjustmentLogs: {
+    sourceTable: "stock_adjustment_logs",
+    sourceKey: "premix_id",
+    targetTable: "archived_stock_adjustment_logs",
+  },
 } as const;
 
 async function getColumns(client: Client, tableName: string): Promise<string[]> {
@@ -166,6 +176,32 @@ async function ensureArchiveTables(client: Client) {
       archived_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
+
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS archived_production_logs (
+      id BIGINT PRIMARY KEY,
+      premix_id TEXT NOT NULL,
+      produced_bottles NUMERIC(10, 2) NOT NULL,
+      production_date DATE NOT NULL,
+      logged_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      notes TEXT,
+      archived_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS archived_stock_adjustment_logs (
+      id BIGINT PRIMARY KEY,
+      premix_id TEXT NOT NULL,
+      premix_name TEXT NOT NULL,
+      old_value NUMERIC(10, 2) NOT NULL,
+      new_value NUMERIC(10, 2) NOT NULL,
+      delta NUMERIC(10, 2) NOT NULL,
+      notes TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      archived_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
 }
 
 async function archiveCocktail(client: Client, id: string) {
@@ -232,16 +268,26 @@ async function archivePremix(client: Client, id: string) {
 
   await copyById(client, PREMIX_TABLES.main, id);
   await copyById(client, PREMIX_TABLES.recipeItems, id);
+  await copyById(client, PREMIX_TABLES.productionLogs, id);
+  await copyById(client, PREMIX_TABLES.stockAdjustmentLogs, id);
 
   const archivedCount = await countById(client, PREMIX_TABLES.main.targetTable, PREMIX_TABLES.main.sourceKey, id);
   if (archivedCount < sourceCount) {
     throw new Error("Archive verification failed for premix row");
   }
 
+  const deletedStockAdjustmentLogs = await deleteById(client, PREMIX_TABLES.stockAdjustmentLogs.sourceTable, PREMIX_TABLES.stockAdjustmentLogs.sourceKey, id);
+  const deletedProductionLogs = await deleteById(client, PREMIX_TABLES.productionLogs.sourceTable, PREMIX_TABLES.productionLogs.sourceKey, id);
   const deletedRecipeItems = await deleteById(client, PREMIX_TABLES.recipeItems.sourceTable, PREMIX_TABLES.recipeItems.sourceKey, id);
   const deletedPremixes = await deleteById(client, PREMIX_TABLES.main.sourceTable, PREMIX_TABLES.main.sourceKey, id);
 
-  return { found: true, deletedRecipeItems, deletedPremixes };
+  return {
+    found: true,
+    deletedStockAdjustmentLogs,
+    deletedProductionLogs,
+    deletedRecipeItems,
+    deletedPremixes,
+  };
 }
 
 async function restorePremix(client: Client, id: string) {
@@ -255,10 +301,21 @@ async function restorePremix(client: Client, id: string) {
     sourceKey: PREMIX_TABLES.main.sourceKey,
     targetTable: PREMIX_TABLES.main.sourceTable,
   }, id);
+
   await copyById(client, {
     sourceTable: PREMIX_TABLES.recipeItems.targetTable,
     sourceKey: PREMIX_TABLES.recipeItems.sourceKey,
     targetTable: PREMIX_TABLES.recipeItems.sourceTable,
+  }, id);
+  await copyById(client, {
+    sourceTable: PREMIX_TABLES.productionLogs.targetTable,
+    sourceKey: PREMIX_TABLES.productionLogs.sourceKey,
+    targetTable: PREMIX_TABLES.productionLogs.sourceTable,
+  }, id);
+  await copyById(client, {
+    sourceTable: PREMIX_TABLES.stockAdjustmentLogs.targetTable,
+    sourceKey: PREMIX_TABLES.stockAdjustmentLogs.sourceKey,
+    targetTable: PREMIX_TABLES.stockAdjustmentLogs.sourceTable,
   }, id);
 
   const liveCount = await countById(client, PREMIX_TABLES.main.sourceTable, PREMIX_TABLES.main.sourceKey, id);
@@ -266,10 +323,18 @@ async function restorePremix(client: Client, id: string) {
     throw new Error("Restore verification failed for premix row");
   }
 
+  const deletedArchivedStockAdjustmentLogs = await deleteById(client, PREMIX_TABLES.stockAdjustmentLogs.targetTable, PREMIX_TABLES.stockAdjustmentLogs.sourceKey, id);
+  const deletedArchivedProductionLogs = await deleteById(client, PREMIX_TABLES.productionLogs.targetTable, PREMIX_TABLES.productionLogs.sourceKey, id);
   const deletedArchivedRecipeItems = await deleteById(client, PREMIX_TABLES.recipeItems.targetTable, PREMIX_TABLES.recipeItems.sourceKey, id);
   const deletedArchivedPremixes = await deleteById(client, PREMIX_TABLES.main.targetTable, PREMIX_TABLES.main.sourceKey, id);
 
-  return { found: true, deletedArchivedRecipeItems, deletedArchivedPremixes };
+  return {
+    found: true,
+    deletedArchivedStockAdjustmentLogs,
+    deletedArchivedProductionLogs,
+    deletedArchivedRecipeItems,
+    deletedArchivedPremixes,
+  };
 }
 
 export async function PATCH(request: Request) {
@@ -299,7 +364,7 @@ export async function PATCH(request: Request) {
     await client.query("BEGIN");
     await ensureArchiveTables(client);
 
-    const result =
+    const primaryResult =
       type === "cocktail"
         ? archived
           ? await archiveCocktail(client, id)
@@ -308,7 +373,7 @@ export async function PATCH(request: Request) {
           ? await archivePremix(client, id)
           : await restorePremix(client, id);
 
-    if (!result.found) {
+    if (!primaryResult.found) {
       await client.query("ROLLBACK");
       return NextResponse.json(
         {
@@ -320,9 +385,23 @@ export async function PATCH(request: Request) {
       );
     }
 
+    let linkedResult: { found: boolean } | null = null;
+
+    if (type === "cocktail") {
+      linkedResult = archived ? await archivePremix(client, id) : await restorePremix(client, id);
+    } else {
+      linkedResult = archived ? await archiveCocktail(client, id) : await restoreCocktail(client, id);
+    }
+
     await client.query("COMMIT");
 
-    return NextResponse.json({ success: true, result });
+    return NextResponse.json({
+      success: true,
+      result: {
+        primary: primaryResult,
+        linked: linkedResult,
+      },
+    });
   } catch (error) {
     try {
       await client.query("ROLLBACK");

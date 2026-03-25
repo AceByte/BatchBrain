@@ -10,14 +10,13 @@ type Change = {
 
 type Body = {
   changes: Change[];
-  reason?: string;
   notes?: string;
 };
 
 export async function PATCH(request: Request) {
   try {
     const body = (await request.json()) as Body;
-    const { changes, reason, notes } = body;
+    const { changes, notes } = body;
 
     if (!Array.isArray(changes) || changes.length === 0) {
       return NextResponse.json(
@@ -83,7 +82,6 @@ export async function PATCH(request: Request) {
         premixName: item?.name ?? "Unknown",
         oldValue,
         newValue: change.newValue,
-        reason: reason || "Manual adjustment",
         notes,
       });
 
