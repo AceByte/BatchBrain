@@ -1,27 +1,15 @@
-import { Pool, QueryResult } from "pg";
+import { neon } from "@neondatabase/serverless";
 
-type SqlClient = Pool;
-const globalForSql = globalThis as unknown as { sql?: SqlClient | undefined };
+const globalForSql = globalThis as unknown as { sql?: ReturnType<typeof neon> };
 
-function getSqlClient(): SqlClient {
-  if (globalForSql.sql) {
-    return globalForSql.sql;
-  }
-
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    throw new Error("DATABASE_URL is not set");
-  }
-
-  const client = new Pool({
-    connectionString: databaseUrl,
+export const sql =
+  globalForSql.sql ??
+  neon(process.env.DATABASE_URL!, {
+    fetchOptions: {
+      cache: "no-store",
+    },
   });
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForSql.sql = client;
-  }
-
-  return client;
+if (process.env.NODE_ENV !== "production") {
+  globalForSql.sql = sql;
 }
-
-export const sql = getSqlClient().query.bind(getSqlClient());
