@@ -1,6 +1,6 @@
-import { neon } from "@neondatabase/serverless";
+import { Pool, QueryResult } from "pg";
 
-type SqlClient = ReturnType<typeof neon<false, false>>;
+type SqlClient = Pool;
 const globalForSql = globalThis as unknown as { sql?: SqlClient | undefined };
 
 function getSqlClient(): SqlClient {
@@ -13,10 +13,8 @@ function getSqlClient(): SqlClient {
     throw new Error("DATABASE_URL is not set");
   }
 
-  const client = neon(databaseUrl, {
-    fetchOptions: {
-      cache: "no-store",
-    },
+  const client = new Pool({
+    connectionString: databaseUrl,
   });
 
   if (process.env.NODE_ENV !== "production") {
@@ -26,7 +24,4 @@ function getSqlClient(): SqlClient {
   return client;
 }
 
-export const sql = ((...args: Parameters<SqlClient>) => {
-  const client = getSqlClient();
-  return client(...args);
-}) as SqlClient;
+export const sql = getSqlClient().query.bind(getSqlClient());
