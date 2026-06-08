@@ -1,131 +1,117 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fdfdfd;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --border: #e2e8f0;
+  --primary: #0f172a;
+  --primary-foreground: #f8fafc;
+  --secondary: #f1f5f9;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --radius: 0.75rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #09090b;
+    --foreground: #fafafa;
+    --card: #09090b;
+    --card-foreground: #fafafa;
+    --border: #27272a;
+    --primary: #fafafa;
+    --primary-foreground: #09090b;
+    --secondary: #27272a;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --accent: #27272a;
+    --accent-foreground: #fafafa;
   }
 }
 
 body {
-  background: #f4f4f5;
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Global scrollbar styling */
+/* Minimalistic Scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #334155 #0f172a;
+  scrollbar-color: var(--border) transparent;
 }
 
 *::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 6px;
+  height: 6px;
 }
 
 *::-webkit-scrollbar-track {
-  background: #0f172a;
-  border-radius: 9999px;
+  background: transparent;
 }
 
 *::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #475569 0%, #334155 100%);
-  border-radius: 9999px;
-  border: 2px solid #0f172a;
+  background: var(--border);
+  border-radius: 10px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #64748b 0%, #475569 100%);
-}
-
-*::-webkit-scrollbar-corner {
-  background: #0f172a;
+  background: var(--muted-foreground);
 }
 
 /* Print styles */
 @media print {
   body {
-    background: white;
+    background: white !important;
+    color: black !important;
   }
   
-  /* Hide interactive elements */
-  button, input, select {
+  button, .no-print {
     display: none !important;
   }
   
-  /* Remove shadows and gradients for cleaner print */
-  * {
+  .spec-sheet {
+    padding: 0 !important;
     box-shadow: none !important;
-    background-image: none !important;
-  }
-  
-  /* Ensure sections break properly */
-  section {
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
-  
-  /* Make collapsed sections visible in print */
-  .print\:block {
-    display: block !important;
+    border: none !important;
   }
 }
 
-/* Spec-sheet styles for print and PDF export */
-.spec-sheet {
-  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
-  color: #111;
-  background: #fff;
+/* Uniform Card Base */
+.glass-card {
+  @apply rounded-[var(--radius)] border border-border bg-card text-card-foreground shadow-sm transition-all;
 }
 
-.spec-header .spec-title {
-  letter-spacing: -0.5px;
+.glass-card:hover {
+  @apply border-muted-foreground/30 shadow-md;
 }
 
-.spec-header .spec-sub {
-  margin-top: 2px;
+/* Modernized Typography */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-bold tracking-tight;
 }
 
-.spec-sheet table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 12px;
-}
-
-.spec-sheet th,
-.spec-sheet td {
-  border: 1px solid #222;
-  padding: 8px 6px;
-  vertical-align: top;
-}
-
-.spec-sheet th {
-  background: #fafafa;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 11px;
-}
-
-/* Make sure each report starts on a fresh page when printed */
 .page-break { page-break-after: always; break-after: page; }
-
-@media print {
-  .spec-sheet { padding: 8mm !important; }
-  .spec-sheet table { font-size: 11px; }
-  .spec-header { display: block !important; }
-  /* Avoid breaking inside rows */
-  .spec-sheet tr { page-break-inside: avoid; break-inside: avoid; }
-}

@@ -17,7 +17,7 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    
+
     if (!cocktailId) {
       setError("Please select a premix");
       return;
@@ -61,27 +61,27 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
   const totalBottles = selectedPremix ? batchesCompleted * selectedPremix.batchYield : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-md">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/70 p-8 shadow-2xl backdrop-blur-xl ring-1 ring-slate-700/70">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-xl">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-3xl font-extrabold text-white">📦 Log Batch Production</h2>
+          <h2 className="text-xl font-bold tracking-tight">Log Batch Production</h2>
           <button
             onClick={onCancel}
-            className="rounded-xl p-2.5 text-slate-300 transition-all hover:bg-slate-800 hover:text-white"
+            className="rounded-md p-1.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
           >
             ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-2 block text-sm font-bold text-slate-200">
-              Premix Name:
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
+              Premix Name
             </label>
             <select
               value={cocktailId}
               onChange={(e) => setCocktailId(e.target.value)}
-              className="w-full rounded-xl bg-slate-800 px-4 py-3 text-white ring-1 ring-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               required
             >
               <option value="">Select a premix...</option>
@@ -94,8 +94,8 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-bold text-slate-200">
-              Batches Completed:
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
+              Batches Completed
             </label>
             <input
               type="number"
@@ -103,53 +103,53 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
               max="10"
               value={batchesCompleted}
               onChange={(e) => setBatchesCompleted(Number(e.target.value))}
-              className="w-full rounded-xl bg-slate-800 px-4 py-3 text-white ring-1 ring-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               required
             />
           </div>
 
           {selectedPremix && (
-            <div className="rounded-2xl bg-gradient-to-br from-blue-900/40 to-indigo-900/40 p-5 text-center ring-1 ring-blue-700/50">
-              <p className="text-sm font-bold uppercase tracking-wider text-blue-300">Total Production:</p>
-              <p className="mt-1 text-3xl font-extrabold text-blue-200">
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-center">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-primary/70">Total Production</p>
+              <p className="mt-1 text-2xl font-bold text-primary">
                 {totalBottles.toFixed(2)} bottles
               </p>
             </div>
           )}
 
           <div>
-            <label className="mb-2 block text-sm font-bold text-slate-200">
-              Notes (optional):
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
+              Notes (optional)
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any additional details..."
               rows={3}
-              className="w-full rounded-xl bg-slate-800 px-4 py-3 text-white ring-1 ring-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             />
           </div>
 
           {error && (
-            <div className="rounded-xl bg-gradient-to-br from-red-50 to-rose-50 p-4 text-sm font-semibold text-red-800 ring-1 ring-red-300">
+            <div className="rounded-md border border-destructive/20 bg-destructive/5 p-3 text-xs font-medium text-destructive">
               {error}
             </div>
           )}
 
-          <div className="flex gap-3">
+          <div className="flex gap-2 pt-2">
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 rounded-xl bg-slate-700 px-5 py-3 font-bold text-slate-100 ring-1 ring-slate-600 transition-all hover:bg-slate-600"
+              className="flex-1 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 px-5 py-3 font-bold text-white shadow-lg transition-all hover:shadow-xl disabled:opacity-50"
+              className="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
-              {submitting ? "Logging..." : "✓ Log Production"}
+              {submitting ? "Logging..." : "Log Production"}
             </button>
           </div>
         </form>
