@@ -10,6 +10,7 @@ type Change = {
 
 type Body = {
   changes: Change[];
+  notes?: string;
 };
 
 export async function PATCH(request: Request) {

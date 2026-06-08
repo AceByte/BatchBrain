@@ -190,6 +190,7 @@ export function Dashboard() {
   // Draft/edit mode
   const [pendingChanges, setPendingChanges] = useState<Map<number, number>>(new Map());
   const [isSaving, setIsSaving] = useState(false);
+  const [adjustmentNotes, setAdjustmentNotes] = useState("");
   const [showProductionForm, setShowProductionForm] = useState(false);
   const [selectedPremixes, setSelectedPremixes] = useState<Set<number>>(new Set());
   const [selectedArchivedPremixes, setSelectedArchivedPremixes] = useState<Set<number>>(new Set());
