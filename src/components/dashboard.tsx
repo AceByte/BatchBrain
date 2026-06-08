@@ -915,7 +915,12 @@ export function Dashboard() {
     }
 
     return (data.premixes ?? [])
-      .filter((premix) => premix.currentBottles < premix.thresholdBottles)
+      .map((p) => ({
+        ...p,
+        currentBottles: pendingChanges.has(p.id) ? pendingChanges.get(p.id)! : p.currentBottles,
+      }))
+      // Exclude archived premixes from low-stock calculations
+      .filter((premix) => !premix.isArchived && premix.currentBottles < premix.thresholdBottles)
       .sort((a, b) => {
         const aCritical = a.currentBottles < a.thresholdBottles * 0.5;
         const bCritical = b.currentBottles < b.thresholdBottles * 0.5;
@@ -927,7 +932,7 @@ export function Dashboard() {
         const bRatio = b.thresholdBottles > 0 ? b.currentBottles / b.thresholdBottles : 1;
         return aRatio - bRatio;
       });
-  }, [data]);
+  }, [data, pendingChanges]);
 
   const lowPremixCount = lowStockPremixes.length;
 

@@ -226,7 +226,12 @@ export function SpecSheetReport({ data }: { data: DashboardData }) {
   };
 
   return (
-    <div className="bg-white p-4 text-[11px] text-black">
+    <div className="spec-sheet bg-white p-6 text-[12px] text-black">
+      <header className="spec-header mb-4">
+        <div className="spec-title text-2xl font-extrabold">Cafe Victor</div>
+        <div className="spec-sub text-sm text-gray-700">Cocktail Specs — {menuYear}</div>
+        <hr className="my-3" />
+      </header>
       <table className="w-full border-collapse border-2 border-black table-fixed">
         <thead>
           <tr>
@@ -263,12 +268,13 @@ export function PrepSpecReport({ data }: { data: DashboardData }) {
   const now = new Date().toLocaleString();
 
   return (
-    <div className="bg-white p-4 text-[11px] text-black">
-      <div className="mb-2 text-[11px]">
-        <div>Prep Spec and Batch Plan</div>
-        <div>Generated: {now}</div>
-        <div>Items to prepare: {prepItems.length}</div>
-      </div>
+    <div className="spec-sheet bg-white p-6 text-[12px] text-black">
+      <header className="spec-header mb-4">
+        <div className="spec-title text-2xl font-extrabold">Cafe Victor</div>
+        <div className="spec-sub text-sm text-gray-700">Prep Spec & Batch Plan</div>
+        <div className="text-xs text-gray-600">Generated: {now} — Items: {prepItems.length}</div>
+        <hr className="my-3" />
+      </header>
 
       <table className="mb-4 w-full table-fixed border-collapse border-2 border-black">
         <thead>
@@ -333,11 +339,13 @@ export function InventorySnapshotReport({ data }: { data: DashboardData }) {
   const now = new Date().toLocaleString();
 
   return (
-    <div className="bg-white p-4 text-[11px] text-black">
-      <div className="mb-2 text-[11px]">
-        <div>Premix Inventory Snapshot</div>
-        <div>Generated: {now}</div>
-      </div>
+    <div className="spec-sheet bg-white p-6 text-[12px] text-black">
+      <header className="spec-header mb-4">
+        <div className="spec-title text-2xl font-extrabold">Cafe Victor</div>
+        <div className="spec-sub text-sm text-gray-700">Premix Inventory Snapshot</div>
+        <div className="text-xs text-gray-600">Generated: {now}</div>
+        <hr className="my-3" />
+      </header>
 
       <table className="w-full table-fixed border-collapse border-2 border-black">
         <thead>

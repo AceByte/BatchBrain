@@ -83,3 +83,49 @@ body {
     display: block !important;
   }
 }
+
+/* Spec-sheet styles for print and PDF export */
+.spec-sheet {
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  color: #111;
+  background: #fff;
+}
+
+.spec-header .spec-title {
+  letter-spacing: -0.5px;
+}
+
+.spec-header .spec-sub {
+  margin-top: 2px;
+}
+
+.spec-sheet table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+
+.spec-sheet th,
+.spec-sheet td {
+  border: 1px solid #222;
+  padding: 8px 6px;
+  vertical-align: top;
+}
+
+.spec-sheet th {
+  background: #fafafa;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+/* Make sure each report starts on a fresh page when printed */
+.page-break { page-break-after: always; break-after: page; }
+
+@media print {
+  .spec-sheet { padding: 8mm !important; }
+  .spec-sheet table { font-size: 11px; }
+  .spec-header { display: block !important; }
+  /* Avoid breaking inside rows */
+  .spec-sheet tr { page-break-inside: avoid; break-inside: avoid; }
+}
