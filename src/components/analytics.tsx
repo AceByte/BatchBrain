@@ -2,6 +2,18 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import {
+  ResponsiveContainer,
+  LineChart as ReLineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Legend,
+} from "recharts";
+
+type TimePoint = { date: string; production: number; consumption: number; net: number; consumptionSmoothed?: number };
 
 type DashboardData = {
   premixes: Array<{
@@ -428,9 +440,81 @@ export function Analytics() {
       negativeAdjustments30,
       positiveAdjustments30,
       balanceGap30,
+      // time-series for use/production over the last 30 days
+      timeSeries: (() => {
+        const days = 30;
+        const padDate = (d: Date) => d.toISOString().slice(0, 10);
+
+        const prodMap: Record<string, number> = {};
+        production.forEach((p) => {
+          const day = p.date.slice(0, 10);
+          prodMap[day] = (prodMap[day] ?? 0) + p.amount;
+        });
+
+        const consMap: Record<string, number> = {};
+        adjustments.forEach((a) => {
+          if (a.delta < 0) {
+            const day = a.createdAt.slice(0, 10);
+            consMap[day] = (consMap[day] ?? 0) + Math.abs(a.delta);
+          }
+        });
+
+        const plannedDaily = Math.max(0, data.prepPlan.reduce((s, it) => s + (it.weeklyUseBottles / 7), 0));
+
+        const series: TimePoint[] = [];
+        for (let i = days - 1; i >= 0; i--) {
+          const dt = new Date();
+          dt.setUTCDate(dt.getUTCDate() - i);
+          const key = padDate(dt);
+          const productionValue = prodMap[key] ?? 0;
+          const consumptionValue = consMap[key] ?? 0;
+          series.push({ date: key, production: productionValue, consumption: consumptionValue, net: productionValue - consumptionValue });
+        }
+
+        // compute simple 3-day moving average smoothing for consumption
+        const smoothed = series.map((pt, idx, arr) => {
+          const win = 3;
+          const half = Math.floor(win / 2);
+          const start = Math.max(0, idx - half);
+          const end = Math.min(arr.length - 1, idx + half);
+          const slice = arr.slice(start, end + 1);
+          const avg = slice.reduce((s, x) => s + x.consumption, 0) / Math.max(1, slice.length);
+          return { ...pt, consumptionSmoothed: avg };
+        });
+
+        return { series: smoothed, plannedDaily };
+      })(),
+
       ingredientTotals: data.ingredientTotals,
     };
   }, [data, adjustments, production]);
+
+  // Custom tooltip component (uses analytics context)
+  function CustomTooltip({ active, payload, label }: any) {
+    if (!active || !payload || payload.length === 0) return null;
+    try {
+      const pt = payload[0].payload as TimePoint;
+      const plannedDaily = (analytics?.timeSeries as any)?.plannedDaily ?? 0;
+      const series = (analytics?.timeSeries as any)?.series ?? [];
+      const obs7 = (series.slice(-7).reduce((s: number, p: TimePoint) => s + (p.consumption || 0), 0) || 0) / 7;
+      const pctDiff = plannedDaily > 0 ? ((obs7 - plannedDaily) / plannedDaily) * 100 : 0;
+
+      return (
+        <div className="rounded-lg bg-white/95 p-3 text-sm text-slate-900 shadow-lg">
+          <div className="font-bold mb-1">{new Date(label).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+          <div className="text-xs text-slate-700">Production: <span className="font-semibold">{(pt.production ?? 0).toFixed(2)}</span></div>
+          <div className="text-xs text-slate-700">Consumption: <span className="font-semibold">{(pt.consumption ?? 0).toFixed(2)}</span></div>
+          {pt.consumptionSmoothed !== undefined && (
+            <div className="text-xs text-slate-700">Smoothed: <span className="font-semibold">{pt.consumptionSmoothed.toFixed(2)}</span></div>
+          )}
+          <div className="mt-2 text-xs text-slate-600">Planned daily: <span className="font-medium">{round2(plannedDaily)}</span></div>
+          <div className="text-xs text-slate-600">Observed 7d avg: <span className="font-medium">{round2(obs7)}</span> <span className={`ml-2 ${pctDiff > 0 ? 'text-rose-500' : 'text-emerald-500'}`}>{pctDiff >= 0 ? `+${round2(pctDiff)}%` : `${round2(pctDiff)}%`}</span></div>
+        </div>
+      );
+    } catch (e) {
+      return null;
+    }
+  }
 
   if (loading) {
     return (
@@ -480,6 +564,70 @@ export function Analytics() {
               className="rounded-xl bg-slate-800 px-5 py-2.5 text-sm font-semibold text-white shadow-lg ring-1 ring-slate-700 transition-all hover:bg-slate-700 hover:shadow-xl"
             >
               🔄 Refresh
+            </button>
+            <button
+              onClick={() => {
+                try {
+                  const rows: string[] = [];
+                  // header
+                  rows.push("date,production,consumption,net,consumptionSmoothed");
+                  const series = (analytics.timeSeries as any).series as TimePoint[];
+                  series.forEach((pt) => {
+                    rows.push([pt.date, pt.production, pt.consumption, pt.net, pt.consumptionSmoothed ?? ""].join(","));
+                  });
+
+                  // summary rows
+                  rows.push("");
+                  rows.push(`produced30,${analytics.produced30}`);
+                  rows.push(`plannedUse30,${analytics.plannedUse30}`);
+                  rows.push(`netAdjustment30,${analytics.netAdjustment30}`);
+
+                  // per-premix summary
+                  rows.push("");
+                  rows.push("premixId,premixName,produced30,consumed30,netAdjustment30,plannedUse30");
+
+                  const prodMap: Record<string, number> = {};
+                  production.forEach((p) => {
+                    prodMap[p.cocktailId] = (prodMap[p.cocktailId] ?? 0) + p.amount;
+                  });
+
+                  const consumedMap: Record<string, number> = {};
+                  const netMap: Record<string, number> = {};
+                  adjustments.forEach((a) => {
+                    netMap[a.cocktailId] = (netMap[a.cocktailId] ?? 0) + a.delta;
+                    if (a.delta < 0) {
+                      consumedMap[a.cocktailId] = (consumedMap[a.cocktailId] ?? 0) + Math.abs(a.delta);
+                    }
+                  });
+
+                  analytics.activePremixes.forEach((pm: any) => {
+                    const id = pm.sourceCocktailId;
+                    const produced = prodMap[id] ?? 0;
+                    const consumed = consumedMap[id] ?? 0;
+                    const net = netMap[id] ?? 0;
+                    const prepPlanItem = data?.prepPlan?.find((it) => it.premixId === pm.id);
+                    const planned30 = prepPlanItem ? (prepPlanItem.weeklyUseBottles / 7) * 30 : 0;
+                    rows.push([id, pm.name, produced, consumed, net, planned30].join(","));
+                  });
+
+                  const csv = rows.join("\n");
+                  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `analytics-${new Date().toISOString().slice(0,10)}.csv`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  URL.revokeObjectURL(url);
+                } catch (e) {
+                  console.error(e);
+                  alert("Export failed");
+                }
+              }}
+              className="rounded-xl bg-slate-800 px-5 py-2.5 text-sm font-semibold text-white shadow-lg ring-1 ring-slate-700 transition-all hover:bg-slate-700 hover:shadow-xl"
+            >
+              ⤓ Export CSV
             </button>
             <Link
               href="/"
@@ -550,6 +698,45 @@ export function Analytics() {
                   </div>
                 );
               })}
+            </div>
+          </article>
+
+          <article className="rounded-3xl bg-slate-800 p-4 shadow-2xl ring-1 ring-slate-700 md:p-6 xl:col-span-2">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-lg font-extrabold text-white">Use Over Time (30d)</h2>
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Observed vs Planned</div>
+            </div>
+
+            <div className="bg-slate-900/70 p-3 rounded-lg ring-1 ring-slate-700/50">
+              <div className="mb-2 text-xs text-slate-300">Blue = production, orange = consumption</div>
+              <div style={{ width: "100%", height: 160 }}>
+                <ResponsiveContainer>
+                  <ReLineChart data={(analytics.timeSeries as any).series as TimePoint[]} margin={{ top: 6, right: 12, left: 0, bottom: 6 }}>
+                    <CartesianGrid stroke="#11182722" strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: '#94a3b8', fontSize: 11 }}
+                      tickFormatter={(v) => {
+                        try {
+                          return new Date(v as string).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                        } catch {
+                          return String(v);
+                        }
+                      }}
+                    />
+                    <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                    <Tooltip content={CustomTooltip} />
+                    <Legend verticalAlign="top" align="right" iconSize={10} />
+                    <Line type="monotone" dataKey="production" stroke="#60a5fa" strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="consumption" stroke="#f97316" strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="consumptionSmoothed" stroke="#fb923c" strokeWidth={1.6} dot={false} strokeDasharray="4 3" />
+                  </ReLineChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
+                <div>Planned daily use: <span className="font-bold text-white">{round2((analytics.timeSeries as any).plannedDaily)}</span></div>
+                <div>Observed 7d avg: <span className="font-bold text-amber-300">{round2(((analytics.timeSeries as any).series.slice(-7).reduce((s: number, p: TimePoint) => s + p.consumption, 0) || 0) / 7)}</span></div>
+              </div>
             </div>
           </article>
 
