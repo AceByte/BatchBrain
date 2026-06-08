@@ -42,6 +42,17 @@ export async function getStockAdjustmentHistory(
     ? new Date(Date.now() - safeDays * 24 * 60 * 60 * 1000)
     : null;
 
+  type StockAdjustmentRow = {
+    id: number;
+    premix_id: string;
+    premix_name: string;
+    old_value: number;
+    new_value: number;
+    delta: number;
+    notes: string | null;
+    created_at: string | Date;
+  };
+
   const rows = (
     cocktailId && cutoffDate
       ? await sql`
@@ -73,9 +84,9 @@ export async function getStockAdjustmentHistory(
               ORDER BY created_at DESC
               LIMIT ${limit}
             `
-  ) as any[];
+  ) as StockAdjustmentRow[];
 
-  return rows.map((row: any) => ({
+  return rows.map((row) => ({
     id: row.id,
     cocktailId: row.premix_id,
     premixName: row.premix_name,

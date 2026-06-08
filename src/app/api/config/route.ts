@@ -48,7 +48,7 @@ export async function PUT(request: Request) {
 
     if (type === "cocktail") {
       await sql`
-        UPDATE cocktail_specs
+        UPDATE cocktails
         SET name = ${data.name as string},
             category = ${data.category as string},
             glassware = ${data.glassware as string | null},
@@ -57,22 +57,53 @@ export async function PUT(request: Request) {
             garnish = ${data.garnish as string | null},
             is_batched = ${Boolean(data.isBatched)},
             serve_extras = ${data.serveExtras as string | null},
-            premix_note = ${data.premixNote as string | null},
-            batch_note = ${data.batchNote as string | null},
-            specs = ${JSON.stringify(data.specs ?? [])}
-        WHERE source_cocktail_id = ${id}
+            updated_at = now()
+        WHERE id = ${id}
+      `;
+
+      await sql`
+        INSERT INTO cocktail_premix_specs (cocktail_id, premix_note, batch_note, created_at, updated_at)
+        VALUES (${id}, ${data.premixNote as string | null}, ${data.batchNote as string | null}, now(), now())
+        ON CONFLICT (cocktail_id) DO UPDATE
+        SET premix_note = EXCLUDED.premix_note,
+            batch_note = EXCLUDED.batch_note,
+            updated_at = now()
       `;
     } else {
       await sql`
-        UPDATE premix_specs
+        UPDATE premixes
         SET name = ${data.name as string},
             current_bottles = ${Number(data.currentBottles ?? 0)},
             threshold_bottles = ${Number(data.thresholdBottles ?? 0)},
             target_bottles = ${Number(data.targetBottles ?? 0)},
-            batch_yield_bottles = ${Number(data.batchYieldBottles ?? 0)},
-            recipe_items = ${JSON.stringify(data.recipeItems ?? [])}
-        WHERE source_cocktail_id = ${id}
+            preparation_notes = ${data.preparationNotes as string | null},
+            updated_at = now()
+        WHERE premix_id = ${id}
       `;
+
+      // Replace recipe items for the premix: delete existing then insert provided items
+      const items = (data.recipeItems ?? []) as Array<{
+        ingredient_name?: string;
+        ingredient?: string;
+        name?: string;
+        amount_per_batch?: number;
+        amount?: number;
+        unit?: string;
+        u?: string;
+      }>;
+      await sql`
+        DELETE FROM premix_recipe_items WHERE premix_id = ${id}
+      `;
+      for (const it of items) {
+        const ingredient = String(it.ingredient_name ?? it.ingredient ?? it.name ?? "");
+        const amount = Number(it.amount_per_batch ?? it.amount ?? 0);
+        const unit = String(it.unit ?? it.u ?? "parts");
+        if (!ingredient) continue;
+        await sql`
+          INSERT INTO premix_recipe_items (premix_id, ingredient_name, amount_per_batch, unit, created_at)
+          VALUES (${id}, ${ingredient}, ${amount}, ${unit}, now())
+        `;
+      }
     }
 
     return NextResponse.json({ success: true });

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 type DashboardData = {
@@ -480,12 +481,12 @@ export function Analytics() {
             >
               🔄 Refresh
             </button>
-            <a
+            <Link
               href="/"
               className="rounded-xl bg-slate-800 px-5 py-2.5 text-sm font-semibold text-white shadow-lg ring-1 ring-slate-700 transition-all hover:bg-slate-700 hover:shadow-xl"
             >
               ← Dashboard
-            </a>
+            </Link>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import {
   ChangeLogReport,
@@ -119,6 +120,11 @@ export default function PrintPage() {
     combined: "Complete-Report",
   };
 
+  const changeLogRange = {
+    from: new Date(Date.now() - parseInt(dateRange) * 24 * 60 * 60 * 1000).toLocaleDateString(),
+    to: new Date().toLocaleDateString(),
+  };
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -159,13 +165,20 @@ export default function PrintPage() {
   const handleDownloadPDF = async () => {
     if (!contentRef.current) return;
 
-    try {
-      setIsExporting(true);
-      document.title = `${reportNames[selectedReport]}-${new Date().toISOString().split("T")[0]}`;
-      window.print();
-    } finally {
+    const previousTitle = document.title;
+    const exportTitle = `${reportNames[selectedReport]}-${new Date().toISOString().split("T")[0]}`;
+
+    setIsExporting(true);
+    document.title = exportTitle;
+
+    const restoreAfterPrint = () => {
+      document.title = previousTitle;
       setIsExporting(false);
-    }
+      window.removeEventListener("afterprint", restoreAfterPrint);
+    };
+
+    window.addEventListener("afterprint", restoreAfterPrint);
+    window.print();
   };
 
   const renderReport = () => {
@@ -173,7 +186,7 @@ export default function PrintPage() {
 
     switch (selectedReport) {
       case "changelog":
-        return <ChangeLogReport data={stockHistory} dateRange={{from: new Date(Date.now() - parseInt(dateRange) * 24 * 60 * 60 * 1000).toLocaleDateString(), to: new Date().toLocaleDateString()}} />;
+        return <ChangeLogReport data={stockHistory} dateRange={changeLogRange} />;
       case "specs":
         return <SpecSheetReport data={dashboardData} />;
       case "prepspec":
@@ -189,7 +202,7 @@ export default function PrintPage() {
             <div className="page-break" style={{ pageBreakBefore: "always" }} />
             <InventorySnapshotReport data={dashboardData} />
             <div className="page-break" style={{ pageBreakBefore: "always" }} />
-            <ChangeLogReport data={stockHistory} />
+            <ChangeLogReport data={stockHistory} dateRange={changeLogRange} />
           </div>
         );
       default:
@@ -219,12 +232,12 @@ export default function PrintPage() {
               >
                 {showControls ? "Hide" : "Options"}
               </button>
-              <a
+              <Link
                 href="/"
                 className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-100 transition hover:bg-slate-700"
               >
                 Home
-              </a>
+              </Link>
             </div>
           </div>
           <p className="text-xs font-medium text-slate-400">Generate printer-friendly reports and save as PDF</p>

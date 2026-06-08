@@ -28,16 +28,49 @@ const DEFAULT_CONFIG: AppConfig = {
 
 export async function getConfig(): Promise<AppConfig> {
   try {
-    const rows = await sql`SELECT key, value FROM app_config` as Array<{ key: string; value: any }>;
+    const rows = (await sql`SELECT key, value FROM app_config`) as Array<{
+      key: keyof AppConfig;
+      value: AppConfig[keyof AppConfig];
+    }>;
     
-    const config: Partial<AppConfig> = {};
+    const config: AppConfig = { ...DEFAULT_CONFIG };
     for (const row of rows) {
-      const key = row.key as keyof AppConfig;
-      config[key] = row.value as any;
+      switch (row.key) {
+        case "defaultThresholdDays":
+          config.defaultThresholdDays = Number(row.value);
+          break;
+        case "defaultTargetDays":
+          config.defaultTargetDays = Number(row.value);
+          break;
+        case "defaultWeeklyDrinksPerCocktail":
+          config.defaultWeeklyDrinksPerCocktail = Number(row.value);
+          break;
+        case "enableLowStockAlerts":
+          config.enableLowStockAlerts = Boolean(row.value);
+          break;
+        case "enableBrowserNotifications":
+          config.enableBrowserNotifications = Boolean(row.value);
+          break;
+        case "darkMode":
+          config.darkMode = Boolean(row.value);
+          break;
+        case "autoSaveDrafts":
+          config.autoSaveDrafts = Boolean(row.value);
+          break;
+        case "productionLeadTimeDays":
+          config.productionLeadTimeDays = Number(row.value);
+          break;
+        case "archivedPremixIds":
+          config.archivedPremixIds = Array.isArray(row.value) ? (row.value as string[]) : [];
+          break;
+        case "archivedCocktailIds":
+          config.archivedCocktailIds = Array.isArray(row.value) ? (row.value as string[]) : [];
+          break;
+      }
     }
     
     // Merge with defaults for any missing keys
-    return { ...DEFAULT_CONFIG, ...config };
+    return config;
   } catch (error) {
     console.error("Error loading config:", error);
     return DEFAULT_CONFIG;

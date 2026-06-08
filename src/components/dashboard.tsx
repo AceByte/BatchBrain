@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ProductionForm } from "./production-form";
 
 type DashboardData = {
@@ -259,6 +259,8 @@ export function Dashboard() {
   const [addCocktailError, setAddCocktailError] = useState<string | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
+  const categoryFilters = ["ALL", "REGULAR", "SEASONAL", "SIGNATURE", "INGREDIENTS"] as const;
+
   const viewOrder: Array<"cocktails" | "inventory" | "prep" | "archive"> = ["cocktails", "inventory", "prep", "archive"];
   const currentViewIndex = viewOrder.indexOf(currentView);
 
@@ -269,13 +271,13 @@ export function Dashboard() {
     archive: "📦 Archive",
   };
 
-  function pushToast(kind: Toast["kind"], message: string) {
+  const pushToast = useCallback((kind: Toast["kind"], message: string) => {
     const id = Date.now() + Math.floor(Math.random() * 1000);
     setToasts((prev) => [...prev, { id, kind, message }]);
     window.setTimeout(() => {
       setToasts((prev) => prev.filter((toast) => toast.id !== id));
     }, 3400);
-  }
+  }, []);
 
   function shouldIgnoreCardToggle(target: EventTarget | null) {
     if (!(target instanceof HTMLElement)) {
@@ -285,7 +287,7 @@ export function Dashboard() {
     return Boolean(target.closest("button, input, textarea, select, a, [data-no-card-toggle='true']"));
   }
 
-  async function loadData() {
+  const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -319,11 +321,11 @@ export function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     window.localStorage.setItem(CURRENT_VIEW_KEY, currentView);
@@ -363,29 +365,6 @@ export function Dashboard() {
     const interval = window.setInterval(tick, 250);
     return () => window.clearInterval(interval);
   }, [undoAdjustment]);
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    function handleKeyboard(e: KeyboardEvent) {
-      // Ctrl+S or Cmd+S to save
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        if (pendingChanges.size > 0 && !isSaving) {
-          savePendingChanges();
-        }
-      }
-      // Escape to discard with confirmation
-      if (e.key === 'Escape' && pendingChanges.size > 0) {
-        if (confirm(`Discard ${pendingChanges.size} pending change(s)?`)) {
-          discardPendingChanges();
-        }
-      }
-    }
-    
-    window.addEventListener('keydown', handleKeyboard);
-    return () => window.removeEventListener('keydown', handleKeyboard);
-  }, [pendingChanges, isSaving]);
-
 
   function adjustStock(premixId: number, deltaBottles: number) {
     // Get current pending value or fall back to original
@@ -453,7 +432,7 @@ export function Dashboard() {
     }
   }
 
-  async function savePendingChanges() {
+  const savePendingChanges = useCallback(async () => {
     if (pendingChanges.size === 0) return;
     
     setIsSaving(true);
@@ -505,7 +484,29 @@ export function Dashboard() {
     } finally {
       setIsSaving(false);
     }
-  }
+  }, [adjustmentNotes, data, loadData, pendingChanges, pushToast]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    function handleKeyboard(e: KeyboardEvent) {
+      // Ctrl+S or Cmd+S to save
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (pendingChanges.size > 0 && !isSaving) {
+          savePendingChanges();
+        }
+      }
+      // Escape to discard with confirmation
+      if (e.key === 'Escape' && pendingChanges.size > 0) {
+        if (confirm(`Discard ${pendingChanges.size} pending change(s)?`)) {
+          discardPendingChanges();
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyboard);
+    return () => window.removeEventListener('keydown', handleKeyboard);
+  }, [isSaving, pendingChanges, savePendingChanges]);
 
   function discardPendingChanges() {
     setPendingChanges(new Map());
@@ -908,11 +909,31 @@ export function Dashboard() {
     }
   }
 
-  const lowPremixCount = useMemo(
-    () =>
-      data?.prepPlan.filter((item) => item.projectedEndBottles < item.thresholdBottles)
-        .length ?? 0,
-    [data],
+  const lowStockPremixes = useMemo(() => {
+    if (!data) {
+      return [];
+    }
+
+    return (data.premixes ?? [])
+      .filter((premix) => premix.currentBottles < premix.thresholdBottles)
+      .sort((a, b) => {
+        const aCritical = a.currentBottles < a.thresholdBottles * 0.5;
+        const bCritical = b.currentBottles < b.thresholdBottles * 0.5;
+
+        if (aCritical && !bCritical) return -1;
+        if (!aCritical && bCritical) return 1;
+
+        const aRatio = a.thresholdBottles > 0 ? a.currentBottles / a.thresholdBottles : 1;
+        const bRatio = b.thresholdBottles > 0 ? b.currentBottles / b.thresholdBottles : 1;
+        return aRatio - bRatio;
+      });
+  }, [data]);
+
+  const lowPremixCount = lowStockPremixes.length;
+
+  const criticalStockPremixes = useMemo(
+    () => lowStockPremixes.filter((premix) => premix.currentBottles < premix.thresholdBottles * 0.5),
+    [lowStockPremixes],
   );
   
   // Filtered and sorted data
@@ -1017,19 +1038,6 @@ export function Dashboard() {
     () => sortedPremixes.filter((premix) => premix.isArchived),
     [sortedPremixes],
   );
-
-  const premixSpecsByName = useMemo(() => {
-    const premixMap = new Map<string, DashboardData["premixes"][number]>();
-    if (!data) {
-      return premixMap;
-    }
-
-    for (const premix of data.premixes) {
-      premixMap.set(premix.name.toLowerCase().trim(), premix);
-    }
-
-    return premixMap;
-  }, [data]);
 
   if (loading) {
     return (
@@ -1387,7 +1395,7 @@ export function Dashboard() {
             <label className={`font-semibold text-slate-300 ${isMobile ? "text-xs" : "text-sm"}`}>Sort by:</label>
             <select 
               value={premixSortBy}
-              onChange={(e) => setPremixSortBy(e.target.value as any)}
+              onChange={(e) => setPremixSortBy(e.target.value as "name" | "stock" | "urgency")}
               className={`rounded-xl bg-slate-700 text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium ${isMobile ? "px-2 py-1.5 text-xs" : "px-4 py-2.5 text-sm"}`}
             >
               <option value="urgency">Urgency</option>
@@ -1397,6 +1405,66 @@ export function Dashboard() {
           </div>
           )}
         </div>
+
+        {lowStockPremixes.length > 0 && (
+          <div className={`mt-4 rounded-2xl border p-4 shadow-lg ring-1 print:hidden ${
+            criticalStockPremixes.length > 0
+              ? "border-red-500/40 bg-gradient-to-br from-red-950/70 to-rose-900/50 ring-red-500/30"
+              : "border-amber-500/40 bg-gradient-to-br from-amber-950/70 to-yellow-900/50 ring-amber-500/30"
+          }`}>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${
+                  criticalStockPremixes.length > 0 ? "text-red-300" : "text-amber-300"
+                }`}>
+                  Low stock alert
+                </p>
+                <h3 className="mt-1 text-lg font-extrabold text-white">
+                  {criticalStockPremixes.length > 0
+                    ? `${criticalStockPremixes.length} critical item${criticalStockPremixes.length !== 1 ? "s" : ""} need attention now`
+                    : `${lowStockPremixes.length} item${lowStockPremixes.length !== 1 ? "s" : ""} are below threshold`}
+                </h3>
+                <p className="mt-1 max-w-2xl text-sm text-slate-200/90">
+                  Use the stock controls below to top up the most urgent premixes first. Critical items are below 50% of threshold.
+                </p>
+              </div>
+              <div className="rounded-xl bg-slate-950/40 px-4 py-3 text-right ring-1 ring-white/10">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Low stock items</p>
+                <p className="text-2xl font-extrabold text-white">{lowPremixCount}</p>
+                <p className="text-xs text-slate-300">{criticalStockPremixes.length} critical</p>
+              </div>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              {lowStockPremixes.slice(0, isMobile ? 3 : 6).map((premix) => {
+                const isCritical = premix.currentBottles < premix.thresholdBottles * 0.5;
+                const percent = premix.thresholdBottles > 0
+                  ? Math.max(0, Math.round((premix.currentBottles / premix.thresholdBottles) * 100))
+                  : 0;
+
+                return (
+                  <div
+                    key={`low-stock-${premix.id}`}
+                    className={`flex min-w-[180px] flex-1 items-center justify-between rounded-xl px-3 py-2 text-sm ring-1 ${
+                      isCritical
+                        ? "bg-red-500/10 text-red-100 ring-red-400/30"
+                        : "bg-amber-500/10 text-amber-50 ring-amber-400/30"
+                    }`}
+                  >
+                    <div>
+                      <p className="font-bold">{premix.name}</p>
+                      <p className="text-xs opacity-80">{premix.currentBottles.toFixed(2)} / {premix.thresholdBottles.toFixed(2)} bottles</p>
+                    </div>
+                    <span className="rounded-full bg-black/20 px-2 py-1 text-xs font-bold uppercase tracking-wide">
+                      {isCritical ? "Critical" : `${percent}%`}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <p className={`mt-2 font-medium text-slate-400 ${isMobile ? "text-xs" : "text-sm"}`}>
           Showing {visibleActivePremixes.length} of {activePremixes.length} active premixes
         </p>
@@ -1634,10 +1702,10 @@ export function Dashboard() {
             className={`flex-1 rounded-xl bg-slate-700 text-white ring-1 ring-slate-600 transition-all placeholder:text-slate-400 focus:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 ${isMobile ? "min-w-[150px] px-3 py-2 text-xs" : "min-w-[200px] px-5 py-3 text-sm"}`}
           />
           <div className="flex flex-wrap gap-2">
-            {["ALL", "REGULAR", "SEASONAL", "SIGNATURE", "INGREDIENTS"].map((cat) => (
+            {categoryFilters.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setCategoryFilter(cat as any)}
+                onClick={() => setCategoryFilter(cat)}
                 className={`rounded-xl font-semibold transition-all ${isMobile ? "px-2 py-1.5 text-xs" : "px-5 py-2.5 text-sm"} ${
                   categoryFilter === cat
                     ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-md'
@@ -1745,10 +1813,10 @@ export function Dashboard() {
               spec,
               idx,
             }));
-            
+
             return (
-              <article 
-                key={cocktail.id} 
+              <article
+                key={cocktail.id}
                 role="checkbox"
                 aria-checked={isSelected}
                 tabIndex={0}
@@ -1851,7 +1919,7 @@ export function Dashboard() {
                             const match = line.match(/^([0-9.]+\s*[a-zA-Z]+)\s+(.+)$/);
                             const amount = match ? match[1].trim() : '';
                             const ingredient = match ? match[2].trim() : line;
-                            
+
                             return (
                               <li
                                 key={`${cocktail.id}-premix-line-${idx}`}
@@ -1888,7 +1956,6 @@ export function Dashboard() {
                             cocktail.serveExtras.split(/[,\n]/).map((line, idx) => {
                               const trimmedLine = line.trim();
                               if (!trimmedLine) return null; // Skip empty lines
-                              
                               return (
                                 <li
                                   key={`${cocktail.id}-serve-extra-${idx}`}
@@ -1928,18 +1995,15 @@ export function Dashboard() {
               const ingNameLower = ing.ingredientName.toLowerCase();
               const emptyBottleIngredients = ['juice', 'honey syrup', 'espresso martini', 'spice mix', 'passionfruit puree'];
               const waterSugarIngredients = ['water', 'sugar'];
-              
               if (emptyBottleIngredients.some(name => ingNameLower.includes(name.toLowerCase()))) {
                 return sum + ing.totalAmount;
               }
-              
               // For water and sugar, check they don't contain syrup or "still water"
               if (waterSugarIngredients.some(name => ingNameLower.includes(name.toLowerCase()))) {
                 if (!ingNameLower.includes('syrup') && !ingNameLower.includes('still water')) {
                   return sum + ing.totalAmount;
                 }
               }
-              
               return sum;
             }, 0);
             return total + bottlesForThisItem;
@@ -1966,7 +2030,7 @@ export function Dashboard() {
             const criticalItems = prepItems.filter(item => item.projectedEndBottles < item.thresholdBottles * 0.5);
             const urgentItems = prepItems.filter(item => item.projectedEndBottles < item.thresholdBottles && item.projectedEndBottles >= item.thresholdBottles * 0.5);
             const normalItems = prepItems.filter(item => item.projectedEndBottles >= item.thresholdBottles);
-            
+
             return (
               <>
                 {criticalItems.length > 0 && (
@@ -2008,7 +2072,6 @@ export function Dashboard() {
                     </div>
                   </div>
                 )}
-                
                 {urgentItems.length > 0 && (
                   <div className="rounded-2xl bg-gradient-to-br from-amber-900 to-orange-900 ring-2 ring-amber-700 shadow-lg overflow-hidden">
                     <div className="bg-gradient-to-r from-amber-800 to-orange-800 px-6 py-3">
@@ -2250,7 +2313,8 @@ export function Dashboard() {
                       </div>
                     </div>
                   </div>
-                )})}
+                );
+              })}
               </div>
             )
           )}
@@ -2462,7 +2526,8 @@ export function Dashboard() {
                       </div>
                     )}
                   </article>
-                )})}
+                );
+              })}
               </div>
             )
           )}
@@ -2874,7 +2939,7 @@ export function Dashboard() {
                   <label className="block text-sm font-semibold text-slate-300 mb-1">Category</label>
                   <select
                     value={editingCocktail.category}
-                    onChange={(e) => setEditingCocktail({...editingCocktail, category: e.target.value as any})}
+                    onChange={(e) => setEditingCocktail({...editingCocktail, category: e.target.value as EditingCocktail["category"]})}
                     className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="REGULAR">Regular</option>

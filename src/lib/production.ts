@@ -44,6 +44,16 @@ export async function getProductionHistory(
     ? new Date(Date.now() - safeDays * 24 * 60 * 60 * 1000)
     : null;
 
+  type ProductionHistoryRow = {
+    id: number;
+    production_date: string;
+    premix_id: string;
+    produced_bottles: number;
+    logged_at: string | Date;
+    notes: string | null;
+    premix_name: string | null;
+  };
+
   const rows = (
     cocktailId && cutoffDate
       ? await sql`
@@ -79,16 +89,16 @@ export async function getProductionHistory(
               ORDER BY p.logged_at DESC
               LIMIT ${limit}
             `
-  ) as any[];
+  ) as ProductionHistoryRow[];
 
-  return rows.map((row: any) => ({
+  return rows.map((row) => ({
     id: row.id,
     date: row.production_date,
     cocktailId: row.premix_id,
     cocktailName: row.premix_name || "Unknown",
     amount: Number(row.produced_bottles),
     timestamp: new Date(row.logged_at),
-    notes: row.notes,
+    notes: row.notes ?? undefined,
   }));
 }
 
@@ -97,13 +107,18 @@ export async function getWeeklyUsage(
 ): Promise<Map<string, number>> {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - weeksBack * 7);
-  
-  const rows = await sql`
+
+  type WeeklyUsageRow = {
+    premix_id: string;
+    total_amount: number | string | null;
+  };
+
+  const rows = (await sql`
     SELECT premix_id, SUM(produced_bottles) as total_amount
     FROM production_logs
     WHERE logged_at >= ${cutoffDate.toISOString()}
     GROUP BY premix_id
-  ` as any[];
+  `) as WeeklyUsageRow[];
   
   const weeklyUsage = new Map<string, number>();
   for (const row of rows) {

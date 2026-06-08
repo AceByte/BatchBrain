@@ -11,14 +11,13 @@ type PasscodeGateProps = {
 
 export function PasscodeGate({ children }: PasscodeGateProps) {
   const [isReady, setIsReady] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(() => typeof window !== "undefined" && window.localStorage.getItem(STORAGE_KEY) === "true");
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const alreadyUnlocked = window.localStorage.getItem(STORAGE_KEY) === "true";
-    setIsUnlocked(alreadyUnlocked);
-    setIsReady(true);
+    const readyTimer = window.setTimeout(() => setIsReady(true), 0);
+    return () => window.clearTimeout(readyTimer);
   }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
