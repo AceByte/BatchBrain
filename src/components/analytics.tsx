@@ -454,7 +454,7 @@ export function Analytics() {
                   <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip
-                    content={({ active, payload, label }: { active?: boolean; payload?: any[]; label?: any }) => {
+                    content={({ active, payload, label }: { active?: boolean; payload?: readonly any[]; label?: any }) => {
                       if (!active || !payload || payload.length === 0) return null;
                       const point = payload[0].payload as TimePoint;
                       return (
