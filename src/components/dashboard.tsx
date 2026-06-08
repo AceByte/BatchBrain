@@ -190,7 +190,6 @@ export function Dashboard() {
   // Draft/edit mode
   const [pendingChanges, setPendingChanges] = useState<Map<number, number>>(new Map());
   const [isSaving, setIsSaving] = useState(false);
-  const [adjustmentNotes, setAdjustmentNotes] = useState("");
   const [showProductionForm, setShowProductionForm] = useState(false);
   const [selectedPremixes, setSelectedPremixes] = useState<Set<number>>(new Set());
   const [selectedArchivedPremixes, setSelectedArchivedPremixes] = useState<Set<number>>(new Set());
@@ -449,10 +448,7 @@ export function Dashboard() {
       const response = await fetch("/api/premix/batch-adjust", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          changes,
-          notes: adjustmentNotes,
-        }),
+        body: JSON.stringify({ changes }),
       });
 
       if (!response.ok) {
@@ -461,7 +457,6 @@ export function Dashboard() {
       }
 
       setPendingChanges(new Map());
-      setAdjustmentNotes("");
       setUndoAdjustment({
         expiresAt: Date.now() + 10000,
         changes: changes.map((change) => ({
@@ -484,7 +479,7 @@ export function Dashboard() {
     } finally {
       setIsSaving(false);
     }
-  }, [adjustmentNotes, data, loadData, pendingChanges, pushToast]);
+  }, [data, loadData, pendingChanges, pushToast]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -526,7 +521,6 @@ export function Dashboard() {
             newValue: change.oldValue,
             deltaBottles: change.oldValue - change.newValue,
           })),
-          notes: "Undo previous adjustment",
         }),
       });
 
@@ -1169,22 +1163,6 @@ export function Dashboard() {
             </div>
           </div>
 
-          {!isMobile && pendingChanges.size > 0 && (
-            <div className="mt-4 grid gap-4 rounded-2xl border border-white/10 bg-slate-900/45 p-4 backdrop-blur-lg ring-1 ring-slate-700/60 print:hidden">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-100">
-                  Notes (optional):
-                </label>
-                <input
-                  type="text"
-                  value={adjustmentNotes}
-                  onChange={(e) => setAdjustmentNotes(e.target.value)}
-                  placeholder="Additional details..."
-                  className="w-full rounded-xl border border-slate-600 bg-slate-800/90 px-4 py-2.5 text-sm text-slate-100 shadow-sm transition-all placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/60"
-                />
-              </div>
-            </div>
-          )}
         </header>
 
         {isMobile && (
@@ -1287,15 +1265,6 @@ export function Dashboard() {
             <div className="mb-1 flex items-center justify-between">
               <p className="text-xs font-bold text-amber-200">{pendingChanges.size} unsaved changes</p>
               <p className="text-[11px] font-semibold text-slate-400">Sticky quick actions</p>
-            </div>
-            <div className="mb-2">
-              <input
-                type="text"
-                value={adjustmentNotes}
-                onChange={(e) => setAdjustmentNotes(e.target.value)}
-                placeholder="Notes (optional)..."
-                className="w-full rounded-lg border border-slate-600 bg-slate-800/90 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/60"
-              />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <button
