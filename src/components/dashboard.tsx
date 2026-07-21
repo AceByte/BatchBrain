@@ -190,14 +190,14 @@ type StatCardProps = {
 };
 
 function StatCard({ label, value, hint, tone = "default", className = "" }: StatCardProps) {
-  const toneClassName = tone === "warning" ? "border-amber-200 bg-amber-50" : "border-border bg-card";
+  const toneClassName = tone === "warning" ? "border-sky-200 bg-sky-50" : "border-border bg-card";
 
   return (
     <div className={`rounded-xl border p-4 shadow-sm ${toneClassName} ${className}`.trim()}>
-      <p className={`text-xs font-medium uppercase tracking-wider ${tone === "warning" ? "text-amber-800" : "text-muted-foreground"}`}>
+      <p className={`text-xs font-medium uppercase tracking-wider ${tone === "warning" ? "text-sky-800" : "text-muted-foreground"}`}>
         {label}
       </p>
-      <p className={`mt-1 text-2xl font-bold ${tone === "warning" ? "text-amber-900" : "text-foreground"}`}>{value}</p>
+      <p className={`mt-1 text-2xl font-bold ${tone === "warning" ? "text-sky-900" : "text-foreground"}`}>{value}</p>
       {hint ? <p className="mt-1 text-[10px] text-muted-foreground">{hint}</p> : null}
     </div>
   );

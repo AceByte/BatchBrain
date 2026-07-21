@@ -5,14 +5,14 @@
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
-  --border: #e2e8f0;
-  --primary: #111827;
+  --border: #dbe6f2;
+  --primary: #2563eb;
   --primary-foreground: #f8fafc;
-  --secondary: #f1f5f9;
-  --muted: #f8fafc;
+  --secondary: #f4f8ff;
+  --muted: #f8fbff;
   --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #111827;
+  --accent: #eaf2ff;
+  --accent-foreground: #1d4ed8;
   --radius: 0.75rem;
 }
 
