@@ -62,7 +62,7 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-xl">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-sm">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-bold tracking-tight">Log Batch Production</h2>
           <button

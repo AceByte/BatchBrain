@@ -212,40 +212,40 @@ export default function PrintPage() {
 
   if (!isMounted) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-950 text-slate-300" suppressHydrationWarning>
+      <div className="flex h-screen items-center justify-center bg-background text-muted-foreground" suppressHydrationWarning>
         Loading print page...
       </div>
     );
   }
 
   return (
-    <div id="print-root" className="flex h-screen flex-col bg-slate-950 text-slate-100 lg:flex-row">
+    <div id="print-root" className="flex h-screen flex-col bg-background text-foreground lg:flex-row">
       {/* Sidebar */}
-      <div id="print-sidebar" className="w-full overflow-y-auto border-b border-white/10 bg-slate-900/85 shadow-2xl backdrop-blur-xl lg:w-72 lg:border-b-0 lg:border-r">
-        <div className="border-b border-white/10 p-4 lg:p-6">
+      <div id="print-sidebar" className="w-full overflow-y-auto border-b border-border bg-card shadow-sm lg:w-72 lg:border-b-0 lg:border-r">
+        <div className="border-b border-border p-4 lg:p-6">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h1 className="text-2xl font-extrabold tracking-tight text-white">Print & Export</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Print & Export</h1>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowControls((prev) => !prev)}
-                className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-100 transition hover:bg-slate-700 lg:hidden"
+                className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground transition hover:bg-accent lg:hidden"
               >
                 {showControls ? "Hide" : "Options"}
               </button>
               <Link
                 href="/"
-                className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-100 transition hover:bg-slate-700"
+                className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground transition hover:bg-accent"
               >
                 Home
               </Link>
             </div>
           </div>
-          <p className="text-xs font-medium text-slate-400">Generate printer-friendly reports and save as PDF</p>
+          <p className="text-xs font-medium text-muted-foreground">Generate printer-friendly reports and save as PDF</p>
         </div>
 
         <div className={`${showControls ? "block" : "hidden"} space-y-4 p-4 lg:block lg:p-6`}>
           <div>
-            <label className="mb-3 block text-sm font-semibold text-slate-300">Report Type</label>
+            <label className="mb-3 block text-sm font-semibold text-muted-foreground">Report Type</label>
             <div className="space-y-2">
               {[
                 { value: "specs" as ReportType, label: "Cocktail Specs" },
@@ -257,10 +257,10 @@ export default function PrintPage() {
                 <button
                   key={report.value}
                   onClick={() => setSelectedReport(report.value)}
-                  className={`w-full p-3 rounded text-left transition ${
+                  className={`w-full rounded-lg border p-3 text-left transition ${
                     selectedReport === report.value
-                      ? "bg-slate-700 text-white font-semibold ring-1 ring-slate-500"
-                      : "bg-slate-800/90 hover:bg-slate-700 text-slate-200 ring-1 ring-slate-700"
+                      ? "border-primary bg-primary/5 font-semibold text-foreground"
+                      : "border-border bg-background text-foreground hover:bg-accent"
                   }`}
                 >
                   {report.label}
@@ -277,7 +277,7 @@ export default function PrintPage() {
               <select
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value)}
-                className="w-full rounded border border-slate-600 bg-slate-800 p-2 text-slate-100"
+                className="w-full rounded border border-border bg-background p-2 text-foreground"
               >
                 <option value="7">Last 7 days</option>
                 <option value="30">Last 30 days</option>
@@ -287,13 +287,13 @@ export default function PrintPage() {
             </div>
           )}
 
-          <div className="space-y-3 rounded-xl border border-slate-700 bg-slate-900/70 p-3">
+          <div className="space-y-3 rounded-xl border border-border bg-background p-3">
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">Paper Size</label>
+              <label className="mb-1 block text-xs font-semibold text-muted-foreground">Paper Size</label>
               <select
                 value={paperSize}
                 onChange={(e) => setPaperSize(e.target.value as PaperSizeKey)}
-                className="w-full rounded border border-slate-600 bg-slate-800 p-2 text-sm text-slate-100"
+                className="w-full rounded border border-border bg-background p-2 text-sm text-foreground"
               >
                 {Object.entries(PAPER_SIZES).map(([key, value]) => (
                   <option key={key} value={key}>
@@ -304,11 +304,11 @@ export default function PrintPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">Scale</label>
+              <label className="mb-1 block text-xs font-semibold text-muted-foreground">Scale</label>
               <select
                 value={String(printScale)}
                 onChange={(e) => setPrintScale(Number(e.target.value))}
-                className="w-full rounded border border-slate-600 bg-slate-800 p-2 text-sm text-slate-100"
+                className="w-full rounded border border-border bg-background p-2 text-sm text-foreground"
               >
                 {[80, 90, 100, 110, 120].map((value) => (
                   <option key={value} value={value}>
@@ -323,20 +323,20 @@ export default function PrintPage() {
             <button
               onClick={handleDownloadPDF}
               disabled={loading || isExporting}
-              className="w-full rounded-xl bg-blue-600 p-3 font-semibold text-white transition hover:bg-blue-500 disabled:bg-slate-600"
+              className="w-full rounded-xl bg-primary p-3 font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50"
             >
               {isExporting ? "Preparing..." : loading ? "Loading..." : "⬇️ Print / Save PDF"}
             </button>
           </div>
 
-          <div className="border-t border-white/10 pt-4 text-xs text-slate-400">
-            <p className="mb-2 font-semibold text-slate-300">Keyboard Shortcuts:</p>
+          <div className="border-t border-border pt-4 text-xs text-muted-foreground">
+            <p className="mb-2 font-semibold text-foreground">Keyboard Shortcuts:</p>
             <ul className="space-y-1">
               <li>
-                <code className="rounded bg-slate-800 px-1.5 py-0.5 text-slate-200">Ctrl+P</code> to print
+                <code className="rounded bg-muted px-1.5 py-0.5 text-foreground">Ctrl+P</code> to print
               </li>
               <li>
-                <code className="rounded bg-slate-800 px-1.5 py-0.5 text-slate-200">Ctrl+S</code> to save
+                <code className="rounded bg-muted px-1.5 py-0.5 text-foreground">Ctrl+S</code> to save
               </li>
             </ul>
           </div>
@@ -346,17 +346,17 @@ export default function PrintPage() {
       {/* Main Preview Area */}
       <div id="print-main" className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {/* Toolbar */}
-        <div id="print-toolbar" className="flex items-center justify-between border-b border-white/10 bg-slate-900/70 p-4 backdrop-blur-xl">
-          <h2 className="text-lg font-bold text-white">Preview</h2>
-          {loading && <span className="text-sm text-slate-400">Loading...</span>}
+        <div id="print-toolbar" className="flex items-center justify-between border-b border-border bg-card p-4">
+          <h2 className="text-lg font-semibold">Preview</h2>
+          {loading && <span className="text-sm text-muted-foreground">Loading...</span>}
         </div>
 
         {/* Content Preview */}
-        <div id="print-scroll" className="flex-1 overflow-auto bg-slate-800/40 p-3 lg:p-6">
+        <div id="print-scroll" className="flex-1 overflow-auto bg-background p-3 lg:p-6">
           <div
             ref={contentRef}
             id="print-canvas"
-            className="mx-auto min-h-full bg-white shadow-2xl ring-1 ring-black/30"
+            className="mx-auto min-h-full bg-card shadow-sm ring-1 ring-border"
             style={{
               width: `${activePaper.widthIn}in`,
               minHeight: `${activePaper.heightIn}in`,
@@ -364,7 +364,7 @@ export default function PrintPage() {
           >
             {loading ? (
               <div className="flex h-full items-center justify-center">
-                <span className="text-slate-500">Loading data...</span>
+                <span className="text-muted-foreground">Loading data...</span>
               </div>
             ) : (
               <div

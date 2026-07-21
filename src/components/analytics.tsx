@@ -443,8 +443,8 @@ export function Analytics() {
                 <p className="text-sm text-muted-foreground mt-0.5">30-day trend line and rolling average</p>
               </div>
               <div className="text-right text-[10px] uppercase tracking-wider text-muted-foreground space-y-0.5">
-                <div>Daily Use Score: <span className="font-bold text-foreground">{round2(state.plannedUse30 / 30)}</span></div>
-                <div>7-Day Average: <span className="font-bold text-primary">{round2(recentConsumption)}</span></div>
+                <div>Daily Use Score: <span className="font-semibold text-foreground">{round2(state.plannedUse30 / 30)}</span></div>
+                <div>7-Day Average: <span className="font-semibold text-foreground">{round2(recentConsumption)}</span></div>
               </div>
             </div>
             <div className="h-[350px] w-full">
@@ -509,7 +509,7 @@ export function Analytics() {
                   </div>
                   <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
                     <div
-                      className={`h-full transition-all duration-500 ${row.riskValue > 70 ? 'bg-destructive' : row.riskValue > 40 ? 'bg-amber-500' : 'bg-primary'
+                      className={`h-full transition-all duration-500 ${row.riskValue > 70 ? 'bg-foreground' : row.riskValue > 40 ? 'bg-muted-foreground' : 'bg-primary'
                         }`}
                       style={{ width: `${clamp(row.riskValue, 5, 100)}%` }}
                     />
@@ -538,8 +538,8 @@ export function Analytics() {
                       <p className="text-[10px] text-muted-foreground">Weekly use: {round2(item.weeklyUseBottles)}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-black text-primary">{item.batchesToMake}</p>
-                      <p className="text-[10px] uppercase tracking-tighter text-muted-foreground font-bold">batches</p>
+                      <p className="text-sm font-semibold text-foreground">{item.batchesToMake}</p>
+                      <p className="text-[10px] uppercase tracking-tighter text-muted-foreground font-semibold">batches</p>
                     </div>
                   </div>
                 ))
@@ -597,8 +597,8 @@ export function Analytics() {
                   state.recentAdjustments.map((item) => (
                     <div key={item.id} className="rounded-lg border border-border bg-background p-3 text-xs">
                       <div className="flex justify-between gap-2 mb-2">
-                        <span className="font-bold truncate">{item.premixName}</span>
-                        <span className={`font-black ${item.delta >= 0 ? "text-emerald-600" : "text-rose-600"}`}>{formatSigned(item.delta)}</span>
+                        <span className="font-semibold truncate">{item.premixName}</span>
+                        <span className="font-semibold text-foreground">{formatSigned(item.delta)}</span>
                       </div>
                       <div className="flex justify-between items-center text-[10px] text-muted-foreground">
                         <span>{formatDate(item.createdAt)}</span>
@@ -618,8 +618,8 @@ export function Analytics() {
                   state.recentProduction.map((item) => (
                     <div key={item.id} className="rounded-lg border border-border bg-background p-3 text-xs">
                       <div className="flex justify-between gap-2 mb-2">
-                        <span className="font-bold truncate">{item.cocktailName}</span>
-                        <span className="font-black text-primary">+{round2(item.amount)}</span>
+                        <span className="font-semibold truncate">{item.cocktailName}</span>
+                        <span className="font-semibold text-foreground">+{round2(item.amount)}</span>
                       </div>
                       <div className="flex justify-between items-center text-[10px] text-muted-foreground">
                         <span>{formatDate(item.timestamp)}</span>
@@ -645,9 +645,9 @@ export function Analytics() {
                 <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-2">Model Use</p>
                 <p className="text-2xl font-black">{round2(state.plannedUse30)}</p>
               </div>
-              <div className="rounded-lg border border-border bg-card shadow-inner p-4 text-center">
-                <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-2">30d Gap</p>
-                <p className={`text-2xl font-black ${state.balanceGap30 >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+              <div className="rounded-lg border border-border bg-background p-4 text-center">
+                <p className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider mb-2">30d Gap</p>
+                <p className="text-2xl font-semibold text-foreground">
                   {formatSigned(state.balanceGap30)}
                 </p>
               </div>

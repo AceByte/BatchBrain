@@ -1192,27 +1192,27 @@ export function Dashboard() {
 
         {/* Global Notifications / Status */}
         {(lowPremixCount > 0 || pendingChanges.size > 0) && (
-          <div className="flex flex-wrap items-center gap-2 px-4 py-2 bg-muted/30 border-b border-border print:hidden">
+          <div className="flex flex-wrap items-center gap-2 border-b border-border bg-muted/30 px-4 py-2 print:hidden">
             {lowPremixCount > 0 && (
-              <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800">
+              <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                 {lowPremixCount} low stock items
               </span>
             )}
             {pendingChanges.size > 0 && (
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-800">
+                <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                   {pendingChanges.size} unsaved changes
                 </span>
                 <button
                   onClick={savePendingChanges}
                   disabled={isSaving}
-                  className="text-[10px] font-bold text-emerald-600 hover:underline disabled:opacity-50"
+                  className="text-[10px] font-bold text-foreground hover:underline disabled:opacity-50"
                 >
                   Save Now
                 </button>
                 <button
                   onClick={discardPendingChanges}
-                  className="text-[10px] font-bold text-rose-600 hover:underline"
+                  className="text-[10px] font-bold text-foreground hover:underline"
                 >
                   Discard
                 </button>
@@ -1244,14 +1244,9 @@ export function Dashboard() {
               {data?.prepPlan.reduce((sum, item) => sum + item.batchesToMake, 0) ?? 0}
             </p>
           </div>
-          <div className={`rounded-xl border p-4 shadow-sm ${lowPremixCount > 0
-            ? "border-amber-200 bg-amber-50"
-            : "border-border bg-card"
-            }`}>
-            <p className={`text-xs font-medium uppercase tracking-wider ${lowPremixCount > 0 ? "text-amber-800" : "text-muted-foreground"
-              }`}>Low Stock Items</p>
-            <p className={`mt-1 text-2xl font-bold ${lowPremixCount > 0 ? "text-amber-900" : ""
-              }`}>
+          <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Low Stock Items</p>
+            <p className="mt-1 text-2xl font-bold text-foreground">
               {lowPremixCount}
             </p>
           </div>
@@ -1328,7 +1323,7 @@ export function Dashboard() {
                   </select>
                   <button
                     onClick={() => setShowProductionForm(true)}
-                    className="inline-flex h-9 items-center justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-emerald-700"
+                    className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
                   >
                     Log Production
                   </button>
@@ -1336,14 +1331,10 @@ export function Dashboard() {
               </div>
 
               {lowStockPremixes.length > 0 && (
-                <div className={`rounded-xl border p-4 shadow-sm print:hidden ${criticalStockPremixes.length > 0
-                  ? "border-amber-200 bg-amber-50"
-                  : "border-sky-200 bg-sky-50"
-                  }`}>
+                <div className="rounded-xl border border-border bg-card p-4 shadow-sm print:hidden">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h3 className={`text-sm font-bold uppercase tracking-wider ${criticalStockPremixes.length > 0 ? "text-amber-800" : "text-sky-800"
-                        }`}>
+                      <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">
                         {criticalStockPremixes.length > 0 ? "Critical Stock Alert" : "Stock Warning"}
                       </h3>
                       <p className="mt-1 text-sm text-foreground/80">
@@ -1355,20 +1346,14 @@ export function Dashboard() {
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {lowStockPremixes.slice(0, 8).map((premix) => {
-                      const isCritical = premix.currentBottles < premix.thresholdBottles * 0.5;
-                      return (
-                        <div
-                          key={`low-stock-${premix.id}`}
-                          className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium border ${isCritical
-                            ? "bg-amber-100 text-amber-900 border-amber-200"
-                            : "bg-sky-100 text-sky-900 border-sky-200"
-                            }`}
-                        >
-                          {premix.name} ({premix.currentBottles.toFixed(1)})
-                        </div>
-                      );
-                    })}
+                    {lowStockPremixes.slice(0, 8).map((premix) => (
+                      <div
+                        key={`low-stock-${premix.id}`}
+                        className="inline-flex items-center rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
+                      >
+                        {premix.name} ({premix.currentBottles.toFixed(1)})
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -1394,7 +1379,7 @@ export function Dashboard() {
                       <button
                         onClick={() => bulkArchiveOrRestorePremixes(selectedPremixes, true)}
                         disabled={archiveTarget === "bulk:premix"}
-                        className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium text-rose-600 shadow-sm transition-colors hover:bg-rose-50"
+                        className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
                       >
                         Archive
                       </button>
@@ -1444,19 +1429,17 @@ export function Dashboard() {
                             />
                             <h3 className="text-sm font-bold tracking-tight">{premix.name}</h3>
                             {isCritical && (
-                              <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+                              <span className="h-2 w-2 rounded-full bg-primary/70 animate-pulse" />
                             )}
                             {isLow && !isCritical && (
-                              <span className="h-2 w-2 rounded-full bg-amber-500" />
+                              <span className="h-2 w-2 rounded-full bg-primary/60" />
                             )}
                           </div>
 
                           <div className="mt-3 grid grid-cols-2 gap-4">
                             <div>
                               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Stock</p>
-                              <p className={`text-lg font-bold ${isCritical ? "text-rose-600" : isLow ? "text-amber-600" : ""
-                                }`}>
-                                {premix.currentBottles.toFixed(1)}
+                              <p className={`text-lg font-bold ${isCritical || isLow ? "text-foreground" : ""}`}>                                {premix.currentBottles.toFixed(1)}
                                 {hasChange && (
                                   <span className="ml-1 text-[10px] text-muted-foreground font-normal">
                                     ({originalValue.toFixed(1)})
@@ -1497,7 +1480,7 @@ export function Dashboard() {
                           </button>
                           <button
                             onClick={() => setArchiveState("premix", premix.sourceCocktailId, true)}
-                            className="h-7 w-7 inline-flex items-center justify-center rounded-md hover:bg-rose-50 text-muted-foreground hover:text-rose-600 transition-colors"
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                             title="Archive"
                           >
                             <span className="text-xs">Arc</span>
@@ -1685,7 +1668,7 @@ export function Dashboard() {
                                 </button>
                                 <button
                                   onClick={() => setArchiveState("cocktail", cocktail.sourceCocktailId, true)}
-                                  className="h-7 w-7 inline-flex items-center justify-center rounded-md hover:bg-rose-50 text-muted-foreground hover:text-rose-600 transition-colors"
+                                  className="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                                   title="Archive"
                                 >
                                   <span className="text-xs">Arc</span>
@@ -1820,7 +1803,7 @@ export function Dashboard() {
                                     End: {item.projectedEndBottles.toFixed(1)} / Threshold: {item.thresholdBottles.toFixed(1)}
                                   </p>
                                 </div>
-                                <div className={`flex flex-col items-center justify-center rounded-md px-2 py-1 ${badgeColor} text-white`}>
+                                <div className={`flex flex-col items-center justify-center rounded-md px-2 py-1 ${badgeColor} text-foreground`}>
                                   <span className="text-[8px] font-bold uppercase">Make</span>
                                   <span className="text-sm font-black">{item.batchesToMake}</span>
                                 </div>
@@ -1845,9 +1828,9 @@ export function Dashboard() {
 
                     return (
                       <>
-                        {criticalItems.length > 0 && <PrepGroup title="Critical" items={criticalItems} badgeColor="bg-rose-600" />}
-                        {urgentItems.length > 0 && <PrepGroup title="Urgent" items={urgentItems} badgeColor="bg-amber-600" />}
-                        {normalItems.length > 0 && <PrepGroup title="Regular" items={normalItems} badgeColor="bg-primary" />}
+                        {criticalItems.length > 0 && <PrepGroup title="Critical" items={criticalItems} badgeColor="bg-primary" />}
+                        {urgentItems.length > 0 && <PrepGroup title="Urgent" items={urgentItems} badgeColor="bg-primary/80" />}
+                        {normalItems.length > 0 && <PrepGroup title="Regular" items={normalItems} badgeColor="bg-primary/60" />}
                       </>
                     );
                   })()}
@@ -2076,12 +2059,7 @@ export function Dashboard() {
           toasts.length > 0 && (
             <div className="pointer-events-none fixed right-4 top-4 z-[70] flex w-full max-w-sm flex-col gap-2">
               {toasts.map((toast) => {
-                const tone =
-                  toast.kind === "success"
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                    : toast.kind === "error"
-                      ? "border-rose-200 bg-rose-50 text-rose-900"
-                      : "border-sky-200 bg-sky-50 text-sky-900";
+                const tone = "border-border bg-card text-foreground";
 
                 return (
                   <div
@@ -2103,7 +2081,7 @@ export function Dashboard() {
                 <h2 className="mb-4 text-xl font-semibold text-foreground">Add Cocktail</h2>
 
                 {addCocktailError && (
-                  <div className="mb-4 rounded-lg bg-red-900/30 p-3 text-sm font-semibold text-red-200 ring-1 ring-red-700">
+                  <div className="mb-4 rounded-lg bg-muted p-3 text-sm font-semibold text-foreground ring-1 ring-border">
                     {addCocktailError}
                   </div>
                 )}
@@ -2111,21 +2089,21 @@ export function Dashboard() {
                 <div className="space-y-4">
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="mb-1 block text-sm font-semibold text-slate-300">Cocktail Name</label>
+                      <label className="mb-1 block text-sm font-semibold text-muted-foreground">Cocktail Name</label>
                       <input
                         type="text"
                         value={addCocktailForm.name}
                         onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, name: e.target.value }))}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                         placeholder="e.g., Naked and Famous"
                       />
                     </div>
                     <div>
-                      <label className="mb-1 block text-sm font-semibold text-slate-300">Category</label>
+                      <label className="mb-1 block text-sm font-semibold text-muted-foreground">Category</label>
                       <select
                         value={addCocktailForm.category}
                         onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, category: e.target.value as AddCocktailForm["category"] }))}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                       >
                         <option value="REGULAR">Regular</option>
                         <option value="SEASONAL">Seasonal</option>
@@ -2137,22 +2115,22 @@ export function Dashboard() {
 
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="mb-1 block text-sm font-semibold text-slate-300">Glassware</label>
+                      <label className="mb-1 block text-sm font-semibold text-muted-foreground">Glassware</label>
                       <input
                         type="text"
                         value={addCocktailForm.glassware}
                         onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, glassware: e.target.value }))}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                         placeholder="e.g., Coupe"
                       />
                     </div>
                     <div>
-                      <label className="mb-1 block text-sm font-semibold text-slate-300">Garnish</label>
+                      <label className="mb-1 block text-sm font-semibold text-muted-foreground">Garnish</label>
                       <input
                         type="text"
                         value={addCocktailForm.garnish}
                         onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, garnish: e.target.value }))}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                         placeholder="e.g., Lime twist"
                       />
                     </div>
@@ -2160,22 +2138,22 @@ export function Dashboard() {
 
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="mb-1 block text-sm font-semibold text-slate-300">Technique</label>
+                      <label className="mb-1 block text-sm font-semibold text-muted-foreground">Technique</label>
                       <textarea
                         value={addCocktailForm.technique}
                         onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, technique: e.target.value }))}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                         rows={2}
                         placeholder="e.g., Shake then fine strain"
                       />
                     </div>
                     <div>
-                      <label className="mb-1 block text-sm font-semibold text-slate-300">Straining</label>
+                      <label className="mb-1 block text-sm font-semibold text-muted-foreground">Straining</label>
                       <input
                         type="text"
                         value={addCocktailForm.straining}
                         onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, straining: e.target.value }))}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                         placeholder="e.g., Fine"
                       />
                     </div>
@@ -2183,17 +2161,17 @@ export function Dashboard() {
 
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="mb-1 block text-sm font-semibold text-slate-300">Serve Extras</label>
+                      <label className="mb-1 block text-sm font-semibold text-muted-foreground">Serve Extras</label>
                       <textarea
                         value={addCocktailForm.serveExtras}
                         onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, serveExtras: e.target.value }))}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                         rows={2}
                         placeholder="Optional serve notes"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-300">
+                      <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-muted-foreground">
                         <input
                           type="checkbox"
                           checked={addCocktailForm.createPremix}
@@ -2213,11 +2191,11 @@ export function Dashboard() {
                           }}
                           className="peer sr-only"
                         />
-                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-slate-500 bg-slate-900/80 shadow-inner transition-all duration-150 peer-checked:border-emerald-300 peer-checked:bg-emerald-500/25 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-300/70 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-slate-900">
+                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-border bg-background/80 shadow-inner transition-all duration-150 peer-checked:border-primary peer-checked:bg-primary/10 peer-focus-visible:ring-2 peer-focus-visible:ring-primary/70 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-slate-900">
                           <svg
                             viewBox="0 0 20 20"
                             fill="none"
-                            className="h-3.5 w-3.5 text-emerald-100 opacity-0 transition-opacity duration-150 peer-checked:opacity-100"
+                            className="h-3.5 w-3.5 text-primary-foreground opacity-0 transition-opacity duration-150 peer-checked:opacity-100"
                             aria-hidden="true"
                           >
                             <path
@@ -2231,7 +2209,7 @@ export function Dashboard() {
                         </span>
                         Also add as premix
                       </label>
-                      <p className="text-xs font-medium text-slate-400">
+                      <p className="text-xs font-medium text-muted-foreground">
                         Turning this on will automatically mark the cocktail as batched.
                       </p>
                     </div>
@@ -2239,13 +2217,13 @@ export function Dashboard() {
 
                   <div>
                     <div className="mb-2 flex items-center justify-between">
-                      <label className="block text-sm font-semibold text-slate-300">Specs</label>
+                      <label className="block text-sm font-semibold text-muted-foreground">Specs</label>
                       <button
                         onClick={() => setAddCocktailForm((prev) => ({
                           ...prev,
                           specs: [...prev.specs, { ingredient: "", ml: 0 }],
                         }))}
-                        className="rounded bg-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-600"
+                        className="rounded bg-muted px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-muted"
                       >
                         + Line
                       </button>
@@ -2262,7 +2240,7 @@ export function Dashboard() {
                               setAddCocktailForm((prev) => ({ ...prev, specs }));
                             }}
                             placeholder="Ingredient"
-                            className="min-w-0 rounded-lg bg-slate-800 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="min-w-0 rounded-lg bg-background px-3 py-2 text-sm text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                           <input
                             type="number"
@@ -2274,7 +2252,7 @@ export function Dashboard() {
                             }}
                             placeholder="ml"
                             step={0.01}
-                            className="rounded-lg bg-slate-800 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="rounded-lg bg-background px-3 py-2 text-sm text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                           <button
                             onClick={() => {
@@ -2282,7 +2260,7 @@ export function Dashboard() {
                               const specs = addCocktailForm.specs.filter((_, i) => i !== idx);
                               setAddCocktailForm((prev) => ({ ...prev, specs }));
                             }}
-                            className="h-10 w-10 rounded bg-red-700 text-xs font-semibold text-white hover:bg-red-600"
+                            className="h-10 w-10 rounded bg-muted text-xs font-semibold text-foreground hover:bg-accent"
                             title="Remove line"
                           >
                             X
@@ -2293,50 +2271,50 @@ export function Dashboard() {
                   </div>
 
                   {addCocktailForm.createPremix && (
-                    <div className="space-y-3 rounded-xl bg-slate-800/60 p-4 ring-1 ring-slate-700">
-                      <h3 className="text-sm font-bold uppercase tracking-wide text-slate-200">Premix Setup</h3>
+                    <div className="space-y-3 rounded-xl bg-background/80 p-4 ring-1 ring-border">
+                      <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">Premix Setup</h3>
                       <div className="grid gap-3 sm:grid-cols-3">
                         <div>
-                          <label className="mb-1 block text-xs font-semibold text-slate-300">Current Bottles</label>
+                          <label className="mb-1 block text-xs font-semibold text-muted-foreground">Current Bottles</label>
                           <input
                             type="number"
                             value={addCocktailForm.premixCurrentBottles}
                             onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, premixCurrentBottles: Number(e.target.value) || 0 }))}
                             step={0.01}
-                            className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full rounded-lg bg-background px-3 py-2 text-sm text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                         </div>
                         <div>
-                          <label className="mb-1 block text-xs font-semibold text-slate-300">Threshold Bottles</label>
+                          <label className="mb-1 block text-xs font-semibold text-muted-foreground">Threshold Bottles</label>
                           <input
                             type="number"
                             value={addCocktailForm.premixThresholdBottles}
                             onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, premixThresholdBottles: Number(e.target.value) || 0 }))}
                             step={0.01}
-                            className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full rounded-lg bg-background px-3 py-2 text-sm text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                         </div>
                         <div>
-                          <label className="mb-1 block text-xs font-semibold text-slate-300">Target Bottles</label>
+                          <label className="mb-1 block text-xs font-semibold text-muted-foreground">Target Bottles</label>
                           <input
                             type="number"
                             value={addCocktailForm.premixTargetBottles}
                             onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, premixTargetBottles: Number(e.target.value) || 0 }))}
                             step={0.01}
-                            className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full rounded-lg bg-background px-3 py-2 text-sm text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                         </div>
                       </div>
 
                       <div>
                         <div className="mb-2 flex items-center justify-between">
-                          <label className="text-xs font-semibold text-slate-300">Premix Recipe Items</label>
+                          <label className="text-xs font-semibold text-muted-foreground">Premix Recipe Items</label>
                           <button
                             onClick={() => setAddCocktailForm((prev) => ({
                               ...prev,
                               premixRecipeItems: [...prev.premixRecipeItems, { ingredientName: "", amountPerBatch: 0, unit: "parts" }],
                             }))}
-                            className="rounded bg-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-100 hover:bg-slate-600"
+                            className="rounded bg-muted px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-muted"
                           >
                             + Line
                           </button>
@@ -2353,7 +2331,7 @@ export function Dashboard() {
                                   setAddCocktailForm((prev) => ({ ...prev, premixRecipeItems }));
                                 }}
                                 placeholder="Ingredient"
-                                className="min-w-0 rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="min-w-0 rounded-lg bg-background px-3 py-2 text-sm text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                               />
                               <input
                                 type="number"
@@ -2365,7 +2343,7 @@ export function Dashboard() {
                                 }}
                                 step={0.01}
                                 placeholder="Amount"
-                                className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="rounded-lg bg-background px-3 py-2 text-sm text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                               />
                               <input
                                 type="text"
@@ -2376,7 +2354,7 @@ export function Dashboard() {
                                   setAddCocktailForm((prev) => ({ ...prev, premixRecipeItems }));
                                 }}
                                 placeholder="parts"
-                                className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="rounded-lg bg-background px-3 py-2 text-sm text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                               />
                               <button
                                 onClick={() => {
@@ -2384,7 +2362,7 @@ export function Dashboard() {
                                   const premixRecipeItems = addCocktailForm.premixRecipeItems.filter((_, i) => i !== idx);
                                   setAddCocktailForm((prev) => ({ ...prev, premixRecipeItems }));
                                 }}
-                                className="h-10 w-10 rounded bg-red-700 text-xs font-semibold text-white hover:bg-red-600"
+                                className="h-10 w-10 rounded bg-muted text-xs font-semibold text-foreground hover:bg-accent"
                                 title="Remove line"
                               >
                                 X
@@ -2396,21 +2374,21 @@ export function Dashboard() {
 
                       <div className="grid gap-3 sm:grid-cols-2">
                         <div>
-                          <label className="mb-1 block text-xs font-semibold text-slate-300">Premix Note</label>
+                          <label className="mb-1 block text-xs font-semibold text-muted-foreground">Premix Note</label>
                           <textarea
                             value={addCocktailForm.premixNote}
                             onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, premixNote: e.target.value }))}
                             rows={2}
-                            className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full rounded-lg bg-background px-3 py-2 text-sm text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                         </div>
                         <div>
-                          <label className="mb-1 block text-xs font-semibold text-slate-300">Batch Note</label>
+                          <label className="mb-1 block text-xs font-semibold text-muted-foreground">Batch Note</label>
                           <textarea
                             value={addCocktailForm.batchNote}
                             onChange={(e) => setAddCocktailForm((prev) => ({ ...prev, batchNote: e.target.value }))}
                             rows={2}
-                            className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full rounded-lg bg-background px-3 py-2 text-sm text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                         </div>
                       </div>
@@ -2421,14 +2399,14 @@ export function Dashboard() {
                     <button
                       onClick={createCocktail}
                       disabled={addCocktailSaving}
-                      className="flex-1 rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-emerald-600 disabled:opacity-50"
+                      className="flex-1 rounded-lg bg-primary px-4 py-2 font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
                     >
                       {addCocktailSaving ? "Creating..." : "Create Cocktail"}
                     </button>
                     <button
                       onClick={() => setShowAddCocktailModal(false)}
                       disabled={addCocktailSaving}
-                      className="flex-1 rounded-lg bg-slate-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-600 disabled:opacity-50"
+                      className="flex-1 rounded-lg bg-muted px-4 py-2 font-semibold text-foreground transition-colors hover:bg-muted disabled:opacity-50"
                     >
                       Cancel
                     </button>
@@ -2446,26 +2424,26 @@ export function Dashboard() {
               <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-card p-6 shadow-sm">
                 <h2 className="mb-4 text-xl font-semibold text-foreground">Edit Cocktail Spec</h2>
                 {editError && (
-                  <div className="mb-4 rounded-lg bg-red-900/30 p-3 text-sm font-semibold text-red-200 ring-1 ring-red-700">
+                  <div className="mb-4 rounded-lg bg-muted p-3 text-sm font-semibold text-foreground ring-1 ring-border">
                     {editError}
                   </div>
                 )}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-1">Name</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Name</label>
                     <input
                       type="text"
                       value={editingCocktail.name}
                       onChange={(e) => editingCocktail && setEditingCocktail({ ...editingCocktail, name: e.target.value })}
-                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-1">Category</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Category</label>
                     <select
                       value={editingCocktail.category}
                       onChange={(e) => editingCocktail && setEditingCocktail({ ...editingCocktail, category: e.target.value as EditingCocktail["category"] })}
-                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       <option value="REGULAR">Regular</option>
                       <option value="SEASONAL">Seasonal</option>
@@ -2474,46 +2452,46 @@ export function Dashboard() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-1">Glassware</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Glassware</label>
                     <input
                       type="text"
                       value={editingCocktail.glassware || ""}
                       onChange={(e) => editingCocktail && setEditingCocktail({ ...editingCocktail, glassware: e.target.value || null })}
-                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="e.g., Coupe glass"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-1">Technique</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Technique</label>
                     <textarea
                       value={editingCocktail.technique || ""}
                       onChange={(e) => editingCocktail && setEditingCocktail({ ...editingCocktail, technique: e.target.value || null })}
-                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="e.g., Shake and strain"
                       rows={2}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-1">Straining</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Straining</label>
                     <input
                       type="text"
                       value={editingCocktail.straining || ""}
                       onChange={(e) => editingCocktail && setEditingCocktail({ ...editingCocktail, straining: e.target.value || null })}
-                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="e.g., Fine strain"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-1">Garnish</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Garnish</label>
                     <input
                       type="text"
                       value={editingCocktail.garnish || ""}
                       onChange={(e) => editingCocktail && setEditingCocktail({ ...editingCocktail, garnish: e.target.value || null })}
-                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="e.g., Orange twist"
                     />
                   </div>
-                  <label htmlFor="isBatched" className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-300">
+                  <label htmlFor="isBatched" className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-muted-foreground">
                     <input
                       type="checkbox"
                       id="isBatched"
@@ -2521,11 +2499,11 @@ export function Dashboard() {
                       onChange={(e) => editingCocktail && setEditingCocktail({ ...editingCocktail, isBatched: e.target.checked })}
                       className="peer sr-only"
                     />
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-slate-500 bg-slate-900/80 shadow-inner transition-all duration-150 peer-checked:border-blue-300 peer-checked:bg-blue-500/25 peer-focus-visible:ring-2 peer-focus-visible:ring-blue-300/70 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-slate-900">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-border bg-background/80 shadow-inner transition-all duration-150 peer-checked:border-primary peer-checked:bg-primary/10 peer-focus-visible:ring-2 peer-focus-visible:ring-primary/70 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-slate-900">
                       <svg
                         viewBox="0 0 20 20"
                         fill="none"
-                        className="h-3.5 w-3.5 text-blue-100 opacity-0 transition-opacity duration-150 peer-checked:opacity-100"
+                        className="h-3.5 w-3.5 text-primary-foreground opacity-0 transition-opacity duration-150 peer-checked:opacity-100"
                         aria-hidden="true"
                       >
                         <path
@@ -2540,31 +2518,31 @@ export function Dashboard() {
                     Batched cocktail
                   </label>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-1">Serve Extras</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Serve Extras</label>
                     <textarea
                       value={editingCocktail.serveExtras || ""}
                       onChange={(e) => editingCocktail && setEditingCocktail({ ...editingCocktail, serveExtras: e.target.value || null })}
-                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="e.g., Fresh mint sprig"
                       rows={2}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-1">Premix Note</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Premix Note</label>
                     <textarea
                       value={editingCocktail.premixNote || ""}
                       onChange={(e) => editingCocktail && setEditingCocktail({ ...editingCocktail, premixNote: e.target.value || null })}
-                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="Notes about premix usage"
                       rows={2}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-1">Batch Note</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Batch Note</label>
                     <textarea
                       value={editingCocktail.batchNote || ""}
                       onChange={(e) => editingCocktail && setEditingCocktail({ ...editingCocktail, batchNote: e.target.value || null })}
-                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="Notes about batch preparation"
                       rows={2}
                     />
@@ -2573,14 +2551,14 @@ export function Dashboard() {
                     <button
                       onClick={saveEditingCocktail}
                       disabled={editSaving}
-                      className="flex-1 rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+                      className="flex-1 rounded-lg bg-primary px-4 py-2 font-semibold text-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
                     >
                       {editSaving ? "Saving..." : "Save Changes"}
                     </button>
                     <button
                       onClick={() => setEditingCocktail(null)}
                       disabled={editSaving}
-                      className="flex-1 rounded-lg bg-slate-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-600 disabled:opacity-50"
+                      className="flex-1 rounded-lg bg-muted px-4 py-2 font-semibold text-foreground transition-colors hover:bg-muted disabled:opacity-50"
                     >
                       Cancel
                     </button>
@@ -2598,66 +2576,66 @@ export function Dashboard() {
               <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-card p-6 shadow-sm">
                 <h2 className="mb-4 text-xl font-semibold text-foreground">Edit Premix</h2>
                 {editError && (
-                  <div className="mb-4 rounded-lg bg-red-900/30 p-3 text-sm font-semibold text-red-200 ring-1 ring-red-700">
+                  <div className="mb-4 rounded-lg bg-muted p-3 text-sm font-semibold text-foreground ring-1 ring-border">
                     {editError}
                   </div>
                 )}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-1">Name</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-1">Name</label>
                     <input
                       type="text"
                       value={editingPremix.name}
                       onChange={(e) => editingPremix && setEditingPremix({ ...editingPremix, name: e.target.value })}
-                      className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-300 mb-1">Current Bottles</label>
+                      <label className="block text-sm font-semibold text-muted-foreground mb-1">Current Bottles</label>
                       <input
                         type="number"
                         value={editingPremix.currentBottles}
                         onChange={(e) => editingPremix && setEditingPremix({ ...editingPremix, currentBottles: parseFloat(e.target.value) || 0 })}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                         step={0.01}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-300 mb-1">Threshold Bottles</label>
+                      <label className="block text-sm font-semibold text-muted-foreground mb-1">Threshold Bottles</label>
                       <input
                         type="number"
                         value={editingPremix.thresholdBottles}
                         onChange={(e) => editingPremix && setEditingPremix({ ...editingPremix, thresholdBottles: parseFloat(e.target.value) || 0 })}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                         step={0.01}
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-300 mb-1">Target Bottles</label>
+                      <label className="block text-sm font-semibold text-muted-foreground mb-1">Target Bottles</label>
                       <input
                         type="number"
                         value={editingPremix.targetBottles}
                         onChange={(e) => editingPremix && setEditingPremix({ ...editingPremix, targetBottles: parseFloat(e.target.value) || 0 })}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                         step={0.01}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-300 mb-1">Batch Yield Bottles</label>
+                      <label className="block text-sm font-semibold text-muted-foreground mb-1">Batch Yield Bottles</label>
                       <input
                         type="number"
                         value={editingPremix.batchYieldBottles}
                         onChange={(e) => editingPremix && setEditingPremix({ ...editingPremix, batchYieldBottles: parseFloat(e.target.value) || 0 })}
-                        className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary"
                         step={0.01}
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-2">Recipe Items</label>
+                    <label className="block text-sm font-semibold text-muted-foreground mb-2">Recipe Items</label>
                     <div className="space-y-2">
                       {editingPremix.recipeItems.map((item, idx) => (
                         <div key={idx} className="grid grid-cols-[minmax(0,1fr)_5rem_4.5rem_auto] items-end gap-2">
@@ -2670,7 +2648,7 @@ export function Dashboard() {
                               setEditingPremix({ ...editingPremix, recipeItems: updated });
                             }}
                             placeholder="Ingredient"
-                            className="min-w-0 rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="min-w-0 rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                           />
                           <input
                             type="number"
@@ -2681,7 +2659,7 @@ export function Dashboard() {
                               setEditingPremix({ ...editingPremix, recipeItems: updated });
                             }}
                             placeholder="Amount"
-                            className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                             step={0.01}
                           />
                           <input
@@ -2693,14 +2671,14 @@ export function Dashboard() {
                               setEditingPremix({ ...editingPremix, recipeItems: updated });
                             }}
                             placeholder="ml/g"
-                            className="w-full rounded-lg bg-slate-800 px-3 py-2 text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="w-full rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                           />
                           <button
                             onClick={() => {
                               const updated = editingPremix.recipeItems.filter((_, i) => i !== idx);
                               setEditingPremix({ ...editingPremix, recipeItems: updated });
                             }}
-                            className="h-10 w-10 rounded bg-red-700 text-xs font-semibold text-white hover:bg-red-600"
+                            className="h-10 w-10 rounded bg-muted text-xs font-semibold text-foreground hover:bg-accent"
                           >
                             X
                           </button>
@@ -2712,14 +2690,14 @@ export function Dashboard() {
                     <button
                       onClick={saveEditingPremix}
                       disabled={editSaving}
-                      className="flex-1 rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+                      className="flex-1 rounded-lg bg-primary px-4 py-2 font-semibold text-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
                     >
                       {editSaving ? "Saving..." : "Save Changes"}
                     </button>
                     <button
                       onClick={() => setEditingPremix(null)}
                       disabled={editSaving}
-                      className="flex-1 rounded-lg bg-slate-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-600 disabled:opacity-50"
+                      className="flex-1 rounded-lg bg-muted px-4 py-2 font-semibold text-foreground transition-colors hover:bg-muted disabled:opacity-50"
                     >
                       Cancel
                     </button>
