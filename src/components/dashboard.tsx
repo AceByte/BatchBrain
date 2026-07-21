@@ -2,143 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ProductionForm } from "./production-form";
-
-type DashboardData = {
-  premixes: Array<{
-    id: number;
-    sourceCocktailId: string;
-    name: string;
-    isArchived: boolean;
-    currentBottles: number;
-    thresholdBottles: number;
-    targetBottles: number;
-    batchYieldBottles: number;
-    recipeItems: Array<{
-      ingredientName: string;
-      amountPerBatch: number;
-      unit: string;
-    }>;
-  }>;
-  cocktails: Array<{
-    id: number;
-    sourceCocktailId: string;
-    name: string;
-    isArchived: boolean;
-    category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS";
-    glassware: string | null;
-    technique: string | null;
-    straining: string | null;
-    garnish: string | null;
-    isBatched: boolean;
-    serveExtras: string | null;
-    premixNote: string | null;
-    batchNote: string | null;
-    specs: Array<{
-      ingredient: string;
-      ml: number;
-    }>;
-  }>;
-  prepPlan: Array<{
-    premixId: number;
-    premixName: string;
-    currentBottles: number;
-    thresholdBottles: number;
-    targetBottles: number;
-    weeklyUseBottles: number;
-    projectedEndBottles: number;
-    bottlesToProduce: number;
-    batchesToMake: number;
-    ingredients: Array<{
-      ingredientName: string;
-      unit: string;
-      totalAmount: number;
-    }>;
-  }>;
-  ingredientTotals: Array<{
-    ingredientName: string;
-    unit: string;
-    totalAmount: number;
-  }>;
-};
+import type { AddCocktailForm, DashboardData, DashboardView, EditingCocktail, EditingPremix, Toast, UndoAdjustment } from "@/lib/dashboard-types";
+import { EmptyState, Panel, SectionHeader, StatCard } from "./dashboard/dashboard-ui";
 
 function formatCategory(category: DashboardData["cocktails"][number]["category"]) {
   return category.charAt(0) + category.slice(1).toLowerCase();
 }
-
-type EditingCocktail = {
-  id: number;
-  sourceCocktailId: string;
-  name: string;
-  category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS";
-  glassware: string | null;
-  technique: string | null;
-  straining: string | null;
-  garnish: string | null;
-  isBatched: boolean;
-  serveExtras: string | null;
-  premixNote: string | null;
-  batchNote: string | null;
-  specs: Array<{
-    ingredient: string;
-    ml: number;
-  }>;
-};
-
-type EditingPremix = {
-  id: number;
-  sourceCocktailId: string;
-  name: string;
-  currentBottles: number;
-  thresholdBottles: number;
-  targetBottles: number;
-  batchYieldBottles: number;
-  recipeItems: Array<{
-    ingredientName: string;
-    amountPerBatch: number;
-    unit: string;
-  }>;
-};
-
-type AddCocktailForm = {
-  name: string;
-  category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS";
-  glassware: string;
-  technique: string;
-  straining: string;
-  garnish: string;
-  isBatched: boolean;
-  serveExtras: string;
-  premixNote: string;
-  batchNote: string;
-  specs: Array<{
-    ingredient: string;
-    ml: number;
-  }>;
-  createPremix: boolean;
-  premixCurrentBottles: number;
-  premixThresholdBottles: number;
-  premixTargetBottles: number;
-  premixRecipeItems: Array<{
-    ingredientName: string;
-    amountPerBatch: number;
-    unit: string;
-  }>;
-};
-
-type Toast = {
-  id: number;
-  kind: "success" | "error" | "info";
-  message: string;
-};
-
-type UndoAdjustment = {
-  expiresAt: number;
-  changes: Array<{
-    id: number;
-    oldValue: number;
-    newValue: number;
-  }>;
-};
 
 const CURRENT_VIEW_KEY = "batchbrain.currentView";
 const COCKTAIL_SEARCH_KEY = "batchbrain.cocktailSearch";
@@ -190,7 +59,6 @@ export function Dashboard() {
   // Draft/edit mode
   const [pendingChanges, setPendingChanges] = useState<Map<number, number>>(new Map());
   const [isSaving, setIsSaving] = useState(false);
-  const [adjustmentNotes, setAdjustmentNotes] = useState("");
   const [showProductionForm, setShowProductionForm] = useState(false);
   const [selectedPremixes, setSelectedPremixes] = useState<Set<number>>(new Set());
   const [selectedArchivedPremixes, setSelectedArchivedPremixes] = useState<Set<number>>(new Set());
@@ -261,8 +129,7 @@ export function Dashboard() {
 
   const categoryFilters = ["ALL", "REGULAR", "SEASONAL", "SIGNATURE", "INGREDIENTS"] as const;
 
-  const viewOrder: Array<"cocktails" | "inventory" | "prep" | "archive"> = ["cocktails", "inventory", "prep", "archive"];
-  const currentViewIndex = viewOrder.indexOf(currentView);
+  const viewOrder: DashboardView[] = ["cocktails", "inventory", "prep", "archive"];
 
   const viewTitles: Record<"cocktails" | "inventory" | "prep" | "archive", string> = {
     cocktails: "Spec Sheet",
@@ -271,6 +138,12 @@ export function Dashboard() {
     archive: "Archive",
   };
 
+  const panelClassName = "rounded-xl border border-border bg-card shadow-sm";
+  const inputClassName = "w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary";
+  const secondaryButtonClassName = "inline-flex items-center justify-center rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent";
+  const primaryButtonClassName = "inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90";
+  const emptyStateClassName = "flex flex-col items-center justify-center rounded-xl border border-dashed border-border p-12 text-center";
+
   const pushToast = useCallback((kind: Toast["kind"], message: string) => {
     const id = Date.now() + Math.floor(Math.random() * 1000);
     setToasts((prev) => [...prev, { id, kind, message }]);
@@ -278,14 +151,6 @@ export function Dashboard() {
       setToasts((prev) => prev.filter((toast) => toast.id !== id));
     }, 3400);
   }, []);
-
-  function shouldIgnoreCardToggle(target: EventTarget | null) {
-    if (!(target instanceof HTMLElement)) {
-      return false;
-    }
-
-    return Boolean(target.closest("button, input, textarea, select, a, [data-no-card-toggle='true']"));
-  }
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -1073,12 +938,13 @@ export function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <div className={`mx-auto flex w-full flex-col gap-4 ${isMobile ? "p-2 pb-36 md:p-6 lg:p-8" : "p-4 md:p-6 lg:p-8"}`}>
-        {/* Top Navbar */}
-        <nav className="flex flex-col gap-4 border-b border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold tracking-tight">BatchBrain</h1>
-            <div className="h-4 w-px bg-border" aria-hidden="true" />
-            <div className="flex items-center gap-1">
+        <nav className="flex flex-col gap-3 border-b border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-3">
+              <h1 className="text-lg font-semibold tracking-tight">BatchBrain</h1>
+              <div className="hidden h-4 w-px bg-border sm:block" aria-hidden="true" />
+            </div>
+            <div className="flex flex-wrap gap-1">
               {viewOrder.map((view) => {
                 const isActive = currentView === view;
                 return (
@@ -1097,39 +963,32 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={loadData}
-                disabled={loading}
-                className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
-                title="Refresh data (F5)"
-              >
-                {loading ? "..." : "Refresh"}
-              </button>
-              {lastUpdated && (
-                <span className="text-[10px] text-muted-foreground">
-                  Updated: {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
-              )}
-            </div>
-
-            <div className="h-4 w-px bg-border" aria-hidden="true" />
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={openAddCocktailModal}
-                className="inline-flex h-8 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
-              >
-                Add Cocktail
-              </button>
-              <a
-                href="/analytics"
-                className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-              >
-                Analytics
-              </a>
-            </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={loadData}
+              disabled={loading}
+              className={`${secondaryButtonClassName} h-8 px-3 text-xs disabled:opacity-50`}
+              title="Refresh data"
+            >
+              {loading ? "Loading..." : "Refresh"}
+            </button>
+            {lastUpdated && (
+              <span className="text-[10px] text-muted-foreground">
+                Updated {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              </span>
+            )}
+            <button
+              onClick={openAddCocktailModal}
+              className={`${primaryButtonClassName} h-8 px-3 text-xs`}
+            >
+              Add Cocktail
+            </button>
+            <a
+              href="/analytics"
+              className={`${secondaryButtonClassName} h-8 px-3 text-xs`}
+            >
+              Analytics
+            </a>
           </div>
         </nav>
 
@@ -1137,13 +996,13 @@ export function Dashboard() {
         {(lowPremixCount > 0 || pendingChanges.size > 0) && (
           <div className="flex flex-wrap items-center gap-2 px-4 py-2 bg-muted/30 border-b border-border print:hidden">
             {lowPremixCount > 0 && (
-              <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+              <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800">
                 {lowPremixCount} low stock items
               </span>
             )}
             {pendingChanges.size > 0 && (
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                <span className="inline-flex items-center rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-800">
                   {pendingChanges.size} unsaved changes
                 </span>
                 <button
@@ -1165,67 +1024,11 @@ export function Dashboard() {
         )}
 
         {isMobile && (
-          <div className="sticky top-2 z-40 rounded-2xl border border-white/10 bg-slate-900/90 p-2 shadow-xl ring-1 ring-slate-700/70 backdrop-blur-xl print:hidden">
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-sm font-extrabold text-white">{viewTitles[currentView]}</p>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tab Controls</p>
-            </div>
-
-            {currentView === "inventory" && (
-              <div className="grid grid-cols-1 gap-2">
-                <input
-                  type="text"
-                  value={premixSearch}
-                  onChange={(e) => setPremixSearch(e.target.value)}
-                  placeholder="Search premixes or ingredients..."
-                  className="w-full rounded-lg bg-slate-800 px-3 py-2 text-xs text-white ring-1 ring-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  <select
-                    value={premixSortBy}
-                    onChange={(e) => setPremixSortBy(e.target.value as "name" | "stock" | "urgency")}
-                    className="rounded-lg bg-slate-800 px-2 py-2 text-xs font-semibold text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="urgency">Urgency</option>
-                    <option value="name">Name</option>
-                    <option value="stock">Stock</option>
-                  </select>
-                  <button
-                    onClick={() => setShowProductionForm(true)}
-                    className="rounded-lg border border-border bg-primary px-2 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:opacity-90"
-                  >
-                    Log Production
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {currentView === "cocktails" && (
-              <div className="grid grid-cols-1 gap-2">
-                <input
-                  type="text"
-                  value={cocktailSearch}
-                  onChange={(e) => setCocktailSearch(e.target.value)}
-                  placeholder="Search cocktails..."
-                  className="w-full rounded-lg bg-slate-800 px-3 py-2 text-xs text-white ring-1 ring-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value as "ALL" | "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS")}
-                  className="rounded-lg bg-slate-800 px-3 py-2 text-xs font-semibold text-white ring-1 ring-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="ALL">All Categories</option>
-                  <option value="REGULAR">Regular</option>
-                  <option value="SEASONAL">Seasonal</option>
-                  <option value="SIGNATURE">Signature</option>
-                  <option value="INGREDIENTS">Ingredients</option>
-                </select>
-              </div>
-            )}
+          <div className={`${panelClassName} px-3 py-2 print:hidden`}>
+            <p className="text-sm font-medium text-foreground">{viewTitles[currentView]}</p>
           </div>
         )}
 
-        {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Premixes</p>
@@ -1244,12 +1047,12 @@ export function Dashboard() {
             </p>
           </div>
           <div className={`rounded-xl border p-4 shadow-sm ${lowPremixCount > 0
-            ? "border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/20"
+            ? "border-amber-200 bg-amber-50"
             : "border-border bg-card"
             }`}>
-            <p className={`text-xs font-medium uppercase tracking-wider ${lowPremixCount > 0 ? "text-amber-800 dark:text-amber-300" : "text-muted-foreground"
+            <p className={`text-xs font-medium uppercase tracking-wider ${lowPremixCount > 0 ? "text-amber-800" : "text-muted-foreground"
               }`}>Low Stock Items</p>
-            <p className={`mt-1 text-2xl font-bold ${lowPremixCount > 0 ? "text-amber-900 dark:text-amber-200" : ""
+            <p className={`mt-1 text-2xl font-bold ${lowPremixCount > 0 ? "text-amber-900" : ""
               }`}>
               {lowPremixCount}
             </p>
@@ -1257,88 +1060,43 @@ export function Dashboard() {
         </div>
 
         {isMobile && pendingChanges.size > 0 && (
-          <div className="fixed bottom-16 left-2 right-2 z-50 rounded-xl border border-amber-400/40 bg-slate-900/95 p-2 shadow-xl ring-1 ring-amber-300/30 backdrop-blur-lg print:hidden">
-            <div className="mb-1 flex items-center justify-between">
-              <p className="text-xs font-bold text-amber-200">{pendingChanges.size} unsaved changes</p>
-              <p className="text-[11px] font-semibold text-slate-400">Sticky quick actions</p>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="fixed bottom-4 left-2 right-2 z-50 rounded-xl border border-border bg-card p-3 shadow-sm print:hidden">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <p className="text-sm font-medium text-foreground">{pendingChanges.size} unsaved changes</p>
               <button
                 onClick={savePendingChanges}
                 disabled={isSaving}
-                className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+                className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-50"
               >
                 {isSaving ? "Saving..." : "Save"}
               </button>
-              <button
-                onClick={() => {
-                  if (confirm(`Discard ${pendingChanges.size} pending change(s)?`)) {
-                    discardPendingChanges();
-                  }
-                }}
-                disabled={isSaving}
-                className="rounded-lg bg-rose-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
-              >
-                Discard
-              </button>
             </div>
+            <button
+              onClick={() => {
+                if (confirm(`Discard ${pendingChanges.size} pending change(s)?`)) {
+                  discardPendingChanges();
+                }
+              }}
+              disabled={isSaving}
+              className="w-full rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground disabled:opacity-50"
+            >
+              Discard
+            </button>
           </div>
         )}
 
         {undoAdjustment && undoSecondsLeft > 0 && (
-          <div className="fixed bottom-28 left-2 right-2 z-50 rounded-xl border border-blue-400/40 bg-slate-900/95 p-2 shadow-xl ring-1 ring-blue-300/30 backdrop-blur-lg print:hidden sm:left-auto sm:right-4 sm:w-80">
+          <div className="fixed bottom-24 left-2 right-2 z-50 rounded-xl border border-border bg-card p-3 shadow-sm print:hidden sm:left-auto sm:right-4 sm:w-80">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-blue-100">Adjustment saved. Undo available for {undoSecondsLeft}s.</p>
+              <p className="text-sm text-foreground">Undo available for {undoSecondsLeft}s.</p>
               <button
                 onClick={undoLastAdjustment}
                 disabled={isSaving}
-                className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+                className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-50"
               >
                 Undo
               </button>
             </div>
-          </div>
-        )}
-
-        {isMobile ? (
-          <nav className="fixed bottom-2 left-2 right-2 z-50 rounded-2xl border border-white/10 bg-slate-900/95 p-1.5 shadow-xl ring-1 ring-slate-700/80 backdrop-blur-lg print:hidden">
-            <div className="grid grid-cols-4 gap-1">
-              {viewOrder.map((view) => {
-                const isActive = currentView === view;
-                return (
-                  <button
-                    key={`mobile-tab-${view}`}
-                    onClick={() => setCurrentView(view)}
-                    className={`rounded-xl px-1 py-2 text-[11px] font-bold transition-all ${isActive
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                      }`}
-                  >
-                    <span className="block text-xs">{viewTitles[view].split(" ")[0]}</span>
-                    <span className="block mt-0.5 leading-none">{viewTitles[view].replace(/^\S+\s*/, "")}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </nav>
-        ) : (
-          <div className="flex items-center justify-between rounded-lg bg-slate-800/80 p-1.5 shadow-md ring-1 ring-slate-700 print:hidden">
-            <button
-              onClick={() => setCurrentView(viewOrder[(currentViewIndex - 1 + viewOrder.length) % viewOrder.length])}
-              className="rounded-lg bg-slate-700 px-2 py-1 text-sm font-semibold text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600"
-            >
-              ←
-            </button>
-            <div className="text-center">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">View</p>
-              <p className="text-sm font-extrabold text-white">{viewTitles[currentView]}</p>
-            </div>
-            <button
-              onClick={() => setCurrentView(viewOrder[(currentViewIndex + 1) % viewOrder.length])}
-              className="rounded-lg bg-slate-700 px-2 py-1 text-sm font-semibold text-white ring-1 ring-slate-600 transition-all hover:bg-slate-600"
-            >
-              →
-            </button>
           </div>
         )}
 
@@ -1359,7 +1117,7 @@ export function Dashboard() {
                     value={premixSearch}
                     onChange={(e) => setPremixSearch(e.target.value)}
                     placeholder="Search..."
-                    className="h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:w-64"
+                    className={inputClassName}
                   />
                   <select
                     value={premixSortBy}
@@ -1381,12 +1139,12 @@ export function Dashboard() {
 
               {lowStockPremixes.length > 0 && (
                 <div className={`rounded-xl border p-4 shadow-sm print:hidden ${criticalStockPremixes.length > 0
-                  ? "border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/20"
-                  : "border-blue-100 bg-blue-50/50 dark:border-blue-900/30 dark:bg-blue-950/10"
+                  ? "border-amber-200 bg-amber-50"
+                  : "border-sky-200 bg-sky-50"
                   }`}>
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h3 className={`text-sm font-bold uppercase tracking-wider ${criticalStockPremixes.length > 0 ? "text-amber-800 dark:text-amber-300" : "text-blue-800 dark:text-blue-300"
+                      <h3 className={`text-sm font-bold uppercase tracking-wider ${criticalStockPremixes.length > 0 ? "text-amber-800" : "text-sky-800"
                         }`}>
                         {criticalStockPremixes.length > 0 ? "Critical Stock Alert" : "Stock Warning"}
                       </h3>
@@ -1405,8 +1163,8 @@ export function Dashboard() {
                         <div
                           key={`low-stock-${premix.id}`}
                           className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium border ${isCritical
-                            ? "bg-amber-100 text-amber-900 border-amber-200 dark:bg-amber-900/50 dark:text-amber-200 dark:border-amber-700"
-                            : "bg-blue-100 text-blue-900 border-blue-200 dark:bg-blue-900/40 dark:text-blue-200 dark:border-blue-800"
+                            ? "bg-amber-100 text-amber-900 border-amber-200"
+                            : "bg-sky-100 text-sky-900 border-sky-200"
                             }`}
                         >
                           {premix.name} ({premix.currentBottles.toFixed(1)})
@@ -1438,7 +1196,7 @@ export function Dashboard() {
                       <button
                         onClick={() => bulkArchiveOrRestorePremixes(selectedPremixes, true)}
                         disabled={archiveTarget === "bulk:premix"}
-                        className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium text-rose-600 shadow-sm transition-colors hover:bg-rose-50 dark:hover:bg-rose-950/20"
+                        className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium text-rose-600 shadow-sm transition-colors hover:bg-rose-50"
                       >
                         Archive
                       </button>
@@ -1625,7 +1383,7 @@ export function Dashboard() {
                       <button
                         onClick={() => bulkArchiveOrRestoreCocktails(selectedCocktails, true)}
                         disabled={archiveTarget === "bulk:cocktail"}
-                        className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium text-rose-600 shadow-sm transition-colors hover:bg-rose-50 dark:hover:bg-rose-950/20 disabled:opacity-50"
+                        className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-3 text-xs font-medium text-rose-600 shadow-sm transition-colors hover:bg-rose-50 disabled:opacity-50"
                       >
                         Archive
                       </button>
@@ -1687,11 +1445,6 @@ export function Dashboard() {
                     })
                     .map((cocktail) => {
                       const isSelected = selectedCocktails.has(cocktail.id);
-                      const specRows = cocktail.specs.map((spec, idx) => ({
-                        spec,
-                        idx,
-                      }));
-
                       return (
                         <article
                           key={cocktail.id}
@@ -2127,15 +1880,15 @@ export function Dashboard() {
               {toasts.map((toast) => {
                 const tone =
                   toast.kind === "success"
-                    ? "ring-emerald-500/45 bg-emerald-500/15 text-emerald-100"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-900"
                     : toast.kind === "error"
-                      ? "ring-rose-500/45 bg-rose-500/15 text-rose-100"
-                      : "ring-blue-500/45 bg-blue-500/15 text-blue-100";
+                      ? "border-rose-200 bg-rose-50 text-rose-900"
+                      : "border-sky-200 bg-sky-50 text-sky-900";
 
                 return (
                   <div
                     key={toast.id}
-                    className={`pointer-events-auto rounded-2xl border border-white/10 px-4 py-3 shadow-2xl backdrop-blur-xl ring-1 ${tone}`}
+                    className={`pointer-events-auto rounded-xl border px-4 py-3 shadow-sm ${tone}`}
                   >
                     <p className="text-sm font-semibold">{toast.message}</p>
                   </div>
@@ -2147,9 +1900,9 @@ export function Dashboard() {
 
         {
           showAddCocktailModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-md">
-              <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl backdrop-blur-xl ring-1 ring-slate-700/70">
-                <h2 className="mb-4 text-2xl font-extrabold text-white">Add Cocktail</h2>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-3">
+              <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-border bg-card p-6 shadow-sm">
+                <h2 className="mb-4 text-xl font-semibold text-foreground">Add Cocktail</h2>
 
                 {addCocktailError && (
                   <div className="mb-4 rounded-lg bg-red-900/30 p-3 text-sm font-semibold text-red-200 ring-1 ring-red-700">
@@ -2491,9 +2244,9 @@ export function Dashboard() {
         {/* Edit Cocktail Modal */}
         {
           editingCocktail && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 backdrop-blur-md">
-              <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl backdrop-blur-xl ring-1 ring-slate-700/70">
-                <h2 className="text-2xl font-extrabold text-white mb-4">Edit Cocktail Spec</h2>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-3">
+              <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-card p-6 shadow-sm">
+                <h2 className="mb-4 text-xl font-semibold text-foreground">Edit Cocktail Spec</h2>
                 {editError && (
                   <div className="mb-4 rounded-lg bg-red-900/30 p-3 text-sm font-semibold text-red-200 ring-1 ring-red-700">
                     {editError}
@@ -2643,9 +2396,9 @@ export function Dashboard() {
         {/* Edit Premix Modal */}
         {
           editingPremix && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 backdrop-blur-md">
-              <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl backdrop-blur-xl ring-1 ring-slate-700/70">
-                <h2 className="text-2xl font-extrabold text-white mb-4">Edit Premix</h2>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-3">
+              <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-card p-6 shadow-sm">
+                <h2 className="mb-4 text-xl font-semibold text-foreground">Edit Premix</h2>
                 {editError && (
                   <div className="mb-4 rounded-lg bg-red-900/30 p-3 text-sm font-semibold text-red-200 ring-1 ring-red-700">
                     {editError}
