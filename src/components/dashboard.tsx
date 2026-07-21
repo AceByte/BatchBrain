@@ -1,9 +1,207 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { ProductionForm } from "./production-form";
-import type { AddCocktailForm, DashboardData, DashboardView, EditingCocktail, EditingPremix, Toast, UndoAdjustment } from "@/lib/dashboard-types";
-import { EmptyState, Panel, SectionHeader, StatCard } from "./dashboard/dashboard-ui";
+
+type DashboardView = "cocktails" | "inventory" | "prep" | "archive";
+
+type DashboardData = {
+  premixes: Array<{
+    id: number;
+    sourceCocktailId: string;
+    name: string;
+    isArchived: boolean;
+    currentBottles: number;
+    thresholdBottles: number;
+    targetBottles: number;
+    batchYieldBottles: number;
+    recipeItems: Array<{
+      ingredientName: string;
+      amountPerBatch: number;
+      unit: string;
+    }>;
+  }>;
+  cocktails: Array<{
+    id: number;
+    sourceCocktailId: string;
+    name: string;
+    isArchived: boolean;
+    category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS";
+    glassware: string | null;
+    technique: string | null;
+    straining: string | null;
+    garnish: string | null;
+    isBatched: boolean;
+    serveExtras: string | null;
+    premixNote: string | null;
+    batchNote: string | null;
+    specs: Array<{
+      ingredient: string;
+      ml: number;
+    }>;
+  }>;
+  prepPlan: Array<{
+    premixId: number;
+    premixName: string;
+    currentBottles: number;
+    thresholdBottles: number;
+    targetBottles: number;
+    weeklyUseBottles: number;
+    projectedEndBottles: number;
+    bottlesToProduce: number;
+    batchesToMake: number;
+    ingredients: Array<{
+      ingredientName: string;
+      unit: string;
+      totalAmount: number;
+    }>;
+  }>;
+  ingredientTotals: Array<{
+    ingredientName: string;
+    unit: string;
+    totalAmount: number;
+  }>;
+};
+
+type EditingCocktail = {
+  id: number;
+  sourceCocktailId: string;
+  name: string;
+  category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS";
+  glassware: string | null;
+  technique: string | null;
+  straining: string | null;
+  garnish: string | null;
+  isBatched: boolean;
+  serveExtras: string | null;
+  premixNote: string | null;
+  batchNote: string | null;
+  specs: Array<{
+    ingredient: string;
+    ml: number;
+  }>;
+};
+
+type EditingPremix = {
+  id: number;
+  sourceCocktailId: string;
+  name: string;
+  currentBottles: number;
+  thresholdBottles: number;
+  targetBottles: number;
+  batchYieldBottles: number;
+  recipeItems: Array<{
+    ingredientName: string;
+    amountPerBatch: number;
+    unit: string;
+  }>;
+};
+
+type AddCocktailForm = {
+  name: string;
+  category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS";
+  glassware: string;
+  technique: string;
+  straining: string;
+  garnish: string;
+  isBatched: boolean;
+  serveExtras: string;
+  premixNote: string;
+  batchNote: string;
+  specs: Array<{
+    ingredient: string;
+    ml: number;
+  }>;
+  createPremix: boolean;
+  premixCurrentBottles: number;
+  premixThresholdBottles: number;
+  premixTargetBottles: number;
+  premixRecipeItems: Array<{
+    ingredientName: string;
+    amountPerBatch: number;
+    unit: string;
+  }>;
+};
+
+type Toast = {
+  id: number;
+  kind: "success" | "error" | "info";
+  message: string;
+};
+
+type UndoAdjustment = {
+  expiresAt: number;
+  changes: Array<{
+    id: number;
+    oldValue: number;
+    newValue: number;
+  }>;
+};
+
+type PanelProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+function Panel({ children, className = "" }: PanelProps) {
+  return <div className={`rounded-xl border border-border bg-card shadow-sm ${className}`.trim()}>{children}</div>;
+}
+
+type SectionHeaderProps = {
+  title: string;
+  description?: string;
+  actions?: ReactNode;
+  className?: string;
+};
+
+function SectionHeader({ title, description, actions, className = "" }: SectionHeaderProps) {
+  return (
+    <div className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${className}`.trim()}>
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+        {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
+      </div>
+      {actions ? <div className="flex flex-wrap items-center gap-2 print:hidden">{actions}</div> : null}
+    </div>
+  );
+}
+
+type EmptyStateProps = {
+  title: string;
+  description?: string;
+  className?: string;
+};
+
+function EmptyState({ title, description, className = "" }: EmptyStateProps) {
+  return (
+    <div className={`flex flex-col items-center justify-center rounded-xl border border-dashed border-border p-12 text-center ${className}`.trim()}>
+      <p className="text-sm font-medium text-muted-foreground">{title}</p>
+      {description ? <p className="mt-2 text-sm text-muted-foreground">{description}</p> : null}
+    </div>
+  );
+}
+
+type StatCardProps = {
+  label: string;
+  value: string | number;
+  hint?: string;
+  tone?: "default" | "warning";
+  className?: string;
+};
+
+function StatCard({ label, value, hint, tone = "default", className = "" }: StatCardProps) {
+  const toneClassName = tone === "warning" ? "border-amber-200 bg-amber-50" : "border-border bg-card";
+
+  return (
+    <div className={`rounded-xl border p-4 shadow-sm ${toneClassName} ${className}`.trim()}>
+      <p className={`text-xs font-medium uppercase tracking-wider ${tone === "warning" ? "text-amber-800" : "text-muted-foreground"}`}>
+        {label}
+      </p>
+      <p className={`mt-1 text-2xl font-bold ${tone === "warning" ? "text-amber-900" : "text-foreground"}`}>{value}</p>
+      {hint ? <p className="mt-1 text-[10px] text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
 
 function formatCategory(category: DashboardData["cocktails"][number]["category"]) {
   return category.charAt(0) + category.slice(1).toLowerCase();
