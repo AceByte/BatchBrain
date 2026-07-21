@@ -212,6 +212,7 @@ const COCKTAIL_SEARCH_KEY = "batchbrain.cocktailSearch";
 const PREMIX_SEARCH_KEY = "batchbrain.premixSearch";
 const CATEGORY_FILTER_KEY = "batchbrain.categoryFilter";
 const PREMIX_SORT_KEY = "batchbrain.premixSort";
+const THEME_STORAGE_KEY = "batchbrain.theme";
 
 function createEmptyAddCocktailForm(): AddCocktailForm {
   return {
@@ -252,6 +253,7 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const isMobile = useIsMobile();
 
   // Draft/edit mode
@@ -1176,6 +1178,13 @@ export function Dashboard() {
               </span>
             )}
             <button
+              type="button"
+              onClick={() => setTheme((current) => (current === "light" ? "dark" : "light"))}
+              className={`${secondaryButtonClassName} h-8 px-3 text-xs`}
+            >
+              {theme === "light" ? "Dark Mode" : "Light Mode"}
+            </button>
+            <button
               onClick={openAddCocktailModal}
               className={`${primaryButtonClassName} h-8 px-3 text-xs`}
             >
@@ -1414,8 +1423,8 @@ export function Dashboard() {
                     <div
                       key={premix.id}
                       className={`group relative rounded-xl border p-4 transition-all ${isSelected
-                        ? "border-primary bg-primary/5 shadow-md"
-                        : "border-border bg-card hover:border-muted-foreground/30 hover:shadow-sm"
+                        ? "border-primary bg-primary/10 shadow-md"
+                        : "border-border bg-card hover:border-primary/30 hover:bg-accent/40 hover:shadow-sm"
                         }`}
                     >
                       <div className="flex items-start justify-between gap-2">
@@ -1630,8 +1639,8 @@ export function Dashboard() {
                         <article
                           key={cocktail.id}
                           className={`group relative rounded-xl border p-4 transition-all ${isSelected
-                            ? "border-primary bg-primary/5 shadow-md"
-                            : "border-border bg-card hover:border-muted-foreground/30 hover:shadow-sm"
+                            ? "border-primary bg-primary/10 shadow-md"
+                            : "border-border bg-card hover:border-primary/30 hover:bg-accent/40 hover:shadow-sm"
                             }`}
                         >
                           <div className="flex flex-col gap-4">
@@ -1914,8 +1923,8 @@ export function Dashboard() {
                               <div
                                 key={premix.id}
                                 className={`group relative rounded-xl border p-4 transition-all ${isSelected
-                                  ? "border-primary bg-primary/5 shadow-md"
-                                  : "border-border bg-background hover:border-muted-foreground/30"
+                                  ? "border-primary bg-primary/10 shadow-md"
+                                  : "border-border bg-card hover:border-primary/30 hover:bg-accent/40"
                                   }`}
                               >
                                 <div className="flex items-start justify-between gap-2">
@@ -1992,8 +2001,8 @@ export function Dashboard() {
                               <div
                                 key={cocktail.id}
                                 className={`group relative rounded-xl border p-4 transition-all ${isSelected
-                                  ? "border-primary bg-primary/5 shadow-md"
-                                  : "border-border bg-background hover:border-muted-foreground/30"
+                                  ? "border-primary bg-primary/10 shadow-md"
+                                  : "border-border bg-card hover:border-primary/30 hover:bg-accent/40"
                                   }`}
                               >
                                 <div className="flex items-start justify-between gap-2">
