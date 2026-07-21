@@ -69,7 +69,7 @@ export function ProductionForm({ premixes, onSuccess, onCancel }: ProductionForm
             onClick={onCancel}
             className="rounded-md p-1.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
           >
-            ✕
+            Close
           </button>
         </div>
 

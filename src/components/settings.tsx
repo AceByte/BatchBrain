@@ -9,9 +9,9 @@ export function Settings() {
   }, []);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="text-center">
-        <p className="text-xl text-slate-600">Settings are disabled. Redirecting...</p>
+        <p className="text-xl text-foreground">Settings are disabled. Redirecting...</p>
       </div>
     </div>
   );

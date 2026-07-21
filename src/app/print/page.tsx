@@ -219,7 +219,7 @@ export default function PrintPage() {
   }
 
   return (
-    <div id="print-root" className="flex h-screen flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 text-slate-100 lg:flex-row">
+    <div id="print-root" className="flex h-screen flex-col bg-slate-950 text-slate-100 lg:flex-row">
       {/* Sidebar */}
       <div id="print-sidebar" className="w-full overflow-y-auto border-b border-white/10 bg-slate-900/85 shadow-2xl backdrop-blur-xl lg:w-72 lg:border-b-0 lg:border-r">
         <div className="border-b border-white/10 p-4 lg:p-6">
@@ -259,7 +259,7 @@ export default function PrintPage() {
                   onClick={() => setSelectedReport(report.value)}
                   className={`w-full p-3 rounded text-left transition ${
                     selectedReport === report.value
-                      ? "bg-gradient-to-r from-sky-600 to-blue-600 text-white font-semibold ring-1 ring-sky-400/50"
+                      ? "bg-slate-700 text-white font-semibold ring-1 ring-slate-500"
                       : "bg-slate-800/90 hover:bg-slate-700 text-slate-200 ring-1 ring-slate-700"
                   }`}
                 >

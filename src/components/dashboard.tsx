@@ -265,10 +265,10 @@ export function Dashboard() {
   const currentViewIndex = viewOrder.indexOf(currentView);
 
   const viewTitles: Record<"cocktails" | "inventory" | "prep" | "archive", string> = {
-    cocktails: "🍸 Spec Sheet",
-    inventory: "💧 Inventory",
-    prep: "📋 Prep List",
-    archive: "📦 Archive",
+    cocktails: "Spec Sheet",
+    inventory: "Inventory",
+    prep: "Prep List",
+    archive: "Archive",
   };
 
   const pushToast = useCallback((kind: Toast["kind"], message: string) => {
@@ -1041,16 +1041,13 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
-        <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-28 right-10 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
-
-        <div className="relative w-full max-w-sm rounded-3xl bg-slate-900/65 p-7 text-center shadow-2xl ring-1 ring-slate-600/70 backdrop-blur-xl">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-800/80 ring-1 ring-slate-600">
-            <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-slate-500 border-t-emerald-300" />
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-7 text-center shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl border border-border bg-muted/40">
+            <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-muted-foreground border-t-primary" />
           </div>
-          <p className="mt-5 text-base font-bold tracking-wide text-slate-100">Loading BatchBrain data...</p>
-          <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-slate-400">Syncing cocktails, premixes, and prep</p>
+          <p className="mt-5 text-base font-semibold tracking-tight text-foreground">Loading BatchBrain data...</p>
+          <p className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Syncing cocktails, premixes, and prep</p>
         </div>
       </div>
     );
@@ -1058,18 +1055,15 @@ export function Dashboard() {
 
   if (error || !data) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 p-4">
-        <div className="max-w-md rounded-3xl bg-gradient-to-br from-red-50 to-rose-50 p-8 shadow-2xl ring-2 ring-red-300">
-          <div className="flex items-center gap-4">
-            <span className="text-4xl">❌</span>
-            <p className="text-2xl font-extrabold text-red-800">Unable to load dashboard</p>
-          </div>
-          <p className="mt-4 text-sm font-medium text-red-700">{error ?? "Unknown error"}</p>
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm">
+          <p className="text-2xl font-bold text-foreground">Unable to load dashboard</p>
+          <p className="mt-4 text-sm text-muted-foreground">{error ?? "Unknown error"}</p>
           <button
             onClick={loadData}
-            className="mt-6 w-full rounded-xl bg-gradient-to-br from-red-600 to-rose-700 px-6 py-3 font-bold text-white shadow-lg transition-all hover:shadow-xl hover:from-red-700 hover:to-rose-800"
+            className="mt-6 w-full rounded-xl border border-border bg-foreground px-6 py-3 font-semibold text-background transition-colors hover:opacity-90"
           >
-            Retry
+            Try again
           </button>
         </div>
       </div>
@@ -1077,7 +1071,7 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-background">
       <div className={`mx-auto flex w-full flex-col gap-4 ${isMobile ? "p-2 pb-36 md:p-6 lg:p-8" : "p-4 md:p-6 lg:p-8"}`}>
         {/* Top Navbar */}
         <nav className="flex flex-col gap-4 border-b border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
@@ -1198,9 +1192,9 @@ export function Dashboard() {
                   </select>
                   <button
                     onClick={() => setShowProductionForm(true)}
-                    className="rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 px-2 py-2 text-xs font-bold text-white"
+                    className="rounded-lg border border-border bg-primary px-2 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:opacity-90"
                   >
-                    📦 Log Production
+                    Log Production
                   </button>
                 </div>
               </div>
@@ -1693,24 +1687,6 @@ export function Dashboard() {
                     })
                     .map((cocktail) => {
                       const isSelected = selectedCocktails.has(cocktail.id);
-                      const categoryColors = {
-                        REGULAR: 'bg-gradient-to-r from-blue-900/40 to-blue-800/20 ring-blue-700/50',
-                        SEASONAL: 'bg-gradient-to-r from-purple-900/40 to-purple-800/20 ring-purple-700/50',
-                        SIGNATURE: 'bg-gradient-to-r from-amber-900/40 to-amber-800/20 ring-amber-700/50',
-                        INGREDIENTS: 'bg-gradient-to-r from-emerald-900/40 to-teal-800/20 ring-emerald-700/50',
-                      };
-                      const categoryBadgeColors = {
-                        REGULAR: 'bg-gradient-to-br from-blue-900 to-blue-800 text-blue-200 ring-1 ring-blue-700',
-                        SEASONAL: 'bg-gradient-to-br from-purple-900 to-purple-800 text-purple-200 ring-1 ring-purple-700',
-                        SIGNATURE: 'bg-gradient-to-br from-amber-900 to-amber-800 text-amber-200 ring-1 ring-amber-700',
-                        INGREDIENTS: 'bg-gradient-to-br from-emerald-900 to-teal-800 text-emerald-200 ring-1 ring-emerald-700',
-                      };
-                      const categoryEmoji = {
-                        REGULAR: '🥃',
-                        SEASONAL: '🌸',
-                        SIGNATURE: '⭐',
-                        INGREDIENTS: '🧂',
-                      };
                       const specRows = cocktail.specs.map((spec, idx) => ({
                         spec,
                         idx,
@@ -1736,8 +1712,8 @@ export function Dashboard() {
                                   />
                                   <h3 className="text-sm font-bold tracking-tight">{cocktail.name}</h3>
                                   {cocktail.isBatched && (
-                                    <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-[10px] dark:bg-emerald-900/30" title="Batched">
-                                      📦
+                                    <span className="inline-flex rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground" title="Batched">
+                                      Batch
                                     </span>
                                   )}
                                 </div>
@@ -1859,7 +1835,7 @@ export function Dashboard() {
                 return bottlesNeeded > 0 && (
                   <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
                     <p className="text-sm font-medium text-primary">
-                      🍾 Empty Bottles Needed: <span className="text-lg font-bold">{Math.ceil(bottlesNeeded)}</span>
+                      Empty Bottles Needed: <span className="text-lg font-bold">{Math.ceil(bottlesNeeded)}</span>
                     </p>
                   </div>
                 );
@@ -1877,12 +1853,10 @@ export function Dashboard() {
                     const urgentItems = prepItems.filter(item => item.projectedEndBottles < item.thresholdBottles && item.projectedEndBottles >= item.thresholdBottles * 0.5);
                     const normalItems = prepItems.filter(item => item.projectedEndBottles >= item.thresholdBottles);
 
-                    const PrepGroup = ({ title, items, badgeColor, icon }: { title: string, items: typeof prepItems, badgeColor: string, icon: string }) => (
+                    const PrepGroup = ({ title, items, badgeColor }: { title: string, items: typeof prepItems, badgeColor: string }) => (
                       <div className="rounded-xl border border-border bg-card overflow-hidden">
                         <div className="border-b border-border bg-muted/50 px-4 py-2 flex items-center justify-between">
-                          <h3 className="text-sm font-bold flex items-center gap-2">
-                            <span>{icon}</span> {title}
-                          </h3>
+                          <h3 className="text-sm font-bold">{title}</h3>
                           <span className="text-xs font-medium text-muted-foreground">{items.length} items</span>
                         </div>
                         <div className="p-4 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -1920,9 +1894,9 @@ export function Dashboard() {
 
                     return (
                       <>
-                        {criticalItems.length > 0 && <PrepGroup title="Critical" items={criticalItems} badgeColor="bg-rose-600" icon="🔴" />}
-                        {urgentItems.length > 0 && <PrepGroup title="Urgent" items={urgentItems} badgeColor="bg-amber-600" icon="⚠️" />}
-                        {normalItems.length > 0 && <PrepGroup title="Regular" items={normalItems} badgeColor="bg-primary" icon="📦" />}
+                        {criticalItems.length > 0 && <PrepGroup title="Critical" items={criticalItems} badgeColor="bg-rose-600" />}
+                        {urgentItems.length > 0 && <PrepGroup title="Urgent" items={urgentItems} badgeColor="bg-amber-600" />}
+                        {normalItems.length > 0 && <PrepGroup title="Regular" items={normalItems} badgeColor="bg-primary" />}
                       </>
                     );
                   })()}
@@ -1931,7 +1905,7 @@ export function Dashboard() {
 
               <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
                 <h3 className="text-lg font-bold tracking-tight mb-4 flex items-center gap-2">
-                  <span>🛍️</span> Shopping List
+                  Shopping List
                 </h3>
                 {data.ingredientTotals.length === 0 ? (
                   <p className="text-center text-sm text-muted-foreground py-4">No ingredients needed.</p>
