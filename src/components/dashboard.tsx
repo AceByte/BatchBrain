@@ -194,7 +194,7 @@ function StatCard({ label, value, hint, tone = "default", className = "" }: Stat
 
   return (
     <div className={`rounded-xl border p-4 shadow-sm ${toneClassName} ${className}`.trim()}>
-      <p className={`text-xs font-medium uppercase tracking-wider ${tone === "warning" ? "text-sky-800" : "text-muted-foreground"}`}>
+      <p className={`text-xs font-medium uppercase tracking-wider ${tone === "warning" ? "text-sky-700" : "text-muted-foreground"}`}>
         {label}
       </p>
       <p className={`mt-1 text-2xl font-bold ${tone === "warning" ? "text-sky-900" : "text-foreground"}`}>{value}</p>
