@@ -1,7 +1,6 @@
 import { neon } from "@neondatabase/serverless"
 
-// Single shared SQL client. No auth — this is an internal tool.
-export const sql = neon(process.env.DATABASE_URL!)
+export const sql = neon(process.env.DATABASE_URL || "postgres://placeholder:placeholder@localhost:5432/placeholder")
 
 export type Premix = {
   premix_id: string

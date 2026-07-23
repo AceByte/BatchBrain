@@ -113,7 +113,15 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
                       ))}
                     </ul>
                   )}
-                  {c.meta ? <p className="spec-meta">{c.meta}</p> : null}
+                  {c.meta && c.meta.length > 0 ? (
+                    <div className="spec-meta">
+                      {c.meta.map((m, idx) => (
+                        <span key={idx} className="spec-meta-item">
+                          {m.label}: {m.value}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
                 </article>
               ))}
             </div>
