@@ -46,14 +46,35 @@ export async function getCocktailSpecs(): Promise<CocktailSpec[]> {
 export type ArchivedPremix = {
   premix_id: string
   name: string
+  preparation_notes: string | null
+  archived_at: string
+}
+
+export type ArchivedRecipeItem = {
+  id: number
+  premix_id: string
+  ingredient_name: string
+  amount_per_batch: number
+  unit: string
   archived_at: string
 }
 
 export async function getArchivedPremixes(): Promise<ArchivedPremix[]> {
   const rows = await sql`
-    SELECT premix_id, name, archived_at
+    SELECT premix_id, name, preparation_notes, archived_at::text AS archived_at
     FROM archived_premixes
-    ORDER BY archived_at DESC
+    ORDER BY archived_at DESC, name
   `
   return rows as ArchivedPremix[]
+}
+
+export async function getArchivedRecipeItems(): Promise<ArchivedRecipeItem[]> {
+  const rows = await sql`
+    SELECT id, premix_id, ingredient_name,
+           amount_per_batch::float8 AS amount_per_batch, unit,
+           archived_at::text AS archived_at
+    FROM archived_premix_recipe_items
+    ORDER BY ingredient_name
+  `
+  return rows as ArchivedRecipeItem[]
 }

@@ -23,40 +23,53 @@ export default async function SpecsPage() {
 
   return (
     <>
-      <h1>Spec Sheets</h1>
+      <header className="page-head">
+        <h1>Spec Sheets</h1>
+        <p className="muted">Recipes by category.</p>
+      </header>
       {CATEGORY_ORDER.map((category) => {
         const inCategory = cocktails.filter((c) => c.category === category)
         if (inCategory.length === 0) return null
         return (
-          <section key={category}>
-            <h2>{CATEGORY_LABEL[category]}</h2>
-            {inCategory.map((c) => {
-              const ingredients = specsByCocktail.get(c.id) ?? []
-              return (
-                <div key={c.id} style={{ marginBottom: "1rem" }}>
-                  <h3 style={{ marginBottom: "0.25rem" }}>
-                    {c.name}
-                    {c.is_batched ? " (batched)" : ""}
-                  </h3>
-                  <div>
-                    {ingredients.length === 0
-                      ? "No spec recorded"
-                      : ingredients.map((i) => `${i.ingredient} ${i.ml}ml`).join(" · ")}
-                  </div>
-                  <div style={{ color: "#666", fontSize: "0.9rem" }}>
-                    {[
-                      c.technique && `Technique: ${c.technique}`,
-                      c.glassware && `Glass: ${c.glassware}`,
-                      c.straining && `Straining: ${c.straining}`,
-                      c.garnish && `Garnish: ${c.garnish}`,
-                      c.serve_extras && `Extras: ${c.serve_extras}`,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </div>
-                </div>
-              )
-            })}
+          <section key={category} className="category">
+            <h2 className="category-title">{CATEGORY_LABEL[category]}</h2>
+            <div className="stack">
+              {inCategory.map((c) => {
+                const ingredients = specsByCocktail.get(c.id) ?? []
+                const meta = [
+                  c.technique && `Technique: ${c.technique}`,
+                  c.glassware && `Glass: ${c.glassware}`,
+                  c.straining && `Straining: ${c.straining}`,
+                  c.garnish && `Garnish: ${c.garnish}`,
+                  c.serve_extras && `Extras: ${c.serve_extras}`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")
+                return (
+                  <article key={c.id} className="card">
+                    <div className="card-head">
+                      <h2>
+                        {c.name}
+                        {c.is_batched ? <span className="batched">Batched</span> : null}
+                      </h2>
+                    </div>
+                    {ingredients.length === 0 ? (
+                      <p className="muted">No spec recorded.</p>
+                    ) : (
+                      <ul className="recipe">
+                        {ingredients.map((i) => (
+                          <li key={i.id}>
+                            <span>{i.ingredient}</span>
+                            <span className="amount">{i.ml} ml</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {meta ? <p className="spec-meta">{meta}</p> : null}
+                  </article>
+                )
+              })}
+            </div>
           </section>
         )
       })}

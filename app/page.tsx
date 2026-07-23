@@ -17,18 +17,20 @@ export default async function StockPage() {
 
   return (
     <>
-      <h1>Premix Stock</h1>
-      <p>
-        {premixes.length} premixes &middot; {lowCount} at or below threshold
-      </p>
+      <header className="page-head">
+        <h1>Premix Stock</h1>
+        <p className="muted">
+          {premixes.length} premixes &middot; {lowCount} at or below threshold
+        </p>
+      </header>
 
       <table>
         <thead>
           <tr>
             <th>Premix</th>
-            <th>Current</th>
-            <th>Target</th>
-            <th>Threshold</th>
+            <th className="num">Current</th>
+            <th className="num">Target</th>
+            <th className="num">Threshold</th>
             <th>Ingredients / batch</th>
             <th>Log production</th>
             <th>Set stock</th>
@@ -40,14 +42,14 @@ export default async function StockPage() {
             const items = itemsByPremix.get(p.premix_id) ?? []
             return (
               <tr key={p.premix_id} className={low ? "low" : undefined}>
-                <td>
+                <td className="name">
                   {p.name}
                   {low ? " (low)" : ""}
                 </td>
-                <td>{p.current_bottles}</td>
-                <td>{p.target_bottles}</td>
-                <td>{p.threshold_bottles}</td>
-                <td>
+                <td className="num">{p.current_bottles}</td>
+                <td className="num">{p.target_bottles}</td>
+                <td className="num">{p.threshold_bottles}</td>
+                <td className="ingredients">
                   {items.length === 0
                     ? "—"
                     : items
