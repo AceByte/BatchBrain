@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f9fe;
+  --foreground: #10213a;
+  --card: #ffffff;
+  --card-foreground: #10213a;
+  --border: #dce8f8;
+  --primary: #2563eb;
+  --primary-foreground: #f8fbff;
+  --secondary: #eff6ff;
+  --muted: #f8fbff;
+  --muted-foreground: #5b6b82;
+  --accent: #dfeeff;
+  --accent-foreground: #1e40af;
+  --radius: 0.75rem;
+}
+
+:root[data-theme="dark"] {
+  --background: #07111f;
+  --foreground: #f5f7fb;
+  --card: #0f172a;
+  --card-foreground: #f5f7fb;
+  --border: #243344;
+  --primary: #60a5fa;
+  --primary-foreground: #07111f;
+  --secondary: #111d33;
+  --muted: #131d2e;
+  --muted-foreground: #93a4ba;
+  --accent: #1d4ed8;
+  --accent-foreground: #dbeafe;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  button, .no-print {
+    display: none !important;
+  }
+  
+  .spec-sheet {
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
+.glass-card {
+  @apply rounded-[var(--radius)] border border-border bg-card text-card-foreground shadow-sm;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-semibold tracking-tight;
+}
+
+.page-break { page-break-after: always; break-after: page; }
