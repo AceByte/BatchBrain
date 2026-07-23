@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import type { Premix, RecipeItem } from "@/lib/db"
 import { adjustStock, logProduction } from "@/app/actions"
+import { EditPremixModal, type PremixEditData } from "./edit-premix-modal"
 
 export type StockPremixCard = Premix & {
   recipe: RecipeItem[]
@@ -12,6 +13,7 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
   const [query, setQuery] = useState("")
   const [filter, setFilter] = useState<"ALL" | "LOW" | "OK">("ALL")
   const [view, setView] = useState<"GRID" | "TABLE">("GRID")
+  const [editingPremix, setEditingPremix] = useState<PremixEditData | null>(null)
 
   const itemsByPremix = useMemo(() => {
     const map = new Map<string, RecipeItem[]>()
@@ -51,6 +53,18 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
       return c.recipe.some((i) => i.ingredient_name.toLowerCase().includes(q))
     })
   }, [cards, query, filter])
+
+  function openEditModal(p: StockPremixCard) {
+    setEditingPremix({
+      premix_id: p.premix_id,
+      name: p.name,
+      current_bottles: p.current_bottles,
+      target_bottles: p.target_bottles,
+      threshold_bottles: p.threshold_bottles,
+      preparation_notes: p.preparation_notes,
+      recipe: p.recipe,
+    })
+  }
 
   return (
     <>
@@ -128,10 +142,21 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
             return (
               <article key={p.premix_id} className={`card ${isLow ? "card-low" : ""}`}>
                 <div className="card-head">
-                  <h3>{p.name}</h3>
-                  <span className={`stock-badge ${isLow ? "badge-danger" : "badge-ok"}`}>
-                    {isLow ? "Low Stock" : "In Stock"}
-                  </span>
+                  <div className="card-title-group">
+                    <h3>{p.name}</h3>
+                    <span className={`stock-badge ${isLow ? "badge-danger" : "badge-ok"}`}>
+                      {isLow ? "Low Stock" : "In Stock"}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-edit-icon"
+                    onClick={() => openEditModal(p)}
+                    title="Edit Premix & Targets"
+                    aria-label={`Edit ${p.name}`}
+                  >
+                    Edit
+                  </button>
                 </div>
 
                 <div className="stock-level-box">
@@ -235,6 +260,7 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
                 <th>Ingredients / Batch</th>
                 <th>Log Batch</th>
                 <th>Set Stock</th>
+                <th>Edit</th>
               </tr>
             </thead>
             <tbody>
@@ -292,12 +318,26 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
                         </button>
                       </form>
                     </td>
+                    <td>
+                      <button
+                        type="button"
+                        className="btn-edit-icon"
+                        onClick={() => openEditModal(p)}
+                        title="Edit Premix"
+                      >
+                        Edit
+                      </button>
+                    </td>
                   </tr>
                 )
               })}
             </tbody>
           </table>
         </div>
+      )}
+
+      {editingPremix && (
+        <EditPremixModal premix={editingPremix} onClose={() => setEditingPremix(null)} />
       )}
     </>
   )

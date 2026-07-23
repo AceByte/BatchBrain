@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react"
 import type { CocktailCategory } from "@/lib/db"
+import { EditSpecModal, type SpecEditData } from "./edit-spec-modal"
 
 type SpecIngredient = { id: number; ingredient: string; ml: number }
 type SpecMeta = { label: string; value: string }
@@ -26,6 +27,7 @@ const CATEGORY_LABEL: Record<CocktailCategory, string> = {
 export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState<CocktailCategory | "ALL">("ALL")
+  const [editingSpec, setEditingSpec] = useState<SpecEditData | null>(null)
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { ALL: cards.length }
@@ -39,7 +41,9 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
       if (category !== "ALL" && c.category !== category) return false
       if (!q) return true
       if (c.name.toLowerCase().includes(q)) return true
-      return c.ingredients.some((i) => i.ingredient.toLowerCase().includes(q))
+      if (c.ingredients.some((i) => i.ingredient.toLowerCase().includes(q))) return true
+      if (c.meta.some((m) => m.label.toLowerCase().includes(q) || m.value.toLowerCase().includes(q))) return true
+      return false
     })
   }, [cards, query, category])
 
@@ -50,13 +54,28 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
     })).filter((g) => g.items.length > 0)
   }, [filtered])
 
+  function openEditModal(c: SpecCard) {
+    setEditingSpec({
+      id: c.id,
+      name: c.name,
+      category: c.category,
+      is_batched: c.is_batched,
+      technique: c.meta.find((m) => m.label === "Technique")?.value || "",
+      glassware: c.meta.find((m) => m.label === "Glass")?.value || "",
+      straining: c.meta.find((m) => m.label === "Straining")?.value || "",
+      garnish: c.meta.find((m) => m.label === "Garnish")?.value || "",
+      serve_extras: c.meta.find((m) => m.label === "Extras")?.value || "",
+      ingredients: c.ingredients.map((i) => ({ ingredient: i.ingredient, ml: i.ml })),
+    })
+  }
+
   return (
     <>
       <div className="controls">
         <input
           type="search"
           className="search"
-          placeholder="Search drinks or ingredients…"
+          placeholder="Search drinks, ingredients, or methods…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Search spec sheets"
@@ -98,8 +117,19 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
               {g.items.map((c) => (
                 <article key={c.id} className="card">
                   <div className="card-head">
-                    <h3>{c.name}</h3>
-                    {c.is_batched ? <span className="batched">Batched</span> : null}
+                    <div className="card-title-group">
+                      <h3>{c.name}</h3>
+                      {c.is_batched ? <span className="batched">Batched</span> : null}
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-edit-icon"
+                      onClick={() => openEditModal(c)}
+                      title="Edit Spec"
+                      aria-label={`Edit spec for ${c.name}`}
+                    >
+                      Edit
+                    </button>
                   </div>
                   {c.ingredients.length === 0 ? (
                     <p className="muted">No spec recorded.</p>
@@ -114,19 +144,24 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
                     </ul>
                   )}
                   {c.meta && c.meta.length > 0 ? (
-                    <div className="spec-meta">
+                    <ul className="recipe spec-details">
                       {c.meta.map((m, idx) => (
-                        <span key={idx} className="spec-meta-item">
-                          {m.label}: {m.value}
-                        </span>
+                        <li key={idx}>
+                          <span className="ing-name meta-label">{m.label}</span>
+                          <span className="amount meta-val">{m.value}</span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   ) : null}
                 </article>
               ))}
             </div>
           </section>
         ))
+      )}
+
+      {editingSpec && (
+        <EditSpecModal spec={editingSpec} onClose={() => setEditingSpec(null)} />
       )}
     </>
   )

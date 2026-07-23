@@ -29,6 +29,7 @@ export async function adjustStock(formData: FormData) {
       (${premixId}, ${name}, ${oldValue}, ${newValue}, ${newValue - oldValue}, ${reason}, now())
   `
   revalidatePath("/")
+  revalidatePath("/specs")
 }
 
 // Log a production batch: adds produced bottles to stock and records the log.
@@ -49,5 +50,85 @@ export async function logProduction(formData: FormData) {
     VALUES
       (${premixId}, ${produced}, current_date, ${notes}, now())
   `
+  revalidatePath("/")
+  revalidatePath("/specs")
+}
+
+// Update Premix stock levels, targets, thresholds, notes, and recipe items
+export async function updatePremix(data: {
+  premix_id: string
+  name: string
+  current_bottles: number
+  target_bottles: number
+  threshold_bottles: number
+  preparation_notes: string | null
+  ingredients: { ingredient_name: string; amount_per_batch: number; unit: string }[]
+}) {
+  const { premix_id, name, current_bottles, target_bottles, threshold_bottles, preparation_notes, ingredients } = data
+
+  await sql`
+    UPDATE premixes
+    SET name = ${name},
+        current_bottles = ${current_bottles},
+        target_bottles = ${target_bottles},
+        threshold_bottles = ${threshold_bottles},
+        preparation_notes = ${preparation_notes || null},
+        updated_at = now()
+    WHERE premix_id = ${premix_id}
+  `
+
+  await sql`DELETE FROM premix_recipe_items WHERE premix_id = ${premix_id}`
+  for (const item of ingredients) {
+    if (item.ingredient_name.trim()) {
+      await sql`
+        INSERT INTO premix_recipe_items (premix_id, ingredient_name, amount_per_batch, unit)
+        VALUES (${premix_id}, ${item.ingredient_name.trim()}, ${item.amount_per_batch || 0}, ${item.unit || "ml"})
+      `
+    }
+  }
+
+  revalidatePath("/")
+  revalidatePath("/specs")
+}
+
+// Update Cocktail metadata (technique, glass, straining, garnish, extras, batched) & specs
+export async function updateCocktailSpec(data: {
+  id: string
+  name: string
+  category: "REGULAR" | "SEASONAL" | "SIGNATURE" | "INGREDIENTS"
+  technique: string | null
+  glassware: string | null
+  straining: string | null
+  garnish: string | null
+  serve_extras: string | null
+  is_batched: boolean
+  ingredients: { ingredient: string; ml: number }[]
+}) {
+  const { id, name, category, technique, glassware, straining, garnish, serve_extras, is_batched, ingredients } = data
+
+  await sql`
+    UPDATE cocktails
+    SET name = ${name},
+        category = ${category},
+        technique = ${technique || null},
+        glassware = ${glassware || null},
+        straining = ${straining || null},
+        garnish = ${garnish || null},
+        serve_extras = ${serve_extras || null},
+        is_batched = ${is_batched}
+    WHERE id = ${id}
+  `
+
+  await sql`DELETE FROM cocktail_specs WHERE cocktail_id = ${id}`
+  for (const item of ingredients) {
+    if (item.ingredient.trim()) {
+      await sql`
+        INSERT INTO cocktail_specs (cocktail_id, ingredient, ml)
+        VALUES (${id}, ${item.ingredient.trim()}, ${item.ml || 0})
+      `
+    }
+  }
+
+  revalidatePath("/specs")
   revalidatePath("/")
 }
