@@ -357,14 +357,18 @@ form.inline button:hover {
 
 .spec-details li {
   background: var(--surface-2);
+  align-items: flex-start;
 }
 
 .meta-label {
-  font-size: 0.82rem;
-  font-weight: 500;
+  font-size: 0.78rem;
+  font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding-top: 0.05rem;
 }
 
 .meta-val {
@@ -372,6 +376,11 @@ form.inline button:hover {
   font-weight: 500;
   font-size: 0.85rem;
   text-align: right;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  min-width: 0;
+  flex: 1;
 }
 
 .batched {
