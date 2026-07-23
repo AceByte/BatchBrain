@@ -4,13 +4,14 @@ import { useMemo, useState } from "react"
 import type { CocktailCategory } from "@/lib/db"
 
 type SpecIngredient = { id: number; ingredient: string; ml: number }
+type SpecMeta = { label: string; value: string }
 
 export type SpecCard = {
   id: string
   name: string
   category: CocktailCategory
   is_batched: boolean
-  meta: string
+  meta: SpecMeta[]
   ingredients: SpecIngredient[]
 }
 

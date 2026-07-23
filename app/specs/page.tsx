@@ -19,14 +19,12 @@ export default async function SpecsPage() {
     category: c.category,
     is_batched: c.is_batched,
     meta: [
-      c.technique && `Technique: ${c.technique}`,
-      c.glassware && `Glass: ${c.glassware}`,
-      c.straining && `Straining: ${c.straining}`,
-      c.garnish && `Garnish: ${c.garnish}`,
-      c.serve_extras && `Extras: ${c.serve_extras}`,
-    ]
-      .filter(Boolean)
-      .join(" · "),
+      { label: "Technique", value: c.technique },
+      { label: "Glass", value: c.glassware },
+      { label: "Straining", value: c.straining },
+      { label: "Garnish", value: c.garnish },
+      { label: "Extras", value: c.serve_extras },
+    ].filter((m): m is { label: string; value: string } => Boolean(m.value)),
     ingredients: (specsByCocktail.get(c.id) ?? []).map((i) => ({
       id: i.id,
       ingredient: i.ingredient,
