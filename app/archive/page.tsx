@@ -1,56 +1,34 @@
 import { getArchivedPremixes, getArchivedRecipeItems } from "@/lib/queries"
+import { ArchiveBrowser, type ArchiveCard } from "@/components/archive-browser"
 
 export const dynamic = "force-dynamic"
 
 export default async function ArchivePage() {
   const [archived, items] = await Promise.all([getArchivedPremixes(), getArchivedRecipeItems()])
 
-  // Match recipe items to the same archive event (premix + archived_at).
-  function itemsFor(premixId: string, archivedAt: string) {
-    return items.filter((i) => i.premix_id === premixId && i.archived_at === archivedAt)
-  }
+  const cards: ArchiveCard[] = archived.map((a) => ({
+    key: `${a.premix_id}-${a.archived_at}`,
+    premix_id: a.premix_id,
+    name: a.name,
+    preparation_notes: a.preparation_notes,
+    archived_at: a.archived_at,
+    recipe: items
+      .filter((i) => i.premix_id === a.premix_id && i.archived_at === a.archived_at)
+      .map((i) => ({
+        id: i.id,
+        ingredient_name: i.ingredient_name,
+        amount_per_batch: i.amount_per_batch,
+        unit: i.unit,
+      })),
+  }))
 
   return (
     <>
       <header className="page-head">
         <h1>Recipe Archive</h1>
-        <p className="muted">Previous premix recipes that have been retired.</p>
+        <p className="muted">{archived.length} retired premix recipes.</p>
       </header>
-
-      {archived.length === 0 ? (
-        <p className="muted">Nothing archived yet.</p>
-      ) : (
-        <div className="stack">
-          {archived.map((a) => {
-            const recipe = itemsFor(a.premix_id, a.archived_at)
-            return (
-              <article key={`${a.premix_id}-${a.archived_at}`} className="card">
-                <div className="card-head">
-                  <h2>{a.name}</h2>
-                  <span className="tag">Archived {new Date(a.archived_at).toLocaleDateString()}</span>
-                </div>
-
-                {recipe.length === 0 ? (
-                  <p className="muted">No recipe recorded.</p>
-                ) : (
-                  <ul className="recipe">
-                    {recipe.map((i) => (
-                      <li key={i.id}>
-                        <span>{i.ingredient_name}</span>
-                        <span className="amount">
-                          {i.amount_per_batch} {i.unit}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {a.preparation_notes ? <p className="notes">{a.preparation_notes}</p> : null}
-              </article>
-            )
-          })}
-        </div>
-      )}
+      <ArchiveBrowser cards={cards} />
     </>
   )
 }

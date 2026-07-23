@@ -24,7 +24,8 @@ export default async function StockPage() {
         </p>
       </header>
 
-      <table>
+      <div className="table-wrap">
+        <table>
         <thead>
           <tr>
             <th>Premix</th>
@@ -90,7 +91,8 @@ export default async function StockPage() {
             )
           })}
         </tbody>
-      </table>
+        </table>
+      </div>
     </>
   )
 }
