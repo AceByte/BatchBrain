@@ -370,6 +370,210 @@ form.inline button:hover {
   align-self: center;
 }
 
+/* Stock Page Styling */
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.view-toggle {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.toggle-btn.active {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.chip-danger-subtle {
+  border-color: rgba(255, 107, 107, 0.35);
+}
+
+.chip.chip-danger.active {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+.stock-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.badge-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid rgba(255, 107, 107, 0.35);
+}
+
+.badge-ok {
+  background: var(--surface-2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.card-low {
+  border-color: rgba(255, 107, 107, 0.4);
+  box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.15);
+}
+
+.stock-level-box {
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--border);
+}
+
+.stock-numbers {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.stock-label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.stock-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.stock-value-sub {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.bg-danger {
+  background: var(--danger);
+}
+
+.bg-accent {
+  background: var(--accent);
+}
+
+.stock-bar-track {
+  height: 5px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.stock-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.empty-recipe {
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+}
+
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+.card-action-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.action-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.action-input-group {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.action-input-group input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.88rem;
+}
+
+.btn-primary {
+  cursor: pointer;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  cursor: pointer;
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+  font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+}
+
 /* Mobile */
 @media (max-width: 640px) {
   nav {
