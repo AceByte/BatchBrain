@@ -153,7 +153,7 @@ export async function getArchivedCocktailPremixSpecs(): Promise<ArchivedCocktail
 }
 
 export async function getAnalytics() {
-  const [overview, recent] = await Promise.all([
+  const [overview, recent, stockHealth, depletion, ingredientDemand, categoryBreakdown] = await Promise.all([
     sql`
       SELECT
         (SELECT count(*)::int FROM premixes) AS premix_count,
@@ -167,6 +167,55 @@ export async function getAnalytics() {
       ORDER BY created_at DESC
       LIMIT 8
     `,
+    sql`
+      SELECT premix_id, name,
+             current_bottles::float8 AS current_bottles,
+             target_bottles::float8 AS target_bottles,
+             threshold_bottles::float8 AS threshold_bottles
+      FROM premixes
+      ORDER BY (current_bottles::float8 / NULLIF(target_bottles, 0)) ASC
+    `,
+    sql`
+      SELECT premix_id, sum(delta)::float8 AS net_delta
+      FROM stock_adjustment_logs
+      WHERE created_at >= current_date - interval '30 days' AND delta < 0
+      GROUP BY premix_id
+    `,
+    sql`
+      SELECT ingredient_name, unit,
+             sum(amount_per_batch)::float8 AS total_amount,
+             count(DISTINCT premix_id)::int AS premix_count
+      FROM premix_recipe_items
+      GROUP BY ingredient_name, unit
+      ORDER BY total_amount DESC
+      LIMIT 12
+    `,
+    sql`
+      SELECT category,
+             count(*)::int AS total,
+             count(*) FILTER (WHERE is_batched)::int AS batched_count
+      FROM cocktails
+      GROUP BY category
+    `,
   ])
-  return { overview: overview[0] as { premix_count: number; low_count: number; cocktail_count: number; produced_last_30_days: number }, recent: recent as { name: string; delta: number; reason: string; happened_at: string }[] }
+
+  const depletionByPremix = new Map<string, number>()
+  for (const row of depletion as { premix_id: string; net_delta: number }[]) {
+    depletionByPremix.set(row.premix_id, row.net_delta)
+  }
+
+  const stock = (stockHealth as { premix_id: string; name: string; current_bottles: number; target_bottles: number; threshold_bottles: number }[]).map((p) => {
+    const netDelta = depletionByPremix.get(p.premix_id) ?? 0
+    const avgDailyUse = netDelta < 0 ? Math.abs(netDelta) / 30 : 0
+    const daysRemaining = avgDailyUse > 0 ? Math.round(p.current_bottles / avgDailyUse) : null
+    return { ...p, daysRemaining }
+  })
+
+  return {
+    overview: overview[0] as { premix_count: number; low_count: number; cocktail_count: number; produced_last_30_days: number },
+    recent: recent as { name: string; delta: number; reason: string; happened_at: string }[],
+    stockHealth: stock,
+    ingredientDemand: ingredientDemand as { ingredient_name: string; unit: string; total_amount: number; premix_count: number }[],
+    categoryBreakdown: categoryBreakdown as { category: string; total: number; batched_count: number }[],
+  }
 }
