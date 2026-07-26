@@ -1,5 +1,5 @@
 import { sql } from "./db"
-import type { Premix, RecipeItem, Cocktail, CocktailSpec } from "./db"
+import type { Premix, RecipeItem, Cocktail, CocktailSpec, CocktailCategory } from "./db"
 
 export async function getPremixes(): Promise<Premix[]> {
   const rows = await sql`
@@ -43,6 +43,22 @@ export async function getCocktailSpecs(): Promise<CocktailSpec[]> {
   return rows as CocktailSpec[]
 }
 
+export type CocktailPremixSpec = {
+  id: number
+  cocktail_id: string
+  premix_note: string | null
+  batch_note: string | null
+}
+
+export async function getCocktailPremixSpecs(): Promise<CocktailPremixSpec[]> {
+  const rows = await sql`
+    SELECT id, cocktail_id, premix_note, batch_note
+    FROM cocktail_premix_specs
+    ORDER BY id
+  `
+  return rows as CocktailPremixSpec[]
+}
+
 export type ArchivedPremix = {
   premix_id: string
   name: string
@@ -77,4 +93,61 @@ export async function getArchivedRecipeItems(): Promise<ArchivedRecipeItem[]> {
     ORDER BY ingredient_name
   `
   return rows as ArchivedRecipeItem[]
+}
+
+export type ArchivedCocktail = {
+  id: string
+  name: string
+  category: CocktailCategory
+  technique: string | null
+  glassware: string | null
+  straining: string | null
+  garnish: string | null
+  serve_extras: string | null
+  is_batched: boolean
+  archived_at: string
+}
+
+export type ArchivedCocktailSpec = {
+  id: number
+  cocktail_id: string
+  ingredient: string
+  ml: number
+  archived_at: string
+}
+
+export type ArchivedCocktailPremixSpec = {
+  id: number
+  cocktail_id: string
+  premix_note: string | null
+  batch_note: string | null
+  archived_at: string
+}
+
+export async function getArchivedCocktails(): Promise<ArchivedCocktail[]> {
+  const rows = await sql`
+    SELECT id, name, category, technique, glassware, straining, garnish,
+           serve_extras, is_batched, archived_at::text AS archived_at
+    FROM archived_cocktails
+    ORDER BY archived_at DESC, name
+  `
+  return rows as ArchivedCocktail[]
+}
+
+export async function getArchivedCocktailSpecs(): Promise<ArchivedCocktailSpec[]> {
+  const rows = await sql`
+    SELECT id, cocktail_id, ingredient, ml::float8 AS ml, archived_at::text AS archived_at
+    FROM archived_cocktail_specs
+    ORDER BY id
+  `
+  return rows as ArchivedCocktailSpec[]
+}
+
+export async function getArchivedCocktailPremixSpecs(): Promise<ArchivedCocktailPremixSpec[]> {
+  const rows = await sql`
+    SELECT id, cocktail_id, premix_note, batch_note, archived_at::text AS archived_at
+    FROM archived_cocktail_premix_specs
+    ORDER BY id
+  `
+  return rows as ArchivedCocktailPremixSpec[]
 }

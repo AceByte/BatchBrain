@@ -172,10 +172,10 @@ export function EditSpecModal({
 
               <div className="form-group full-width">
                 <label htmlFor="edit-extras">Extras</label>
-                <input
+                <textarea
                   id="edit-extras"
-                  type="text"
-                  placeholder="e.g. Big Ice Cube, Sidecar"
+                  rows={4}
+                  placeholder={"One item per line, e.g.\nBig ice cube\nSidecar"}
                   value={serveExtras}
                   onChange={(e) => setServeExtras(e.target.value)}
                 />

@@ -1,25 +1,38 @@
-import { getArchivedPremixes, getArchivedRecipeItems } from "@/lib/queries"
+import { getArchivedCocktailPremixSpecs, getArchivedCocktailSpecs, getArchivedCocktails } from "@/lib/queries"
 import { ArchiveBrowser, type ArchiveCard } from "@/components/archive-browser"
 
 export const dynamic = "force-dynamic"
 
 export default async function ArchivePage() {
-  const [archived, items] = await Promise.all([getArchivedPremixes(), getArchivedRecipeItems()])
+  const [cocktails, specs, premixSpecs] = await Promise.all([
+    getArchivedCocktails(),
+    getArchivedCocktailSpecs(),
+    getArchivedCocktailPremixSpecs(),
+  ])
 
-  const cards: ArchiveCard[] = archived.map((a) => ({
-    key: `${a.premix_id}-${a.archived_at}`,
-    premix_id: a.premix_id,
-    name: a.name,
-    preparation_notes: a.preparation_notes,
-    archived_at: a.archived_at,
-    recipe: items
-      .filter((i) => i.premix_id === a.premix_id && i.archived_at === a.archived_at)
-      .map((i) => ({
-        id: i.id,
-        ingredient_name: i.ingredient_name,
-        amount_per_batch: i.amount_per_batch,
-        unit: i.unit,
-      })),
+  const cards: ArchiveCard[] = cocktails.map((cocktail) => ({
+    key: `${cocktail.id}-${cocktail.archived_at}`,
+    name: cocktail.name,
+    archived_at: cocktail.archived_at,
+    is_batched: cocktail.is_batched,
+    meta: [
+      { label: "Technique", value: cocktail.technique },
+      { label: "Glass", value: cocktail.glassware },
+      { label: "Straining", value: cocktail.straining },
+      { label: "Garnish", value: cocktail.garnish },
+    ].filter((item): item is { label: string; value: string } => Boolean(item.value)),
+    extras: cocktail.serve_extras,
+    recipe: specs.filter((spec) => spec.cocktail_id === cocktail.id).map((spec) => ({
+      id: spec.id,
+      ingredient: spec.ingredient,
+      amount: spec.ml,
+      unit: "ml",
+    })),
+    premixNotes: premixSpecs.filter((spec) => spec.cocktail_id === cocktail.id).map((spec) => ({
+      id: spec.id,
+      premix_note: spec.premix_note,
+      batch_note: spec.batch_note,
+    })),
   }))
 
   return (
@@ -27,7 +40,7 @@ export default async function ArchivePage() {
       <header className="page-head">
         <p className="eyebrow">Reference library</p>
         <h1>Recipe Archive</h1>
-        <p className="muted">{archived.length} retired premix recipes.</p>
+        <p className="muted">{cards.length} retired cocktail recipes.</p>
       </header>
       <ArchiveBrowser cards={cards} />
     </>

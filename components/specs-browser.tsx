@@ -6,6 +6,18 @@ import { EditSpecModal, type SpecEditData } from "./edit-spec-modal"
 
 type SpecIngredient = { id: number; ingredient: string; ml: number }
 type SpecMeta = { label: string; value: string }
+type PremixSpec = {
+  id: string
+  premixNote: string | null
+  batchNote: string | null
+  premix: {
+    name: string
+    current: number
+    target: number
+    threshold: number
+    recipe: { id: number; ingredient_name: string; amount_per_batch: number; unit: string }[]
+  } | null
+}
 
 export type SpecCard = {
   id: string
@@ -13,6 +25,8 @@ export type SpecCard = {
   category: CocktailCategory
   is_batched: boolean
   meta: SpecMeta[]
+  extras: string | null
+  premixSpecs: PremixSpec[]
   ingredients: SpecIngredient[]
 }
 
@@ -64,7 +78,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
       glassware: c.meta.find((m) => m.label === "Glass")?.value || "",
       straining: c.meta.find((m) => m.label === "Straining")?.value || "",
       garnish: c.meta.find((m) => m.label === "Garnish")?.value || "",
-      serve_extras: c.meta.find((m) => m.label === "Extras")?.value || "",
+      serve_extras: c.extras || "",
       ingredients: c.ingredients.map((i) => ({ ingredient: i.ingredient, ml: i.ml })),
     })
   }
@@ -153,6 +167,43 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
                       ))}
                     </ul>
                   ) : null}
+                  {c.extras ? (
+                    <section className="extras-card" aria-label={`Extras for ${c.name}`}>
+                      <h4>Extras</h4>
+                      <div className="extras-list">
+                        {c.extras.split(/\r?\n/).filter(Boolean).map((extra, index) => (
+                          <p key={index}>{extra}</p>
+                        ))}
+                      </div>
+                    </section>
+                  ) : null}
+                  {c.premixSpecs.map((spec) => {
+                    const stock = spec.premix
+                    const isLow = stock ? stock.current <= stock.threshold : false
+                    const fill = stock ? Math.min(100, Math.max(0, (stock.current / (stock.target || 1)) * 100)) : 0
+                    return (
+                      <section className="premix-spec-card" key={spec.id}>
+                        <h4>Premix build</h4>
+                        {spec.premixNote ? <div className="premix-note">{spec.premixNote.split(/\r?\n/).filter(Boolean).map((line, index) => <p key={index}>{line}</p>)}</div> : null}
+                        {spec.batchNote ? <div className="batch-note"><span>Batch note</span><p>{spec.batchNote}</p></div> : null}
+                        {stock ? (
+                          <div className="linked-stock">
+                            <div className="linked-stock-head">
+                              <span>Inventory · {stock.name}</span>
+                              <strong className={isLow ? "text-danger" : ""}>{stock.current} / {stock.target}</strong>
+                            </div>
+                            <div className="stock-bar-track"><div className={`stock-bar-fill ${isLow ? "bg-danger" : "bg-accent"}`} style={{ width: `${fill}%` }} /></div>
+                            <p>{isLow ? `Below minimum of ${stock.threshold}` : `Minimum stock: ${stock.threshold}`}</p>
+                            {stock.recipe.length > 0 ? (
+                              <ul className="linked-recipe">
+                                {stock.recipe.map((item) => <li key={item.id}>{item.ingredient_name} <span>{item.amount_per_batch} {item.unit}</span></li>)}
+                              </ul>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </section>
+                    )
+                  })}
                 </article>
               ))}
             </div>

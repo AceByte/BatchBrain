@@ -622,6 +622,111 @@ form.inline button:hover {
   transition: width 0.3s ease;
 }
 
+.extras-card,
+.archive-method {
+  margin-top: 0.75rem;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface-2);
+}
+
+.extras-card h4,
+.archive-method h4 {
+  margin: 0 0 0.4rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.extras-list {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.extras-list p,
+.archive-method p {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.extras-list p {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.extras-list p::before {
+  content: "•";
+  color: var(--accent);
+}
+
+.premix-spec-card {
+  margin-top: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface-2);
+}
+
+.premix-spec-card > h4 {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  color: var(--accent);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.premix-note {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.15rem 0.75rem 0.7rem;
+}
+
+.premix-note p, .batch-note p { margin: 0; font-size: 0.86rem; }
+.premix-note p { display: flex; gap: 0.45rem; }
+.premix-note p::before { content: "•"; color: var(--accent); }
+
+.batch-note {
+  margin: 0 0.75rem 0.7rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 0.35rem;
+  background: var(--surface);
+}
+
+.batch-note span { display: block; margin-bottom: 0.15rem; color: var(--muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+
+.linked-stock {
+  padding: 0.7rem 0.75rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.linked-stock-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.82rem;
+}
+
+.linked-stock-head span, .linked-stock > p { color: var(--muted); }
+.linked-stock > p { margin: 0.35rem 0 0; font-size: 0.76rem; }
+
+.linked-recipe {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+}
+
+.linked-recipe li { display: flex; justify-content: space-between; gap: 0.5rem; }
+.linked-recipe span { color: var(--muted); white-space: nowrap; }
+
 .stock-helper {
   margin: 0.45rem 0 0;
   color: var(--muted);
