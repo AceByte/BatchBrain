@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import "./globals.css"
+import { SiteNav } from "@/components/site-nav"
 
 export const metadata: Metadata = {
   title: "BatchBrain",
@@ -15,12 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <nav>
-          <strong>BatchBrain</strong>
-          <Link href="/">Stock</Link>
-          <Link href="/specs">Spec Sheets</Link>
-          <Link href="/archive">Archive</Link>
-        </nav>
+        <SiteNav />
         <main>{children}</main>
       </body>
     </html>

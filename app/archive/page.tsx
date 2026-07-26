@@ -25,6 +25,7 @@ export default async function ArchivePage() {
   return (
     <>
       <header className="page-head">
+        <p className="eyebrow">Reference library</p>
         <h1>Recipe Archive</h1>
         <p className="muted">{archived.length} retired premix recipes.</p>
       </header>

@@ -35,6 +35,7 @@ export default async function SpecsPage() {
   return (
     <>
       <header className="page-head">
+        <p className="eyebrow">Cocktail library</p>
         <h1>Spec Sheets</h1>
         <p className="muted">{cocktails.length} recipes · search or filter by category.</p>
       </header>

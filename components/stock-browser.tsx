@@ -139,8 +139,10 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
             const isLow = p.current_bottles <= p.threshold_bottles
             const fillPct = Math.min(100, Math.max(0, (p.current_bottles / (p.target_bottles || 1)) * 100))
 
+            const stockDelta = Math.max(0, p.target_bottles - p.current_bottles)
+
             return (
-              <article key={p.premix_id} className={`card ${isLow ? "card-low" : ""}`}>
+              <article key={p.premix_id} className={`card stock-card ${isLow ? "card-low" : ""}`}>
                 <div className="card-head">
                   <div className="card-title-group">
                     <h3>{p.name}</h3>
@@ -181,6 +183,11 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
                       style={{ width: `${fillPct}%` }}
                     />
                   </div>
+                  <p className={`stock-helper ${isLow ? "text-danger" : ""}`}>
+                    {isLow
+                      ? `${stockDelta} bottles needed to reach target`
+                      : `${Math.round(fillPct)}% of target on hand`}
+                  </p>
                 </div>
 
                 {p.recipe.length === 0 ? (
