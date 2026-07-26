@@ -11,6 +11,7 @@ export type StockPremixCard = Premix & {
 
 export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; recipeItems: RecipeItem[] }) {
   const [query, setQuery] = useState("")
+  const [planCollapsed, setPlanCollapsed] = useState(true)
   const [filter, setFilter] = useState<"ALL" | "LOW" | "OK">("ALL")
   const [view, setView] = useState<"GRID" | "TABLE">("GRID")
   const [editingPremix, setEditingPremix] = useState<PremixEditData | null>(null)
@@ -148,8 +149,44 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
 
       {productionPlan.low.length > 0 ? (
         <section className="production-plan">
-          <div className="production-plan-head"><div><p className="eyebrow">Production plan</p><h2>Make next</h2><p className="muted">One batch of each low-stock premix. Ingredient totals are combined below.</p></div><span className="plan-count">{productionPlan.low.length} premixes</span></div>
-          <div className="plan-layout"><div className="plan-premixes">{productionPlan.low.map((item) => <div key={item.premix_id}><strong>{item.name}</strong><span>{Math.max(0, item.target_bottles - item.current_bottles)} bottles to target</span></div>)}</div><ul className="plan-ingredients">{productionPlan.ingredients.map((item) => <li key={`${item.name}-${item.unit}`}><span>{item.name}</span><strong>{item.amount} {item.unit}</strong></li>)}</ul></div>
+          <div className="production-plan-head">
+            <div>
+              <p className="eyebrow">Production plan</p>
+              <h2>Make next</h2>
+              <p className="muted">One batch of each low-stock premix. Ingredient totals are combined below.</p>
+            </div>
+            <div className="production-plan-head-actions">
+              <span className="plan-count">{productionPlan.low.length} premixes</span>
+              <button
+                type="button"
+                className="btn-quiet plan-toggle"
+                onClick={() => setPlanCollapsed((prev) => !prev)}
+                aria-expanded={!planCollapsed}
+              >
+                {planCollapsed ? "Show" : "Hide"}
+              </button>
+            </div>
+          </div>
+          {!planCollapsed ? (
+            <div className="plan-layout">
+              <div className="plan-premixes">
+                {productionPlan.low.map((item) => (
+                  <div key={item.premix_id}>
+                    <strong>{item.name}</strong>
+                    <span>{Math.max(0, item.target_bottles - item.current_bottles)} bottles to target</span>
+                  </div>
+                ))}
+              </div>
+              <ul className="plan-ingredients">
+                {productionPlan.ingredients.map((item) => (
+                  <li key={`${item.name}-${item.unit}`}>
+                    <span>{item.name}</span>
+                    <strong>{item.amount} {item.unit}</strong>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </section>
       ) : null}
 

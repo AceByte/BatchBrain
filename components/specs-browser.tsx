@@ -175,10 +175,10 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
                     <section className="extras-card" aria-label={`Extras for ${c.name}`}>
                       <h4>Extras</h4>
                       <div className="extras-list">
-                        {c.extras.split(/\r?\n/).filter(Boolean).map((extra, index) => (
+                        {c.extras.split(/\r?\n|,/).map((extra) => extra.trim()).filter(Boolean).map((extra, index) => (
                           <p key={index}>{extra}</p>
                         ))}
-                      </div>
+                    </div>
                     </section>
                   ) : null}
                   {c.premixSpecs.map((spec) => {

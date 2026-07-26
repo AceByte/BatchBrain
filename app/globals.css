@@ -629,6 +629,17 @@ form.inline button:hover {
 
 .production-plan { margin: 0 0 1.25rem; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
 .production-plan-head { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; margin-bottom: 0.8rem; }
+.production-plan-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.plan-toggle {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
 .production-plan h2, .activity-panel h2 { margin: 0; font-size: 1.05rem; }
 .plan-count { padding: 0.2rem 0.45rem; border-radius: 999px; background: var(--danger-bg); color: var(--danger); font-size: 0.75rem; white-space: nowrap; }
 .plan-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
