@@ -12,6 +12,7 @@ export default async function ArchivePage() {
 
   const cards: ArchiveCard[] = cocktails.map((cocktail) => ({
     key: `${cocktail.id}-${cocktail.archived_at}`,
+    id: cocktail.id,
     name: cocktail.name,
     archived_at: cocktail.archived_at,
     is_batched: cocktail.is_batched,

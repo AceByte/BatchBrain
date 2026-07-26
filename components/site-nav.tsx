@@ -7,6 +7,7 @@ const links = [
   { href: "/", label: "Stock" },
   { href: "/specs", label: "Spec Sheets" },
   { href: "/archive", label: "Archive" },
+  { href: "/analytics", label: "Analytics" },
 ]
 
 export function SiteNav() {

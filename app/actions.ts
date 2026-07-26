@@ -3,6 +3,15 @@
 import { sql } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
+const slugify = (value: string) => value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
+
+function refreshPages() {
+  revalidatePath("/")
+  revalidatePath("/specs")
+  revalidatePath("/archive")
+  revalidatePath("/analytics")
+}
+
 // Manually set a premix's stock. Records the change in stock_adjustment_logs.
 export async function adjustStock(formData: FormData) {
   const premixId = String(formData.get("premix_id"))
@@ -28,8 +37,7 @@ export async function adjustStock(formData: FormData) {
     VALUES
       (${premixId}, ${name}, ${oldValue}, ${newValue}, ${newValue - oldValue}, ${reason}, now())
   `
-  revalidatePath("/")
-  revalidatePath("/specs")
+  refreshPages()
 }
 
 // Log a production batch: adds produced bottles to stock and records the log.
@@ -50,8 +58,7 @@ export async function logProduction(formData: FormData) {
     VALUES
       (${premixId}, ${produced}, current_date, ${notes}, now())
   `
-  revalidatePath("/")
-  revalidatePath("/specs")
+  refreshPages()
 }
 
 // Update Premix stock levels, targets, thresholds, notes, and recipe items
@@ -87,8 +94,7 @@ export async function updatePremix(data: {
     }
   }
 
-  revalidatePath("/")
-  revalidatePath("/specs")
+  refreshPages()
 }
 
 // Update Cocktail metadata (technique, glass, straining, garnish, extras, batched) & specs
@@ -129,6 +135,51 @@ export async function updateCocktailSpec(data: {
     }
   }
 
-  revalidatePath("/specs")
-  revalidatePath("/")
+  refreshPages()
+}
+
+export async function createPremix(data: Omit<Parameters<typeof updatePremix>[0], "premix_id">) {
+  const premix_id = slugify(data.name)
+  await sql`
+    INSERT INTO premixes (premix_id, name, current_bottles, target_bottles, threshold_bottles, preparation_notes, updated_at)
+    VALUES (${premix_id}, ${data.name}, ${data.current_bottles}, ${data.target_bottles}, ${data.threshold_bottles}, ${data.preparation_notes}, now())
+  `
+  for (const item of data.ingredients.filter((item) => item.ingredient_name.trim())) {
+    await sql`INSERT INTO premix_recipe_items (premix_id, ingredient_name, amount_per_batch, unit) VALUES (${premix_id}, ${item.ingredient_name.trim()}, ${item.amount_per_batch || 0}, ${item.unit || "ml"})`
+  }
+  refreshPages()
+}
+
+export async function createCocktail(data: Omit<Parameters<typeof updateCocktailSpec>[0], "id">) {
+  const id = slugify(data.name)
+  await sql`
+    INSERT INTO cocktails (id, name, category, technique, glassware, straining, garnish, serve_extras, is_batched, updated_at)
+    VALUES (${id}, ${data.name}, ${data.category}, ${data.technique}, ${data.glassware}, ${data.straining}, ${data.garnish}, ${data.serve_extras}, ${data.is_batched}, now())
+  `
+  for (const item of data.ingredients.filter((item) => item.ingredient.trim())) {
+    await sql`INSERT INTO cocktail_specs (cocktail_id, ingredient, ml) VALUES (${id}, ${item.ingredient.trim()}, ${item.ml || 0})`
+  }
+  refreshPages()
+}
+
+export async function archiveCocktail(formData: FormData) {
+  const id = String(formData.get("id"))
+  await sql`INSERT INTO archived_cocktails (id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category) SELECT id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category FROM cocktails WHERE id = ${id}`
+  await sql`INSERT INTO archived_cocktail_specs (cocktail_id, ingredient, ml, created_at) SELECT cocktail_id, ingredient, ml, created_at FROM cocktail_specs WHERE cocktail_id = ${id}`
+  await sql`INSERT INTO archived_cocktail_premix_specs (cocktail_id, premix_note, batch_note, created_at, updated_at) SELECT cocktail_id, premix_note, batch_note, created_at, updated_at FROM cocktail_premix_specs WHERE cocktail_id = ${id}`
+  await sql`DELETE FROM cocktail_premix_specs WHERE cocktail_id = ${id}`
+  await sql`DELETE FROM cocktail_specs WHERE cocktail_id = ${id}`
+  await sql`DELETE FROM cocktails WHERE id = ${id}`
+  refreshPages()
+}
+
+export async function restoreCocktail(formData: FormData) {
+  const id = String(formData.get("id"))
+  await sql`INSERT INTO cocktails (id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category) SELECT id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category FROM archived_cocktails WHERE id = ${id}`
+  await sql`INSERT INTO cocktail_specs (cocktail_id, ingredient, ml, created_at) SELECT cocktail_id, ingredient, ml, created_at FROM archived_cocktail_specs WHERE cocktail_id = ${id}`
+  await sql`INSERT INTO cocktail_premix_specs (cocktail_id, premix_note, batch_note, created_at, updated_at) SELECT cocktail_id, premix_note, batch_note, created_at, updated_at FROM archived_cocktail_premix_specs WHERE cocktail_id = ${id}`
+  await sql`DELETE FROM archived_cocktail_premix_specs WHERE cocktail_id = ${id}`
+  await sql`DELETE FROM archived_cocktail_specs WHERE cocktail_id = ${id}`
+  await sql`DELETE FROM archived_cocktails WHERE id = ${id}`
+  refreshPages()
 }

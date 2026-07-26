@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import type { CocktailCategory } from "@/lib/db"
 import { EditSpecModal, type SpecEditData } from "./edit-spec-modal"
+import { archiveCocktail } from "@/app/actions"
 
 type SpecIngredient = { id: number; ingredient: string; ml: number }
 type SpecMeta = { label: string; value: string }
@@ -42,6 +43,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState<CocktailCategory | "ALL">("ALL")
   const [editingSpec, setEditingSpec] = useState<SpecEditData | null>(null)
+  const [addingCocktail, setAddingCocktail] = useState(false)
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { ALL: cards.length }
@@ -86,6 +88,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
   return (
     <>
       <div className="controls">
+        <div className="controls-row"><span className="controls-label">Cocktail library</span><button type="button" className="btn-primary" onClick={() => setAddingCocktail(true)}>+ Add Cocktail</button></div>
         <input
           type="search"
           className="search"
@@ -144,6 +147,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
                     >
                       Edit
                     </button>
+                    <form action={archiveCocktail}><input type="hidden" name="id" value={c.id} /><button type="submit" className="btn-quiet">Archive</button></form>
                   </div>
                   {c.ingredients.length === 0 ? (
                     <p className="muted">No spec recorded.</p>
@@ -214,6 +218,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
       {editingSpec && (
         <EditSpecModal spec={editingSpec} onClose={() => setEditingSpec(null)} />
       )}
+      {addingCocktail && <EditSpecModal mode="create" spec={{ id: "", name: "", category: "REGULAR", is_batched: false, technique: "", glassware: "", straining: "", garnish: "", serve_extras: "", ingredients: [] }} onClose={() => setAddingCocktail(false)} />}
     </>
   )
 }

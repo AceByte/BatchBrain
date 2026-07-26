@@ -1,12 +1,14 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { restoreCocktail } from "@/app/actions"
 
 type ArchiveIngredient = { id: number; ingredient: string; amount: number; unit: string }
 type ArchiveMeta = { label: string; value: string }
 
 export type ArchiveCard = {
   key: string
+  id: string
   name: string
   archived_at: string
   is_batched: boolean
@@ -37,7 +39,7 @@ export function ArchiveBrowser({ cards }: { cards: ArchiveCard[] }) {
         <div className="grid">
           {filtered.map((card) => (
             <article key={card.key} className="card">
-              <div className="card-head"><div className="card-title-group"><h3>{card.name}</h3>{card.is_batched ? <span className="batched">Batched</span> : null}</div><span className="tag">Archived {new Date(card.archived_at).toLocaleDateString()}</span></div>
+              <div className="card-head"><div className="card-title-group"><h3>{card.name}</h3>{card.is_batched ? <span className="batched">Batched</span> : null}</div><div className="card-actions-inline"><span className="tag">Archived {new Date(card.archived_at).toLocaleDateString()}</span><form action={restoreCocktail}><input type="hidden" name="id" value={card.id} /><button type="submit" className="btn-quiet">Restore</button></form></div></div>
               {card.recipe.length > 0 ? <ul className="recipe">{card.recipe.map((item) => <li key={item.id}><span className="ing-name">{item.ingredient}</span><span className="amount">{item.amount} {item.unit}</span></li>)}</ul> : <p className="muted">No recipe recorded.</p>}
               {card.meta.length > 0 ? <ul className="recipe spec-details">{card.meta.map((item) => <li key={item.label}><span className="ing-name meta-label">{item.label}</span><span className="amount meta-val">{item.value}</span></li>)}</ul> : null}
               {card.extras ? <section className="extras-card"><h4>Extras</h4><div className="extras-list">{card.extras.split(/\r?\n/).filter(Boolean).map((extra, index) => <p key={index}>{extra}</p>)}</div></section> : null}

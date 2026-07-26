@@ -151,3 +151,22 @@ export async function getArchivedCocktailPremixSpecs(): Promise<ArchivedCocktail
   `
   return rows as ArchivedCocktailPremixSpec[]
 }
+
+export async function getAnalytics() {
+  const [overview, recent] = await Promise.all([
+    sql`
+      SELECT
+        (SELECT count(*)::int FROM premixes) AS premix_count,
+        (SELECT count(*)::int FROM premixes WHERE current_bottles <= threshold_bottles) AS low_count,
+        (SELECT count(*)::int FROM cocktails) AS cocktail_count,
+        (SELECT coalesce(sum(produced_bottles), 0)::float8 FROM production_logs WHERE production_date >= current_date - interval '30 days') AS produced_last_30_days
+    `,
+    sql`
+      SELECT premix_name AS name, delta::float8 AS delta, reason, created_at::text AS happened_at
+      FROM stock_adjustment_logs
+      ORDER BY created_at DESC
+      LIMIT 8
+    `,
+  ])
+  return { overview: overview[0] as { premix_count: number; low_count: number; cocktail_count: number; produced_last_30_days: number }, recent: recent as { name: string; delta: number; reason: string; happened_at: string }[] }
+}

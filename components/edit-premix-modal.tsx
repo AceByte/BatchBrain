@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import type { RecipeItem } from "@/lib/db"
-import { updatePremix } from "@/app/actions"
+import { createPremix, updatePremix } from "@/app/actions"
 
 export type PremixEditData = {
   premix_id: string
@@ -17,9 +17,11 @@ export type PremixEditData = {
 export function EditPremixModal({
   premix,
   onClose,
+  mode = "edit",
 }: {
   premix: PremixEditData
   onClose: () => void
+  mode?: "edit" | "create"
 }) {
   const [isPending, startTransition] = useTransition()
 
@@ -64,15 +66,16 @@ export function EditPremixModal({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     startTransition(async () => {
-      await updatePremix({
-        premix_id: premix.premix_id,
+      const payload = {
         name,
         current_bottles: currentBottles,
         target_bottles: targetBottles,
         threshold_bottles: thresholdBottles,
         preparation_notes: notes || null,
         ingredients: ingredients.filter((i) => i.ingredient_name.trim().length > 0),
-      })
+      }
+      if (mode === "create") await createPremix(payload)
+      else await updatePremix({ premix_id: premix.premix_id, ...payload })
       onClose()
     })
   }
@@ -81,7 +84,7 @@ export function EditPremixModal({
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Edit Premix: {premix.name}</h2>
+          <h2>{mode === "create" ? "Add Premix" : `Edit Premix: ${premix.name}`}</h2>
           <button type="button" className="btn-close" onClick={onClose}>
             &times;
           </button>
@@ -201,7 +204,7 @@ export function EditPremixModal({
               Cancel
             </button>
             <button type="submit" className="btn-primary" disabled={isPending}>
-              {isPending ? "Saving..." : "Save Premix"}
+              {isPending ? "Saving..." : mode === "create" ? "Create Premix" : "Save Premix"}
             </button>
           </div>
         </form>

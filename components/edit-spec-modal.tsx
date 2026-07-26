@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import type { CocktailCategory } from "@/lib/db"
-import { updateCocktailSpec } from "@/app/actions"
+import { createCocktail, updateCocktailSpec } from "@/app/actions"
 
 export type SpecEditData = {
   id: string
@@ -20,9 +20,11 @@ export type SpecEditData = {
 export function EditSpecModal({
   spec,
   onClose,
+  mode = "edit",
 }: {
   spec: SpecEditData
   onClose: () => void
+  mode?: "edit" | "create"
 }) {
   const [isPending, startTransition] = useTransition()
 
@@ -58,8 +60,7 @@ export function EditSpecModal({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     startTransition(async () => {
-      await updateCocktailSpec({
-        id: spec.id,
+      const payload = {
         name,
         category,
         is_batched: isBatched,
@@ -69,7 +70,9 @@ export function EditSpecModal({
         garnish: garnish || null,
         serve_extras: serveExtras || null,
         ingredients: ingredients.filter((i) => i.ingredient.trim().length > 0),
-      })
+      }
+      if (mode === "create") await createCocktail(payload)
+      else await updateCocktailSpec({ id: spec.id, ...payload })
       onClose()
     })
   }
@@ -78,7 +81,7 @@ export function EditSpecModal({
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Edit Spec: {spec.name}</h2>
+          <h2>{mode === "create" ? "Add Cocktail" : `Edit Spec: ${spec.name}`}</h2>
           <button type="button" className="btn-close" onClick={onClose}>
             &times;
           </button>
@@ -225,7 +228,7 @@ export function EditSpecModal({
               Cancel
             </button>
             <button type="submit" className="btn-primary" disabled={isPending}>
-              {isPending ? "Saving..." : "Save Changes"}
+              {isPending ? "Saving..." : mode === "create" ? "Create Cocktail" : "Save Changes"}
             </button>
           </div>
         </form>

@@ -14,6 +14,7 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
   const [filter, setFilter] = useState<"ALL" | "LOW" | "OK">("ALL")
   const [view, setView] = useState<"GRID" | "TABLE">("GRID")
   const [editingPremix, setEditingPremix] = useState<PremixEditData | null>(null)
+  const [addingPremix, setAddingPremix] = useState(false)
 
   const itemsByPremix = useMemo(() => {
     const map = new Map<string, RecipeItem[]>()
@@ -54,6 +55,18 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
     })
   }, [cards, query, filter])
 
+  const productionPlan = useMemo(() => {
+    const low = cards.filter((card) => card.current_bottles <= card.threshold_bottles)
+    const ingredients = new Map<string, { name: string; unit: string; amount: number }>()
+    for (const card of low) for (const item of card.recipe) {
+      const key = `${item.ingredient_name.toLowerCase()}-${item.unit}`
+      const current = ingredients.get(key) ?? { name: item.ingredient_name, unit: item.unit, amount: 0 }
+      current.amount += item.amount_per_batch
+      ingredients.set(key, current)
+    }
+    return { low, ingredients: [...ingredients.values()].sort((a, b) => a.name.localeCompare(b.name)) }
+  }, [cards])
+
   function openEditModal(p: StockPremixCard) {
     setEditingPremix({
       premix_id: p.premix_id,
@@ -69,6 +82,10 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
   return (
     <>
       <div className="controls">
+        <div className="controls-row">
+          <span className="controls-label">Stock management</span>
+          <button type="button" className="btn-primary" onClick={() => setAddingPremix(true)}>+ Add Premix</button>
+        </div>
         <input
           type="search"
           className="search"
@@ -128,6 +145,13 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
           </div>
         </div>
       </div>
+
+      {productionPlan.low.length > 0 ? (
+        <section className="production-plan">
+          <div className="production-plan-head"><div><p className="eyebrow">Production plan</p><h2>Make next</h2><p className="muted">One batch of each low-stock premix. Ingredient totals are combined below.</p></div><span className="plan-count">{productionPlan.low.length} premixes</span></div>
+          <div className="plan-layout"><div className="plan-premixes">{productionPlan.low.map((item) => <div key={item.premix_id}><strong>{item.name}</strong><span>{Math.max(0, item.target_bottles - item.current_bottles)} bottles to target</span></div>)}</div><ul className="plan-ingredients">{productionPlan.ingredients.map((item) => <li key={`${item.name}-${item.unit}`}><span>{item.name}</span><strong>{item.amount} {item.unit}</strong></li>)}</ul></div>
+        </section>
+      ) : null}
 
       {filtered.length === 0 ? (
         <p className="muted empty">
@@ -346,6 +370,7 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
       {editingPremix && (
         <EditPremixModal premix={editingPremix} onClose={() => setEditingPremix(null)} />
       )}
+      {addingPremix && <EditPremixModal mode="create" premix={{ premix_id: "", name: "", current_bottles: 0, target_bottles: 6, threshold_bottles: 2, preparation_notes: null, recipe: [] }} onClose={() => setAddingPremix(false)} />}
     </>
   )
 }
