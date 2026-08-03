@@ -18,7 +18,7 @@ export function SiteNav() {
     <nav aria-label="Main navigation">
       <Link href="/" className="brand" aria-label="BatchBrain home">
         <span className="brand-mark" aria-hidden="true">
-          <Image src="/favicon.ico" alt="" width={18} height={18} priority />
+          <Image src="/favicon.ico" alt="" width={16} height={16} priority />
         </span>
         <span>BatchBrain</span>
       </Link>
