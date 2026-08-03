@@ -43,7 +43,7 @@ export function ArchiveBrowser({ cards }: { cards: ArchiveCard[] }) {
               {card.recipe.length > 0 ? <ul className="recipe">{card.recipe.map((item) => <li key={item.id}><span className="ing-name">{item.ingredient}</span><span className="amount">{item.amount} {item.unit}</span></li>)}</ul> : <p className="muted">No recipe recorded.</p>}
               {card.meta.length > 0 ? <ul className="recipe spec-details">{card.meta.map((item) => <li key={item.label}><span className="ing-name meta-label">{item.label}</span><span className="amount meta-val">{item.value}</span></li>)}</ul> : null}
               {card.extras ? <section className="extras-card"><h4>Extras</h4><div className="extras-list">{card.extras.split(/\r?\n|,/).map((extra) => extra.trim()).filter(Boolean).map((extra, index) => <p key={index}>{extra}</p>)}</div></section> : null}
-              {card.premixNotes.map((note) => <section className="premix-spec-card" key={note.id}><h4>Premix build</h4>{note.premix_note ? <div className="premix-note">{note.premix_note.split(/\r?\n/).filter(Boolean).map((line, index) => <p key={index}>{line}</p>)}</div> : null}{note.batch_note ? <div className="batch-note"><span>Batch note</span><p>{note.batch_note}</p></div> : null}</section>) }
+              {card.premixNotes.map((note) => <section className="premix-spec-card" key={note.id}><h4>Premix build</h4>{note.premix_note ? <div className="premix-note">{note.premix_note.split(/\r?\n/).filter(Boolean).map((line, index) => <p key={index}>{line}</p>)}</div> : null}{note.batch_note ? <div className="batch-note"><span>Batch note</span><p>{note.batch_note}</p></div> : null}</section>)}
             </article>
           ))}
         </div>
