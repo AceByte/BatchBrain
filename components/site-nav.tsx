@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -18,7 +17,7 @@ export function SiteNav() {
     <nav aria-label="Main navigation">
       <Link href="/" className="brand" aria-label="BatchBrain home">
         <span className="brand-mark" aria-hidden="true">
-          <Image src="/favicon.ico" alt="" width={16} height={16} priority />
+          B
         </span>
         <span>BatchBrain</span>
       </Link>
