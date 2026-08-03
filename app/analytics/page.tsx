@@ -23,7 +23,7 @@ export default async function AnalyticsPage() {
   const needAttention = lowPremixes.length > 0 || runningLow.length > 0
 
   return (
-    <>
+    <div className="analytics-page">
       <header className="page-head">
         <p className="eyebrow">Operations overview</p>
         <h1>Analytics</h1>
@@ -31,7 +31,6 @@ export default async function AnalyticsPage() {
       </header>
 
       <div className="analytics-grid">
-        {/* ── KPI Summary ── */}
         <div className="kpi-row">
           <div className="kpi-card">
             <span className="kpi-label">Active premixes</span>
@@ -53,7 +52,6 @@ export default async function AnalyticsPage() {
           </div>
         </div>
 
-        {/* ── Production Priority ── */}
         {needAttention && (
           <section className={`analytics-section analytics-section-danger`}>
             <div className="analytics-section-header">
@@ -108,8 +106,7 @@ export default async function AnalyticsPage() {
           </section>
         )}
 
-        {/* ── Stock Health ── */}
-        <section className="analytics-section">
+        <section className="analytics-section analytics-span-2">
           <div className="analytics-section-header">
             <p className="eyebrow">Stock health</p>
             <h2>All premixes</h2>
@@ -143,8 +140,7 @@ export default async function AnalyticsPage() {
           </div>
         </section>
 
-        {/* ── Ingredient Demand ── */}
-        <section className="analytics-section">
+        <section className="analytics-section analytics-span-2">
           <div className="analytics-section-header">
             <p className="eyebrow">Purchasing</p>
             <h2>Ingredient demand</h2>
@@ -168,7 +164,6 @@ export default async function AnalyticsPage() {
           </div>
         </section>
 
-        {/* ── Cocktails by Category ── */}
         <section className="analytics-section">
           <div className="analytics-section-header">
             <p className="eyebrow">Menu</p>
@@ -197,8 +192,7 @@ export default async function AnalyticsPage() {
           </div>
         </section>
 
-        {/* ── Recent Activity ── */}
-        <section className="analytics-section">
+        <section className="analytics-section analytics-span-2">
           <div className="analytics-section-header">
             <p className="eyebrow">Recent activity</p>
             <h2>Stock changes</h2>
@@ -224,6 +218,6 @@ export default async function AnalyticsPage() {
           </div>
         </section>
       </div>
-    </>
+    </div>
   )
 }

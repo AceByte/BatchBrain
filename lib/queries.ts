@@ -187,7 +187,7 @@ export async function getAnalytics() {
              count(DISTINCT premix_id)::int AS premix_count
       FROM premix_recipe_items
       GROUP BY ingredient_name, unit
-      ORDER BY total_amount DESC
+      ORDER BY premix_count DESC, total_amount DESC, ingredient_name ASC
       LIMIT 12
     `,
     sql`
