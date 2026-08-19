@@ -145,7 +145,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
             <h2 className="category-title">
               {CATEGORY_LABEL[g.category]} <span className="category-count">{g.items.length}</span>
             </h2>
-            <div className="grid">
+            <div className="grid grid-row-priority-tight">
               {g.items.map((c) => (
                 <article key={c.id} className={`card ${printId === c.id ? "print-target" : ""}`}>
                   <div className="card-head">

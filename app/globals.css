@@ -128,11 +128,24 @@ nav {
 }
 
 nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   color: var(--muted);
   text-decoration: none;
   font-size: 0.95rem;
   padding: 0.4rem 0.65rem;
   border-radius: 0.45rem;
+}
+
+.nav-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+}
+
+.nav-label {
+  line-height: 1;
 }
 
 nav a:hover {
@@ -403,6 +416,15 @@ form.inline button:hover {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 0.85rem;
   align-items: start;
+}
+
+/* Keep row-first placement while removing visual dead space from shorter cards. */
+.grid-row-priority-tight {
+  align-items: stretch;
+}
+
+.grid-row-priority-tight > .card {
+  height: 100%;
 }
 
 .card {
@@ -1582,15 +1604,54 @@ form.inline button:hover {
 /* Mobile */
 @media (max-width: 640px) {
   nav {
-    padding: 0.75rem 1rem;
-    gap: 0.75rem;
+    position: fixed;
+    top: auto;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: max(0.5rem, env(safe-area-inset-bottom));
+    width: auto;
+    margin: 0;
+    padding: 0.35rem;
+    border: 1px solid color-mix(in srgb, var(--border) 70%, var(--accent) 30%);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--surface) 90%, transparent);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32);
+    z-index: 40;
+    gap: 0;
   }
 
-  .nav-links { width: 100%; }
-  .nav-links a { flex: 1; text-align: center; }
+  .brand {
+    display: none;
+  }
+
+  .nav-links {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.3rem;
+  }
+
+  .nav-links a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 0.22rem;
+    padding: 0.45rem 0.2rem;
+    min-height: 3.1rem;
+    border-radius: 0.75rem;
+    font-size: 0.68rem;
+  }
+
+  .nav-links .nav-icon {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
 
   main {
-    padding: 1.25rem 1rem 3rem;
+    padding: 1.25rem 1rem 6.2rem;
   }
 
   h1 {
@@ -1598,7 +1659,7 @@ form.inline button:hover {
   }
 
   .controls {
-    top: 3.1rem;
+    top: 0.4rem;
   }
 
   .grid {
