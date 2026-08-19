@@ -4,10 +4,10 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 const links = [
-  { href: "/", label: "Stock" },
-  { href: "/specs", label: "Spec Sheets" },
-  { href: "/archive", label: "Archive" },
-  { href: "/analytics", label: "Analytics" },
+  { href: "/", label: "Stock", icon: "▣" },
+  { href: "/specs", label: "Spec Sheets", icon: "☷" },
+  { href: "/archive", label: "Archive", icon: "□" },
+  { href: "/analytics", label: "Analytics", icon: "◔" },
 ]
 
 export function SiteNav() {
@@ -23,6 +23,7 @@ export function SiteNav() {
           const isActive = pathname === link.href
           return (
             <Link key={link.href} href={link.href} className={isActive ? "active" : undefined} aria-current={isActive ? "page" : undefined}>
+              <span className="nav-icon" aria-hidden="true">{link.icon}</span>
               {link.label}
             </Link>
           )

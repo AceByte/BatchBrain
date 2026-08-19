@@ -45,9 +45,17 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
   const [editingSpec, setEditingSpec] = useState<SpecEditData | null>(null)
   const [addingCocktail, setAddingCocktail] = useState(false)
   const [printId, setPrintId] = useState<string | null>(null)
+  const [printMode, setPrintMode] = useState<"single" | "filtered" | null>(null)
 
   function printSpec(id: string) {
     setPrintId(id)
+    setPrintMode("single")
+    window.setTimeout(() => window.print(), 0)
+  }
+
+  function printVisibleSpecs() {
+    setPrintId(null)
+    setPrintMode("filtered")
     window.setTimeout(() => window.print(), 0)
   }
 
@@ -94,7 +102,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
   return (
     <>
       <div className="controls">
-        <div className="controls-row"><span className="controls-label">Cocktail library</span><button type="button" className="btn-primary" onClick={() => setAddingCocktail(true)}>+ Add Cocktail</button></div>
+        <div className="controls-row"><span className="controls-label">Cocktail library</span><div className="controls-actions"><button type="button" className="btn-secondary" onClick={printVisibleSpecs}>Print shown specs</button><button type="button" className="btn-primary" onClick={() => setAddingCocktail(true)}>+ Add Cocktail</button></div></div>
         <input
           type="search"
           className="search"
@@ -128,6 +136,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
         </div>
       </div>
 
+      <div className={printMode === "filtered" ? "print-selection" : undefined}>
       {filtered.length === 0 ? (
         <p className="muted empty">No matches for &ldquo;{query}&rdquo;.</p>
       ) : (
@@ -221,6 +230,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
           </section>
         ))
       )}
+      </div>
 
       {editingSpec && (
         <EditSpecModal spec={editingSpec} onClose={() => setEditingSpec(null)} />
