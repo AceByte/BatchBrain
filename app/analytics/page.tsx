@@ -172,6 +172,33 @@ export default async function AnalyticsPage() {
           </div>
         </section>
 
+        {/* ── Recent Activity ── */}
+        <section className="analytics-section">
+          <div className="analytics-section-header">
+            <p className="eyebrow">Recent activity</p>
+            <h2>Stock changes</h2>
+          </div>
+          <div className="analytics-section-body">
+            {recent.length === 0 ? (
+              <p className="muted">No stock activity recorded yet.</p>
+            ) : (
+              <div className="activity-grid">
+                {recent.map((event, index) => (
+                  <div key={`${event.happened_at}-${index}`} className="activity-item">
+                    <div className="activity-info">
+                      <strong>{event.name}</strong>
+                      <span className="activity-meta">{event.reason || "Manual adjustment"} · {new Date(event.happened_at).toLocaleDateString()}</span>
+                    </div>
+                    <span className={`activity-delta ${event.delta < 0 ? "delta-negative" : "delta-positive"}`}>
+                      {event.delta > 0 ? "+" : ""}{event.delta}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
         {/* ── Cocktails by Category ── */}
         <section className="analytics-section">
           <div className="analytics-section-header">
@@ -201,33 +228,6 @@ export default async function AnalyticsPage() {
           </div>
         </section>
         </div>
-
-        {/* ── Recent Activity ── */}
-        <section className="analytics-section">
-          <div className="analytics-section-header">
-            <p className="eyebrow">Recent activity</p>
-            <h2>Stock changes</h2>
-          </div>
-          <div className="analytics-section-body">
-            {recent.length === 0 ? (
-              <p className="muted">No stock activity recorded yet.</p>
-            ) : (
-              <div className="activity-grid">
-                {recent.map((event, index) => (
-                  <div key={`${event.happened_at}-${index}`} className="activity-item">
-                    <div className="activity-info">
-                      <strong>{event.name}</strong>
-                      <span className="activity-meta">{event.reason || "Manual adjustment"} · {new Date(event.happened_at).toLocaleDateString()}</span>
-                    </div>
-                    <span className={`activity-delta ${event.delta < 0 ? "delta-negative" : "delta-positive"}`}>
-                      {event.delta > 0 ? "+" : ""}{event.delta}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
       </div>
     </>
   )
