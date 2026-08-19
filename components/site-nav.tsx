@@ -16,7 +16,6 @@ export function SiteNav() {
   return (
     <nav aria-label="Main navigation">
       <Link href="/" className="brand" aria-label="BatchBrain home">
-        <span className="brand-mark" aria-hidden="true">B</span>
         <span>BatchBrain</span>
       </Link>
       <div className="nav-links">

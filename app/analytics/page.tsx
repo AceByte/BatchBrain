@@ -17,6 +17,9 @@ function statusBadge(current: number, threshold: number, target: number): { labe
 
 export default async function AnalyticsPage() {
   const { overview, recent, stockHealth, ingredientDemand, categoryBreakdown } = await getAnalytics()
+  const demandByUsage = [...ingredientDemand].sort((a, b) =>
+    b.premix_count - a.premix_count || b.total_amount - a.total_amount || a.ingredient_name.localeCompare(b.ingredient_name),
+  )
 
   const lowPremixes = stockHealth.filter((p) => p.current_bottles <= p.threshold_bottles)
   const runningLow = stockHealth.filter((p) => p.current_bottles > p.threshold_bottles && p.current_bottles < p.target_bottles * 0.5)
@@ -158,7 +161,7 @@ export default async function AnalyticsPage() {
                 <span>Amount</span>
                 <span>Used in</span>
               </div>
-              {ingredientDemand.map((item) => (
+              {demandByUsage.map((item) => (
                 <div key={`${item.ingredient_name}-${item.unit}`} className="demand-row">
                   <span className="demand-cell-name">{item.ingredient_name}</span>
                   <span className="demand-cell-amount"><strong>{item.total_amount}</strong><span className="unit">{item.unit}</span></span>
