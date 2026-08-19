@@ -143,6 +143,7 @@ export default async function AnalyticsPage() {
           </div>
         </section>
 
+        <div className="analytics-pair">
         {/* ── Ingredient Demand ── */}
         <section className="analytics-section">
           <div className="analytics-section-header">
@@ -196,6 +197,7 @@ export default async function AnalyticsPage() {
             </div>
           </div>
         </section>
+        </div>
 
         {/* ── Recent Activity ── */}
         <section className="analytics-section">

@@ -59,7 +59,7 @@ nav {
   align-items: center;
   flex-wrap: wrap;
   gap: 1.5rem;
-  padding: 0.7rem max(1.5rem, calc((100vw - 1040px) / 2 + 1.5rem));
+  padding: 0.7rem max(1.5rem, calc((100vw - 1440px) / 2 + 1.5rem));
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   position: sticky;
@@ -115,7 +115,7 @@ nav a.active {
 
 /* Layout */
 main {
-  max-width: 1040px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 1.75rem 1.5rem 4rem;
 }
@@ -365,12 +365,10 @@ form.inline button:hover {
   font-variant-numeric: tabular-nums;
 }
 
-/* Compact responsive card grid */
+/* Masonry-style cards prevent tall recipes from leaving gaps below neighbours. */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
-  align-items: start;
+  columns: 300px;
+  column-gap: 0.85rem;
 }
 
 .card {
@@ -379,6 +377,10 @@ form.inline button:hover {
   border-radius: var(--radius);
   padding: 1rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  break-inside: avoid;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 0.85rem;
 }
 
 .card:hover {
@@ -630,6 +632,7 @@ form.inline button:hover {
 }
 
 .stock-bar-fill {
+  display: block;
   height: 100%;
   border-radius: 999px;
   transition: width 0.3s ease;
@@ -667,6 +670,13 @@ form.inline button:hover {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.analytics-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 1.5rem;
+  align-items: start;
 }
 
 /* KPI row — pill-style cards */
@@ -898,6 +908,7 @@ form.inline button:hover {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  min-width: 0;
 }
 
 .stock-cell-nums {
@@ -914,6 +925,10 @@ form.inline button:hover {
   font-variant-numeric: tabular-nums;
   color: var(--muted);
   font-size: 0.82rem;
+}
+
+@media (max-width: 900px) {
+  .analytics-pair { grid-template-columns: 1fr; }
 }
 
 /* Badge variants */
@@ -1553,7 +1568,7 @@ form.inline button:hover {
   }
 
   .grid {
-    grid-template-columns: 1fr;
+    columns: auto;
   }
 
   .plan-layout, .kpi-row { grid-template-columns: 1fr; }
