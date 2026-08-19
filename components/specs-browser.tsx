@@ -44,6 +44,12 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
   const [category, setCategory] = useState<CocktailCategory | "ALL">("ALL")
   const [editingSpec, setEditingSpec] = useState<SpecEditData | null>(null)
   const [addingCocktail, setAddingCocktail] = useState(false)
+  const [printId, setPrintId] = useState<string | null>(null)
+
+  function printSpec(id: string) {
+    setPrintId(id)
+    window.setTimeout(() => window.print(), 0)
+  }
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { ALL: cards.length }
@@ -132,7 +138,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
             </h2>
             <div className="grid">
               {g.items.map((c) => (
-                <article key={c.id} className="card">
+                <article key={c.id} className={`card ${printId === c.id ? "print-target" : ""}`}>
                   <div className="card-head">
                     <div className="card-title-group">
                       <h3>{c.name}</h3>
@@ -147,6 +153,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
                     >
                       Edit
                     </button>
+                    <button type="button" className="btn-quiet" onClick={() => printSpec(c.id)} aria-label={`Print spec for ${c.name}`}>Print</button>
                     <form action={archiveCocktail}><input type="hidden" name="id" value={c.id} /><button type="submit" className="btn-quiet">Archive</button></form>
                   </div>
                   {c.ingredients.length === 0 ? (

@@ -53,6 +53,38 @@ body {
   color: var(--text);
 }
 
+@media (max-width: 640px) {
+  nav { gap: 0.35rem; padding: 0.55rem 0.75rem; }
+  .brand { width: 100%; }
+  .nav-links { width: 100%; overflow-x: auto; padding-bottom: 0.1rem; }
+  nav a { flex: 0 0 auto; padding: 0.4rem 0.55rem; font-size: 0.84rem; }
+  main { padding: 1rem 0.75rem 5rem; }
+  .page-head-stock, .controls-row { align-items: stretch; }
+  .page-head-stock { flex-direction: column; }
+  .stock-summary { width: 100%; }
+  .summary-item { flex: 1; min-width: 0; }
+  .controls { top: 6.5rem; }
+  .filters { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.2rem; }
+  .chip { flex: 0 0 auto; min-height: 2.4rem; }
+  .grid { columns: auto; }
+  .card { padding: 0.85rem; }
+  .card-head { align-items: flex-start; }
+  .card-head h3 { font-size: 1.05rem; }
+  .card-actions { grid-template-columns: 1fr; }
+  .action-input-group input { min-width: 0; }
+}
+
+@media print {
+  @page { margin: 12mm; size: A4; }
+  nav, .page-head, .controls, .category-title, .btn-edit-icon, .btn-quiet, form, .modal-backdrop { display: none !important; }
+  body, main { background: #fff !important; color: #111 !important; padding: 0 !important; max-width: none !important; }
+  .category, .grid { display: block !important; }
+  .card { display: none !important; box-shadow: none !important; border: 1px solid #bbb !important; break-inside: avoid; }
+  .card.print-target { display: block !important; }
+  .recipe li, .spec-details li { background: #fff !important; border-bottom: 1px solid #ddd; }
+  .notes, .meta-label, .amount { color: #333 !important; }
+}
+
 /* Nav */
 nav {
   display: flex;
