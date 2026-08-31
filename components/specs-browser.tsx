@@ -93,8 +93,8 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
       technique: c.meta.find((m) => m.label === "Technique")?.value || "",
       glassware: c.meta.find((m) => m.label === "Glass")?.value || "",
       straining: c.meta.find((m) => m.label === "Straining")?.value || "",
-      garnish: c.meta.find((m) => m.label === "Garnish")?.value || "",
       serve_extras: c.extras || "",
+      garnish: c.meta.find((m) => m.label === "Garnish")?.value || "",
       ingredients: c.ingredients.map((i) => ({ ingredient: i.ingredient, ml: i.ml })),
     })
   }
@@ -235,7 +235,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
       {editingSpec && (
         <EditSpecModal spec={editingSpec} onClose={() => setEditingSpec(null)} />
       )}
-      {addingCocktail && <EditSpecModal mode="create" spec={{ id: "", name: "", category: "REGULAR", is_batched: false, technique: "", glassware: "", straining: "", garnish: "", serve_extras: "", ingredients: [] }} onClose={() => setAddingCocktail(false)} />}
+      {addingCocktail && <EditSpecModal mode="create" spec={{ id: "", name: "", category: "REGULAR", is_batched: false, technique: "", glassware: "", straining: "",serve_extras: "", garnish: "", ingredients: [] }} onClose={() => setAddingCocktail(false)} />}
     </>
   )
 }
