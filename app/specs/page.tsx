@@ -56,7 +56,6 @@ export default async function SpecsPage() {
         { label: "Technique", value: c.technique },
         { label: "Glass", value: c.glassware },
         { label: "Straining", value: c.straining },
-        { label: "Extras", value: c.serve_extras },
         { label: "Garnish", value: c.garnish },
       ].filter((m): m is { label: string; value: string } => Boolean(m.value)),
       extras: c.serve_extras,
