@@ -177,6 +177,16 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
                       ))}
                     </ul>
                   )}
+                  {c.extras ? (
+                    <section className="extras-card" aria-label={`Extras for ${c.name}`}>
+                      <h4>Extras</h4>
+                      <div className="extras-list">
+                        {c.extras.split(/\r?\n|,/).map((extra) => extra.trim()).filter(Boolean).map((extra, index) => (
+                          <p key={index}>{extra}</p>
+                        ))}
+                      </div>
+                    </section>
+                  ) : null}
                   {c.meta && c.meta.length > 0 ? (
                     <ul className="recipe spec-details">
                       {c.meta.map((m, idx) => (
@@ -186,16 +196,6 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
                         </li>
                       ))}
                     </ul>
-                  ) : null}
-                  {c.extras ? (
-                    <section className="extras-card" aria-label={`Extras for ${c.name}`}>
-                      <h4>Extras</h4>
-                      <div className="extras-list">
-                        {c.extras.split(/\r?\n|,/).map((extra) => extra.trim()).filter(Boolean).map((extra, index) => (
-                          <p key={index}>{extra}</p>
-                        ))}
-                    </div>
-                    </section>
                   ) : null}
                   {c.premixSpecs.map((spec) => {
                     const stock = spec.premix

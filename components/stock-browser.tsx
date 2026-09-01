@@ -266,7 +266,16 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
                   </ul>
                 )}
 
-                {p.preparation_notes ? <p className="notes">{p.preparation_notes}</p> : null}
+                {p.preparation_notes ? (
+                  <section className="extras-card" aria-label={`Preparation notes for ${p.name}`}>
+                    <h4>Prep Notes</h4>
+                    <div className="extras-list">
+                      {p.preparation_notes.split(/\r?\n|,/).map((entry) => entry.trim()).filter(Boolean).map((entry, index) => (
+                        <p key={index}>{entry}</p>
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
 
                 <div className="card-actions">
                   <form action={logProduction} className="card-action-form">
