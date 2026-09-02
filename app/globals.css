@@ -419,11 +419,11 @@ form.inline button:hover {
 }
 
 /* Keep row-first placement while removing visual dead space from shorter cards. */
-.grid-row-priority-tight {
+.grid.grid-row-priority-tight {
   align-items: stretch;
 }
 
-.grid-row-priority-tight > .card {
+.grid.grid-row-priority-tight > .card {
   height: 100%;
 }
 
