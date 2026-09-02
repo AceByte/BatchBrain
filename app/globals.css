@@ -713,9 +713,18 @@ form.inline button:hover {
 .production-plan h2, .activity-panel h2 { margin: 0; font-size: 1.05rem; }
 .plan-count { padding: 0.2rem 0.45rem; border-radius: 999px; background: var(--danger-bg); color: var(--danger); font-size: 0.75rem; white-space: nowrap; }
 .plan-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.plan-premixes, .plan-ingredients { display: grid; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
-.plan-premixes div, .plan-ingredients li { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.45rem 0.55rem; border-radius: 0.4rem; background: var(--surface-2); font-size: 0.84rem; }
-.plan-premixes span { color: var(--muted); }
+.plan-premixes { display: grid; gap: 0.8rem; margin: 0; padding: 0; list-style: none; }
+.plan-premix-section { padding: 0.6rem; border-radius: 0.4rem; background: var(--surface-2); }
+.plan-premix-header { display: flex; justify-content: space-between; gap: 0.5rem; align-items: center; margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+.plan-premix-header strong { font-size: 0.9rem; }
+.plan-bottles-needed { color: var(--muted); font-size: 0.8rem; }
+.plan-premix-recipe { display: grid; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
+.plan-premix-recipe li { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.3rem 0; font-size: 0.8rem; }
+.plan-premix-recipe .ing-name { color: var(--muted); }
+.plan-totals { }
+.plan-totals h4 { margin: 0 0 0.5rem; font-size: 0.9rem; }
+.plan-ingredients { display: grid; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
+.plan-ingredients li { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.45rem 0.55rem; border-radius: 0.4rem; background: var(--surface-2); font-size: 0.84rem; }
 
 /* ── Analytics ── */
 

@@ -170,21 +170,41 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
           {!planCollapsed ? (
             <div className="plan-layout">
               <div className="plan-premixes">
-                {productionPlan.low.map((item) => (
-                  <div key={item.premix_id}>
-                    <strong>{item.name}</strong>
-                    <span>{Math.max(0, item.target_bottles - item.current_bottles)} bottles to target</span>
-                  </div>
-                ))}
+                {productionPlan.low.map((item) => {
+                  const bottlesNeeded = Math.max(0, item.target_bottles - item.current_bottles)
+                  return (
+                    <div key={item.premix_id} className="plan-premix-section">
+                      <div className="plan-premix-header">
+                        <strong>{item.name}</strong>
+                        <span className="plan-bottles-needed">{bottlesNeeded} bottles to target</span>
+                      </div>
+                      {item.recipe.length > 0 ? (
+                        <ul className="plan-premix-recipe">
+                          {item.recipe.map((recipe) => (
+                            <li key={recipe.id}>
+                              <span className="ing-name">{recipe.ingredient_name}</span>
+                              <span className="amount">{recipe.amount_per_batch * bottlesNeeded} {recipe.unit}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="muted">No recipe recorded</p>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
-              <ul className="plan-ingredients">
-                {productionPlan.ingredients.map((item) => (
-                  <li key={`${item.name}-${item.unit}`}>
-                    <span>{item.name}</span>
-                    <strong>{item.amount} {item.unit}</strong>
-                  </li>
-                ))}
-              </ul>
+              <div className="plan-totals">
+                <h4>Combined Totals</h4>
+                <ul className="plan-ingredients">
+                  {productionPlan.ingredients.map((item) => (
+                    <li key={`${item.name}-${item.unit}`}>
+                      <span>{item.name}</span>
+                      <strong>{item.amount} {item.unit}</strong>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ) : null}
         </section>
