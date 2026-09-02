@@ -195,7 +195,7 @@ export function StockBrowser({ premixes, recipeItems }: { premixes: Premix[]; re
           {cards.length === 0 ? "No premixes found." : `No matches for “${query}”.`}
         </p>
       ) : view === "GRID" ? (
-        <div className="grid">
+        <div className="grid grid-row-priority-tight">
           {filtered.map((p) => {
             const isLow = p.current_bottles <= p.threshold_bottles
             const fillPct = Math.min(100, Math.max(0, (p.current_bottles / (p.target_bottles || 1)) * 100))
