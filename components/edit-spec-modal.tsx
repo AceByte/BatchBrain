@@ -74,15 +74,27 @@ export function EditSpecModal({
     setIngredients((prev) => prev.filter((_, i) => i !== index))
   }
 
+  function hasRecipeChanged(nextIngredients: { ingredient: string; ml: number }[]) {
+    const normalize = (items: { ingredient: string; ml: number }[]) => items
+      .filter((item) => item.ingredient.trim())
+      .map((item) => ({ ingredient: item.ingredient.trim(), ml: item.ml }))
+      .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))
+    return JSON.stringify(normalize(nextIngredients)) !== JSON.stringify(normalize(spec.ingredients))
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    const nextIngredients = ingredients
+      .filter((item) => item.ingredient.trim().length > 0)
+      .map((item) => ({ ingredient: item.ingredient, ml: item.ml }))
+    if (mode === "edit" && hasRecipeChanged(nextIngredients) && !window.confirm("Replace this cocktail recipe? The current recipe lines will be replaced transactionally.")) return
     setError(null)
     startTransition(async () => {
       try {
         const payload = {
           name, category, is_batched: isBatched, technique: technique || null, glassware: glassware || null,
           straining: straining || null, garnish: garnish || null, serve_extras: serveExtras || null,
-          ingredients: ingredients.filter((i) => i.ingredient.trim().length > 0).map(({ rowId: _, ...item }) => item),
+          ingredients: nextIngredients,
         }
         if (mode === "create") await createCocktail(payload)
         else await updateCocktailSpec({ id: spec.id, ...payload })

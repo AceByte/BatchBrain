@@ -1,4 +1,5 @@
-import { getAnalytics } from "@/lib/queries"
+import { getAnalytics, getIngredientAliases } from "@/lib/queries"
+import { IngredientAliasManager } from "@/components/ingredient-alias-manager"
 
 export const dynamic = "force-dynamic"
 
@@ -16,7 +17,7 @@ function statusBadge(current: number, threshold: number, target: number): { labe
 }
 
 export default async function AnalyticsPage() {
-  const { overview, recent, stockHealth, ingredientDemand, categoryBreakdown } = await getAnalytics()
+  const [{ overview, recent, stockHealth, ingredientDemand, categoryBreakdown }, aliases] = await Promise.all([getAnalytics(), getIngredientAliases()])
   const demandByUsage = [...ingredientDemand].sort((a, b) =>
     b.premix_count - a.premix_count || b.total_amount - a.total_amount || a.ingredient_name.localeCompare(b.ingredient_name),
   )
@@ -116,7 +117,7 @@ export default async function AnalyticsPage() {
           <div className="analytics-section-header">
             <p className="eyebrow">Stock health</p>
             <h2>All premixes</h2>
-            <p className="muted">Current stock levels and estimated runway based on 30-day usage.</p>
+            <p className="muted">Current stock and estimated runway based on negative manual adjustments from the last 30 days.</p>
           </div>
           <div className="analytics-section-body">
             <div className="stock-grid">
@@ -227,6 +228,7 @@ export default async function AnalyticsPage() {
             </div>
           </div>
         </section>
+        <IngredientAliasManager aliases={aliases} />
         </div>
       </div>
     </>

@@ -1,10 +1,10 @@
-import { getPremixes, getRecipeItems } from "@/lib/queries"
+import { getPremixes, getRecipeItems, getStockHistory } from "@/lib/queries"
 import { StockBrowser } from "@/components/stock-browser"
 
 export const dynamic = "force-dynamic"
 
 export default async function StockPage() {
-  const [premixes, recipeItems] = await Promise.all([getPremixes(), getRecipeItems()])
+  const [premixes, recipeItems, stockHistory] = await Promise.all([getPremixes(), getRecipeItems(), getStockHistory()])
   const lowCount = premixes.filter((p) => p.current_bottles <= p.threshold_bottles).length
 
   return (
@@ -27,7 +27,7 @@ export default async function StockPage() {
         </div>
       </header>
 
-      <StockBrowser premixes={premixes} recipeItems={recipeItems} />
+      <StockBrowser premixes={premixes} recipeItems={recipeItems} stockHistory={stockHistory} />
     </>
   )
 }

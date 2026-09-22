@@ -18,7 +18,9 @@ export type Premix = {
   current_bottles: number
   target_bottles: number
   threshold_bottles: number
+  bottles_per_batch: number
   preparation_notes: string | null
+  prep_deadline: string | null
 }
 
 export type RecipeItem = {

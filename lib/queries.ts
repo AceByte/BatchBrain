@@ -1,4 +1,5 @@
 import { sql } from "./db"
+import { getDepletionMetrics } from "./business-rules"
 import type { Premix, RecipeItem, Cocktail, CocktailSpec, CocktailCategory } from "./db"
 
 export async function getPremixes(): Promise<Premix[]> {
@@ -7,7 +8,9 @@ export async function getPremixes(): Promise<Premix[]> {
            current_bottles::float8 AS current_bottles,
            target_bottles::float8 AS target_bottles,
            threshold_bottles::float8 AS threshold_bottles,
-           preparation_notes
+           bottles_per_batch::float8 AS bottles_per_batch,
+           preparation_notes,
+           prep_deadline::text AS prep_deadline
     FROM premixes
     ORDER BY name
   `
@@ -22,6 +25,79 @@ export async function getRecipeItems(): Promise<RecipeItem[]> {
     ORDER BY ingredient_name
   `
   return rows as RecipeItem[]
+}
+
+export type IngredientAlias = { alias: string; canonical_name: string }
+
+export async function getIngredientAliases(): Promise<IngredientAlias[]> {
+  const rows = await sql`
+    SELECT alias, canonical_name
+    FROM ingredient_aliases
+    ORDER BY canonical_name, alias
+  `
+  return rows as IngredientAlias[]
+}
+
+export type StockHistoryEvent = {
+  event_id: string
+  premix_id: string
+  premix_name: string
+  event_type: "PRODUCTION" | "ADJUSTMENT"
+  event_date: string
+  happened_at: string
+  quantity: number | null
+  old_value: number | null
+  new_value: number | null
+  delta: number | null
+  reason: string | null
+  notes: string | null
+  reversal_of_id: number | null
+  reversed_by_id: number | null
+}
+
+export async function getStockHistory(): Promise<StockHistoryEvent[]> {
+  const rows = await sql`
+    SELECT event_id, premix_id, premix_name, event_type, event_date, happened_at,
+           quantity, old_value, new_value, delta, reason, notes, reversal_of_id, reversed_by_id
+    FROM (
+      SELECT ('production-' || l.id::text) AS event_id,
+             l.premix_id,
+             coalesce(p.name, l.premix_id) AS premix_name,
+             'PRODUCTION' AS event_type,
+             l.production_date::text AS event_date,
+             l.logged_at::text AS happened_at,
+             l.produced_bottles::float8 AS quantity,
+             NULL::float8 AS old_value,
+             NULL::float8 AS new_value,
+             l.produced_bottles::float8 AS delta,
+             NULL::text AS reason,
+             l.notes,
+             NULL::bigint AS reversal_of_id,
+             NULL::bigint AS reversed_by_id
+      FROM production_logs l
+      LEFT JOIN premixes p ON p.premix_id = l.premix_id
+      UNION ALL
+      SELECT ('adjustment-' || l.id::text) AS event_id,
+             l.premix_id,
+             l.premix_name,
+             'ADJUSTMENT' AS event_type,
+             l.created_at::date::text AS event_date,
+             l.created_at::text AS happened_at,
+             NULL::float8 AS quantity,
+             l.old_value::float8 AS old_value,
+             l.new_value::float8 AS new_value,
+             l.delta::float8 AS delta,
+             l.reason,
+             l.notes,
+             l.reversal_of_id,
+             reversal.id AS reversed_by_id
+      FROM stock_adjustment_logs l
+      LEFT JOIN stock_adjustment_logs reversal ON reversal.reversal_of_id = l.id
+    ) history
+    ORDER BY happened_at DESC
+    LIMIT 100
+  `
+  return rows as StockHistoryEvent[]
 }
 
 export async function getCocktails(): Promise<Cocktail[]> {
@@ -182,11 +258,12 @@ export async function getAnalytics() {
       GROUP BY premix_id
     `,
     sql`
-      SELECT ingredient_name, unit,
-             sum(amount_per_batch)::float8 AS total_amount,
-             count(DISTINCT premix_id)::int AS premix_count
-      FROM premix_recipe_items
-      GROUP BY ingredient_name, unit
+      SELECT coalesce(a.canonical_name, trim(r.ingredient_name)) AS ingredient_name, lower(trim(r.unit)) AS unit,
+             sum(r.amount_per_batch)::float8 AS total_amount,
+             count(DISTINCT r.premix_id)::int AS premix_count
+      FROM premix_recipe_items r
+      LEFT JOIN ingredient_aliases a ON lower(trim(r.ingredient_name)) = a.alias
+      GROUP BY coalesce(a.canonical_name, trim(r.ingredient_name)), lower(trim(r.unit))
       ORDER BY total_amount DESC
       LIMIT 12
     `,
@@ -206,9 +283,7 @@ export async function getAnalytics() {
 
   const stock = (stockHealth as { premix_id: string; name: string; current_bottles: number; target_bottles: number; threshold_bottles: number }[]).map((p) => {
     const netDelta = depletionByPremix.get(p.premix_id) ?? 0
-    const avgDailyUse = netDelta < 0 ? Math.abs(netDelta) / 30 : 0
-    const daysRemaining = avgDailyUse > 0 ? Math.round(p.current_bottles / avgDailyUse) : null
-    return { ...p, daysRemaining }
+    return { ...p, ...getDepletionMetrics(p.current_bottles, netDelta) }
   })
 
   return {

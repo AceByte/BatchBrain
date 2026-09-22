@@ -10,7 +10,9 @@ export type PremixEditData = {
   current_bottles: number
   target_bottles: number
   threshold_bottles: number
+  bottles_per_batch: number
   preparation_notes: string | null
+  prep_deadline: string | null
   recipe: RecipeItem[]
 }
 
@@ -31,7 +33,9 @@ export function EditPremixModal({
   const [currentBottles, setCurrentBottles] = useState(premix.current_bottles)
   const [targetBottles, setTargetBottles] = useState(premix.target_bottles)
   const [thresholdBottles, setThresholdBottles] = useState(premix.threshold_bottles)
+  const [bottlesPerBatch, setBottlesPerBatch] = useState(premix.bottles_per_batch)
   const [notes, setNotes] = useState(premix.preparation_notes || "")
+  const [prepDeadline, setPrepDeadline] = useState(premix.prep_deadline || "")
 
   const [ingredients, setIngredients] = useState<
     { rowId: string; ingredient_name: string; amount_per_batch: number; unit: string }[]
@@ -82,9 +86,21 @@ export function EditPremixModal({
     setIngredients((prev) => prev.filter((_, i) => i !== index))
   }
 
+  function hasRecipeChanged(nextIngredients: { ingredient_name: string; amount_per_batch: number; unit: string }[]) {
+    const normalize = (items: { ingredient_name: string; amount_per_batch: number; unit: string }[]) => items
+      .filter((item) => item.ingredient_name.trim())
+      .map((item) => ({ ingredient_name: item.ingredient_name.trim(), amount_per_batch: item.amount_per_batch, unit: item.unit || "ml" }))
+      .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))
+    return JSON.stringify(normalize(nextIngredients)) !== JSON.stringify(normalize(premix.recipe))
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (thresholdBottles > targetBottles) { setError("Minimum threshold cannot exceed target stock."); return }
+    const nextIngredients = ingredients
+      .filter((item) => item.ingredient_name.trim().length > 0)
+      .map((item) => ({ ingredient_name: item.ingredient_name, amount_per_batch: item.amount_per_batch, unit: item.unit }))
+    if (mode === "edit" && hasRecipeChanged(nextIngredients) && !window.confirm("Replace this premix recipe? The current recipe lines will be replaced transactionally.")) return
     setError(null)
     startTransition(async () => {
       try {
@@ -93,8 +109,10 @@ export function EditPremixModal({
           current_bottles: currentBottles,
           target_bottles: targetBottles,
           threshold_bottles: thresholdBottles,
+          bottles_per_batch: bottlesPerBatch,
           preparation_notes: notes || null,
-          ingredients: ingredients.filter((i) => i.ingredient_name.trim().length > 0).map(({ rowId: _, ...item }) => item),
+          prep_deadline: prepDeadline || null,
+          ingredients: nextIngredients,
         }
         if (mode === "create") await createPremix(payload)
         else await updatePremix({ premix_id: premix.premix_id, ...payload })
@@ -142,6 +160,10 @@ export function EditPremixModal({
                   required
                 />
               </div>
+              <div className="form-group">
+                <label htmlFor="edit-yield">Bottles per Batch</label>
+                <input id="edit-yield" type="number" min="0.01" step="0.01" value={bottlesPerBatch} onChange={(e) => setBottlesPerBatch(Number(e.target.value))} required />
+              </div>
 
               <div className="form-group">
                 <label htmlFor="edit-target">Target Stock</label>
@@ -181,6 +203,12 @@ export function EditPremixModal({
               placeholder="e.g. Infuse for 24h, fine strain before bottling"
               onChange={(e) => setNotes(e.target.value)}
             />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="edit-prep-deadline">Prepare by (optional)</label>
+            <input id="edit-prep-deadline" type="date" value={prepDeadline} onChange={(e) => setPrepDeadline(e.target.value)} />
+            <span className="form-hint">Premixes due by this date appear in the production plan.</span>
           </div>
 
           <fieldset className="fieldset-ingredients">

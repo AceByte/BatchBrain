@@ -1567,7 +1567,7 @@ async function syncCocktails() {
   try {
     // Get existing cocktails
     const existing = await sql`SELECT id, name FROM cocktails`
-    const existingIds = new Set(existing.map((c: any) => c.id))
+    const existingIds = new Set(existing.map((c: { id: string }) => c.id))
 
     console.log(`Found ${existing.length} existing cocktails`)
 

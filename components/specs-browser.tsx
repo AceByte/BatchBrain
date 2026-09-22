@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react"
 import type { CocktailCategory } from "@/lib/db"
 import { EditSpecModal, type SpecEditData } from "./edit-spec-modal"
-import { archiveCocktail } from "@/app/actions"
+import { CocktailArchiveAction } from "./cocktail-archive-action"
+import { CsvExportButton } from "./csv-export-button"
 
 type SpecIngredient = { id: number; ingredient: string; ml: number }
 type SpecMeta = { label: string; value: string }
@@ -37,6 +38,16 @@ const CATEGORY_LABEL: Record<CocktailCategory, string> = {
   SEASONAL: "Seasonal",
   SIGNATURE: "Signature",
   INGREDIENTS: "Ingredients",
+}
+
+function metaValue(card: SpecCard, label: string) {
+  return card.meta.find((item) => item.label.toLowerCase() === label.toLowerCase())?.value || "N/A"
+}
+
+function printMethod(card: SpecCard) {
+  const technique = metaValue(card, "Technique")
+  const straining = metaValue(card, "Straining")
+  return straining !== "N/A" ? `${technique} / ${straining}` : technique
 }
 
 export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
@@ -84,6 +95,11 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
     })).filter((g) => g.items.length > 0)
   }, [filtered])
 
+  const printCards = useMemo(() => {
+    if (printMode === "single" && printId) return cards.filter((card) => card.id === printId)
+    return filtered
+  }, [cards, filtered, printId, printMode])
+
   function openEditModal(c: SpecCard) {
     setEditingSpec({
       id: c.id,
@@ -101,8 +117,9 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
 
   return (
     <>
+      <div className="specs-ui">
       <div className="controls">
-        <div className="controls-row"><span className="controls-label">Cocktail library</span><div className="controls-actions"><button type="button" className="btn-secondary" onClick={printVisibleSpecs}>Print shown specs</button><button type="button" className="btn-primary" onClick={() => setAddingCocktail(true)}>+ Add Cocktail</button></div></div>
+        <div className="controls-row"><span className="controls-label">Cocktail library</span><div className="controls-actions"><CsvExportButton filename="batchbrain-cocktail-specs.csv" headers={["Cocktail", "Category", "Ingredients", "Technique", "Glass", "Straining", "Garnish", "Extras"]} rows={filtered.map((card) => [card.name, CATEGORY_LABEL[card.category], card.ingredients.map((item) => `${item.ml} ml ${item.ingredient}`).join(" | "), metaValue(card, "Technique"), metaValue(card, "Glass"), metaValue(card, "Straining"), metaValue(card, "Garnish"), card.extras])} label="Export specs" /><button type="button" className="btn-secondary" onClick={printVisibleSpecs}>Print shown specs</button><button type="button" className="btn-primary" onClick={() => setAddingCocktail(true)}>+ Add Cocktail</button></div></div>
         <input
           type="search"
           className="search"
@@ -163,7 +180,7 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
                       Edit
                     </button>
                     <button type="button" className="btn-quiet" onClick={() => printSpec(c.id)} aria-label={`Print spec for ${c.name}`}>Print</button>
-                    <form action={archiveCocktail}><input type="hidden" name="id" value={c.id} /><button type="submit" className="btn-quiet">Archive</button></form>
+                    <CocktailArchiveAction id={c.id} mode="archive" />
                   </div>
                   {c.ingredients.length === 0 ? (
                     <p className="muted">No spec recorded.</p>
@@ -231,6 +248,28 @@ export function SpecsBrowser({ cards }: { cards: SpecCard[] }) {
         ))
       )}
       </div>
+      </div>
+
+      <section className={`spec-print-sheet ${printMode ? "print-active" : ""}`} aria-label="Printable cocktail specs">
+        <h1>Spec Sheet</h1>
+        <table>
+          <thead>
+            <tr><th>Cocktail</th><th>Ingredients</th><th>Glass</th><th>ICE</th><th>Method</th><th>Garnish</th></tr>
+          </thead>
+          <tbody>
+            {printCards.map((card) => (
+              <tr key={card.id}>
+                <td className="print-cocktail-name">{card.name}</td>
+                <td>{card.ingredients.map((item) => <div key={item.id}>{item.ml} ml {item.ingredient}</div>)}{card.extras ? <div>{card.extras}</div> : null}</td>
+                <td>Glass: {metaValue(card, "Glass")}</td>
+                <td>ICE: {metaValue(card, "Ice")}</td>
+                <td>Method: {printMethod(card)}</td>
+                <td>Garnish: {metaValue(card, "Garnish")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
 
       {editingSpec && (
         <EditSpecModal spec={editingSpec} onClose={() => setEditingSpec(null)} />

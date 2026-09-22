@@ -74,15 +74,47 @@ body {
   .action-input-group input { min-width: 0; }
 }
 
+.spec-print-sheet { display: none; }
+
 @media print {
-  @page { margin: 12mm; size: A4; }
-  nav, .page-head, .controls, .category-title, .btn-edit-icon, .btn-quiet, form, .modal-backdrop { display: none !important; }
+  @page { margin: 12mm; size: A4 portrait; }
+  nav, .page-head, .specs-ui, .modal-backdrop { display: none !important; }
   body, main { background: #fff !important; color: #111 !important; padding: 0 !important; max-width: none !important; }
-  .category, .grid { display: block !important; }
-  .card { display: none !important; box-shadow: none !important; border: 1px solid #bbb !important; break-inside: avoid; }
-  .card.print-target { display: block !important; }
-  .recipe li, .spec-details li { background: #fff !important; border-bottom: 1px solid #ddd; }
-  .notes, .meta-label, .amount { color: #333 !important; }
+  .spec-print-sheet { display: none !important; font-family: Arial, Helvetica, sans-serif; color: #111; }
+  .spec-print-sheet.print-active { display: block !important; }
+  .spec-print-sheet h1 {
+    display: block;
+    margin: 0 0 9mm;
+    text-align: center;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18pt;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .spec-print-sheet table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 8.5pt;
+    line-height: 1.12;
+  }
+  .spec-print-sheet th,
+  .spec-print-sheet td {
+    border: 0.6pt solid #111;
+    padding: 2.2mm 1.5mm;
+    vertical-align: top;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+  .spec-print-sheet th { font-weight: 700; }
+  .spec-print-sheet th:nth-child(1), .spec-print-sheet td:nth-child(1) { width: 18%; }
+  .spec-print-sheet th:nth-child(2), .spec-print-sheet td:nth-child(2) { width: 24%; }
+  .spec-print-sheet th:nth-child(3), .spec-print-sheet td:nth-child(3) { width: 14%; }
+  .spec-print-sheet th:nth-child(4), .spec-print-sheet td:nth-child(4) { width: 13%; }
+  .spec-print-sheet th:nth-child(5), .spec-print-sheet td:nth-child(5) { width: 17%; }
+  .spec-print-sheet th:nth-child(6), .spec-print-sheet td:nth-child(6) { width: 14%; }
+  .spec-print-sheet tr { break-inside: avoid; page-break-inside: avoid; }
+  .spec-print-sheet td > div + div { margin-top: 0.4mm; }
 }
 
 /* Nav */
@@ -1610,6 +1642,23 @@ form.inline button:hover {
   border-top: 1px solid var(--border);
 }
 
+.stock-actions-table {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.stock-action-message {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.stock-action-message.success { color: var(--success); }
+.stock-action-message.error { color: var(--danger); }
+
+.archive-action { display: inline-flex; align-items: center; gap: 0.35rem; }
+
 .form-error {
   margin: 0;
   padding: 0.65rem 0.75rem;
@@ -1690,4 +1739,56 @@ form.inline button:hover {
   .page-head-stock { align-items: flex-start; flex-direction: column; }
   .stock-summary { width: 100%; }
   .summary-item { flex: 1; }
+}
+ .offline-banner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 0.65rem 1rem;
+  background: #fff3cd;
+  color: #664d03;
+  border-bottom: 1px solid #ffda6a;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.empty-state {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 42rem;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px dashed var(--border, #d6d9df);
+  border-radius: 1rem;
+  text-align: center;
+}
+
+.empty-state .btn-primary {
+  justify-self: center;
+}
+
+.alias-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.alias-list {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.alias-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+@media (max-width: 640px) {
+  .alias-form, .alias-row { grid-template-columns: 1fr; }
 }

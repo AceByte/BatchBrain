@@ -2,11 +2,13 @@
   "name": "batchbrain",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "node ./node_modules/eslint/bin/eslint.js app components lib tests",
+    "test": "node --test --experimental-strip-types tests/business-rules.test.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.1.0",
@@ -19,6 +21,8 @@
     "@types/node": "26.1.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.5",
     "typescript": "5.9.3"
   }
 }
