@@ -173,7 +173,7 @@ export async function getAnalytics() {
              target_bottles::float8 AS target_bottles,
              threshold_bottles::float8 AS threshold_bottles
       FROM premixes
-      ORDER BY (current_bottles::float8 / NULLIF(target_bottles, 0)) ASC
+      ORDER BY (current_bottles::float8 / NULLIF(target_bottles, 0)) ASC NULLS FIRST
     `,
     sql`
       SELECT premix_id, sum(delta)::float8 AS net_delta

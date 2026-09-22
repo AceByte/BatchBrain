@@ -1,6 +1,16 @@
-import { neon } from "@neondatabase/serverless"
+import { neon, type NeonQueryFunction } from "@neondatabase/serverless"
 
-export const sql = neon(process.env.DATABASE_URL || "postgres://placeholder:placeholder@localhost:5432/placeholder")
+const databaseUrl = process.env.DATABASE_URL
+
+function missingDatabaseUrl(): never {
+  throw new Error("DATABASE_URL is required. Configure a Neon/Postgres connection before starting BatchBrain.")
+}
+
+// Keep module evaluation safe during `next build`; the first database operation
+// still fails immediately and with an actionable configuration error.
+export const sql = databaseUrl
+  ? neon(databaseUrl)
+  : Object.assign(missingDatabaseUrl, { transaction: missingDatabaseUrl }) as unknown as NeonQueryFunction<false, false>
 
 export type Premix = {
   premix_id: string

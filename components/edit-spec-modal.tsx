@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useEffect, useRef, useState, useTransition } from "react"
 import type { CocktailCategory } from "@/lib/db"
 import { createCocktail, updateCocktailSpec } from "@/app/actions"
 
@@ -27,6 +27,8 @@ export function EditSpecModal({
   mode?: "edit" | "create"
 }) {
   const [isPending, startTransition] = useTransition()
+  const modalRef = useRef<HTMLDivElement>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const [name, setName] = useState(spec.name)
   const [category, setCategory] = useState<CocktailCategory>(spec.category)
@@ -37,9 +39,24 @@ export function EditSpecModal({
   const [garnish, setGarnish] = useState(spec.garnish)
   const [serveExtras, setServeExtras] = useState(spec.serve_extras)
 
-  const [ingredients, setIngredients] = useState<{ ingredient: string; ml: number }[]>(
-    spec.ingredients.length > 0 ? spec.ingredients : [{ ingredient: "", ml: 0 }]
+  const [ingredients, setIngredients] = useState<{ rowId: string; ingredient: string; ml: number }[]>(
+    spec.ingredients.length > 0 ? spec.ingredients.map((item) => ({ ...item, rowId: crypto.randomUUID() })) : [{ rowId: crypto.randomUUID(), ingredient: "", ml: 0 }]
   )
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose()
+      if (event.key !== "Tab" || !modalRef.current) return
+      const focusable = [...modalRef.current.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])')]
+      if (!focusable.length) return
+      const first = focusable[0], last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+    }
+    window.addEventListener("keydown", onKeyDown)
+    modalRef.current?.querySelector<HTMLElement>("input, button")?.focus()
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [onClose])
 
   function handleIngredientChange(index: number, field: "ingredient" | "ml", value: string | number) {
     setIngredients((prev) => {
@@ -50,7 +67,7 @@ export function EditSpecModal({
   }
 
   function handleAddIngredient() {
-    setIngredients((prev) => [...prev, { ingredient: "", ml: 0 }])
+    setIngredients((prev) => [...prev, { rowId: crypto.randomUUID(), ingredient: "", ml: 0 }])
   }
 
   function handleRemoveIngredient(index: number) {
@@ -59,29 +76,28 @@ export function EditSpecModal({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setError(null)
     startTransition(async () => {
-      const payload = {
-        name,
-        category,
-        is_batched: isBatched,
-        technique: technique || null,
-        glassware: glassware || null,
-        straining: straining || null,
-        garnish: garnish || null,
-        serve_extras: serveExtras || null,
-        ingredients: ingredients.filter((i) => i.ingredient.trim().length > 0),
+      try {
+        const payload = {
+          name, category, is_batched: isBatched, technique: technique || null, glassware: glassware || null,
+          straining: straining || null, garnish: garnish || null, serve_extras: serveExtras || null,
+          ingredients: ingredients.filter((i) => i.ingredient.trim().length > 0).map(({ rowId: _, ...item }) => item),
+        }
+        if (mode === "create") await createCocktail(payload)
+        else await updateCocktailSpec({ id: spec.id, ...payload })
+        onClose()
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Unable to save the cocktail. Please try again.")
       }
-      if (mode === "create") await createCocktail(payload)
-      else await updateCocktailSpec({ id: spec.id, ...payload })
-      onClose()
     })
   }
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div ref={modalRef} className="modal-content" role="dialog" aria-modal="true" aria-labelledby="spec-modal-title" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>{mode === "create" ? "Add Cocktail" : `Edit Spec: ${spec.name}`}</h2>
+          <h2 id="spec-modal-title">{mode === "create" ? "Add Cocktail" : `Edit Spec: ${spec.name}`}</h2>
           <button type="button" className="btn-close" onClick={onClose}>
             &times;
           </button>
@@ -190,7 +206,7 @@ export function EditSpecModal({
             <legend>Recipe Ingredients (ml)</legend>
             <div className="ingredients-editor">
               {ingredients.map((ing, idx) => (
-                <div key={idx} className="ingredient-row">
+                <div key={ing.rowId} className="ingredient-row">
                   <input
                     type="text"
                     placeholder="Ingredient Name"
@@ -222,6 +238,8 @@ export function EditSpecModal({
               </button>
             </div>
           </fieldset>
+
+          {error ? <p className="form-error" role="alert">{error}</p> : null}
 
           <div className="modal-footer">
             <button type="button" className="btn-secondary" onClick={onClose} disabled={isPending}>

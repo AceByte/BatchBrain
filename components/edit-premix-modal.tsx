@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useEffect, useRef, useState, useTransition } from "react"
 import type { RecipeItem } from "@/lib/db"
 import { createPremix, updatePremix } from "@/app/actions"
 
@@ -24,6 +24,8 @@ export function EditPremixModal({
   mode?: "edit" | "create"
 }) {
   const [isPending, startTransition] = useTransition()
+  const modalRef = useRef<HTMLDivElement>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const [name, setName] = useState(premix.name)
   const [currentBottles, setCurrentBottles] = useState(premix.current_bottles)
@@ -32,16 +34,33 @@ export function EditPremixModal({
   const [notes, setNotes] = useState(premix.preparation_notes || "")
 
   const [ingredients, setIngredients] = useState<
-    { ingredient_name: string; amount_per_batch: number; unit: string }[]
+    { rowId: string; ingredient_name: string; amount_per_batch: number; unit: string }[]
   >(
     premix.recipe.length > 0
       ? premix.recipe.map((r) => ({
+          rowId: crypto.randomUUID(),
           ingredient_name: r.ingredient_name,
           amount_per_batch: r.amount_per_batch,
           unit: r.unit || "ml",
         }))
-      : [{ ingredient_name: "", amount_per_batch: 0, unit: "ml" }]
+      : [{ rowId: crypto.randomUUID(), ingredient_name: "", amount_per_batch: 0, unit: "ml" }]
   )
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose()
+      if (event.key !== "Tab" || !modalRef.current) return
+      const focusable = [...modalRef.current.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])')]
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+    }
+    window.addEventListener("keydown", onKeyDown)
+    modalRef.current?.querySelector<HTMLElement>("input, button")?.focus()
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [onClose])
 
   function handleIngredientChange(
     index: number,
@@ -56,7 +75,7 @@ export function EditPremixModal({
   }
 
   function handleAddIngredient() {
-    setIngredients((prev) => [...prev, { ingredient_name: "", amount_per_batch: 0, unit: "ml" }])
+    setIngredients((prev) => [...prev, { rowId: crypto.randomUUID(), ingredient_name: "", amount_per_batch: 0, unit: "ml" }])
   }
 
   function handleRemoveIngredient(index: number) {
@@ -65,26 +84,32 @@ export function EditPremixModal({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (thresholdBottles > targetBottles) { setError("Minimum threshold cannot exceed target stock."); return }
+    setError(null)
     startTransition(async () => {
-      const payload = {
-        name,
-        current_bottles: currentBottles,
-        target_bottles: targetBottles,
-        threshold_bottles: thresholdBottles,
-        preparation_notes: notes || null,
-        ingredients: ingredients.filter((i) => i.ingredient_name.trim().length > 0),
+      try {
+        const payload = {
+          name,
+          current_bottles: currentBottles,
+          target_bottles: targetBottles,
+          threshold_bottles: thresholdBottles,
+          preparation_notes: notes || null,
+          ingredients: ingredients.filter((i) => i.ingredient_name.trim().length > 0).map(({ rowId: _, ...item }) => item),
+        }
+        if (mode === "create") await createPremix(payload)
+        else await updatePremix({ premix_id: premix.premix_id, ...payload })
+        onClose()
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Unable to save the premix. Please try again.")
       }
-      if (mode === "create") await createPremix(payload)
-      else await updatePremix({ premix_id: premix.premix_id, ...payload })
-      onClose()
     })
   }
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div ref={modalRef} className="modal-content" role="dialog" aria-modal="true" aria-labelledby="premix-modal-title" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>{mode === "create" ? "Add Premix" : `Edit Premix: ${premix.name}`}</h2>
+          <h2 id="premix-modal-title">{mode === "create" ? "Add Premix" : `Edit Premix: ${premix.name}`}</h2>
           <button type="button" className="btn-close" onClick={onClose}>
             &times;
           </button>
@@ -111,6 +136,7 @@ export function EditPremixModal({
                   id="edit-current"
                   type="number"
                   step="0.01"
+                  min="0"
                   value={currentBottles}
                   onChange={(e) => setCurrentBottles(Number(e.target.value))}
                   required
@@ -123,6 +149,7 @@ export function EditPremixModal({
                   id="edit-target"
                   type="number"
                   step="0.01"
+                  min="0"
                   value={targetBottles}
                   onChange={(e) => setTargetBottles(Number(e.target.value))}
                   required
@@ -135,6 +162,8 @@ export function EditPremixModal({
                   id="edit-threshold"
                   type="number"
                   step="0.01"
+                  min="0"
+                  max={targetBottles}
                   value={thresholdBottles}
                   onChange={(e) => setThresholdBottles(Number(e.target.value))}
                   required
@@ -158,7 +187,7 @@ export function EditPremixModal({
             <legend>Recipe Ingredients per Batch</legend>
             <div className="ingredients-editor">
               {ingredients.map((ing, idx) => (
-                <div key={idx} className="ingredient-row">
+                <div key={ing.rowId} className="ingredient-row">
                   <input
                     type="text"
                     placeholder="Ingredient Name"
@@ -198,6 +227,8 @@ export function EditPremixModal({
               </button>
             </div>
           </fieldset>
+
+          {error ? <p className="form-error" role="alert">{error}</p> : null}
 
           <div className="modal-footer">
             <button type="button" className="btn-secondary" onClick={onClose} disabled={isPending}>

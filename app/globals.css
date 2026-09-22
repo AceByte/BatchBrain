@@ -1610,6 +1610,16 @@ form.inline button:hover {
   border-top: 1px solid var(--border);
 }
 
+.form-error {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(255, 107, 107, 0.45);
+  border-radius: var(--radius-sm);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
 /* Mobile */
 @media (max-width: 640px) {
   nav {

@@ -4,6 +4,11 @@ import { sql } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
 const slugify = (value: string) => value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
+const roundBottles = (value: number) => Math.round(value * 100) / 100
+
+function requireFiniteNumber(value: number, label: string) {
+  if (!Number.isFinite(value)) throw new Error(`${label} must be a valid number.`)
+}
 
 function refreshPages() {
   revalidatePath("/")
@@ -18,25 +23,21 @@ export async function adjustStock(formData: FormData) {
   const newValue = Number(formData.get("new_value"))
   const reason = String(formData.get("reason") || "manual")
 
+  requireFiniteNumber(newValue, "Stock value")
   const current = await sql`
     SELECT name, current_bottles::float8 AS current_bottles
     FROM premixes WHERE premix_id = ${premixId}
   `
-  if (current.length === 0) return
+  if (current.length === 0) throw new Error("Premix not found. Refresh the page and try again.")
   const oldValue = current[0].current_bottles as number
   const name = current[0].name as string
 
-  await sql`
-    UPDATE premixes
-    SET current_bottles = ${newValue}, updated_at = now()
-    WHERE premix_id = ${premixId}
-  `
-  await sql`
-    INSERT INTO stock_adjustment_logs
-      (premix_id, premix_name, old_value, new_value, delta, reason, created_at)
-    VALUES
-      (${premixId}, ${name}, ${oldValue}, ${newValue}, ${newValue - oldValue}, ${reason}, now())
-  `
+  const roundedValue = roundBottles(newValue)
+  await sql.transaction([
+    sql`UPDATE premixes SET current_bottles = ${roundedValue}, updated_at = now() WHERE premix_id = ${premixId}`,
+    sql`INSERT INTO stock_adjustment_logs (premix_id, premix_name, old_value, new_value, delta, reason, created_at)
+        VALUES (${premixId}, ${name}, ${oldValue}, ${roundedValue}, ${roundBottles(roundedValue - oldValue)}, ${reason}, now())`,
+  ])
   refreshPages()
 }
 
@@ -45,19 +46,17 @@ export async function logProduction(formData: FormData) {
   const premixId = String(formData.get("premix_id"))
   const produced = Number(formData.get("produced_bottles"))
   const notes = String(formData.get("notes") || "")
-  if (!produced) return
+  requireFiniteNumber(produced, "Produced bottles")
+  if (produced <= 0) throw new Error("Produced bottles must be greater than zero.")
 
-  await sql`
-    UPDATE premixes
-    SET current_bottles = current_bottles + ${produced}, updated_at = now()
-    WHERE premix_id = ${premixId}
-  `
-  await sql`
-    INSERT INTO production_logs
-      (premix_id, produced_bottles, production_date, notes, logged_at)
-    VALUES
-      (${premixId}, ${produced}, current_date, ${notes}, now())
-  `
+  const existing = await sql`SELECT premix_id FROM premixes WHERE premix_id = ${premixId}`
+  if (existing.length === 0) throw new Error("Premix not found. Refresh the page and try again.")
+  const roundedProduced = roundBottles(produced)
+  await sql.transaction([
+    sql`UPDATE premixes SET current_bottles = round((current_bottles + ${roundedProduced})::numeric, 2), updated_at = now() WHERE premix_id = ${premixId}`,
+    sql`INSERT INTO production_logs (premix_id, produced_bottles, production_date, notes, logged_at)
+        VALUES (${premixId}, ${roundedProduced}, current_date, ${notes}, now())`,
+  ])
   refreshPages()
 }
 
@@ -72,27 +71,16 @@ export async function updatePremix(data: {
   ingredients: { ingredient_name: string; amount_per_batch: number; unit: string }[]
 }) {
   const { premix_id, name, current_bottles, target_bottles, threshold_bottles, preparation_notes, ingredients } = data
+  requireFiniteNumber(current_bottles, "Current stock")
+  requireFiniteNumber(target_bottles, "Target stock")
+  requireFiniteNumber(threshold_bottles, "Minimum threshold")
+  if (threshold_bottles > target_bottles) throw new Error("Minimum threshold cannot exceed target stock.")
 
-  await sql`
-    UPDATE premixes
-    SET name = ${name},
-        current_bottles = ${current_bottles},
-        target_bottles = ${target_bottles},
-        threshold_bottles = ${threshold_bottles},
-        preparation_notes = ${preparation_notes || null},
-        updated_at = now()
-    WHERE premix_id = ${premix_id}
-  `
-
-  await sql`DELETE FROM premix_recipe_items WHERE premix_id = ${premix_id}`
-  for (const item of ingredients) {
-    if (item.ingredient_name.trim()) {
-      await sql`
-        INSERT INTO premix_recipe_items (premix_id, ingredient_name, amount_per_batch, unit)
-        VALUES (${premix_id}, ${item.ingredient_name.trim()}, ${item.amount_per_batch || 0}, ${item.unit || "ml"})
-      `
-    }
-  }
+  await sql.transaction((tx) => [
+    tx`UPDATE premixes SET name = ${name}, current_bottles = ${roundBottles(current_bottles)}, target_bottles = ${roundBottles(target_bottles)}, threshold_bottles = ${roundBottles(threshold_bottles)}, preparation_notes = ${preparation_notes || null}, updated_at = now() WHERE premix_id = ${premix_id}`,
+    tx`DELETE FROM premix_recipe_items WHERE premix_id = ${premix_id}`,
+    ...ingredients.filter((item) => item.ingredient_name.trim()).map((item) => tx`INSERT INTO premix_recipe_items (premix_id, ingredient_name, amount_per_batch, unit) VALUES (${premix_id}, ${item.ingredient_name.trim()}, ${item.amount_per_batch || 0}, ${item.unit || "ml"})`),
+  ])
 
   refreshPages()
 }
@@ -112,74 +100,62 @@ export async function updateCocktailSpec(data: {
 }) {
   const { id, name, category, technique, glassware, straining, garnish, serve_extras, is_batched, ingredients } = data
 
-  await sql`
-    UPDATE cocktails
-    SET name = ${name},
-        category = ${category},
-        technique = ${technique || null},
-        glassware = ${glassware || null},
-        straining = ${straining || null},
-        garnish = ${garnish || null},
-        serve_extras = ${serve_extras || null},
-        is_batched = ${is_batched}
-    WHERE id = ${id}
-  `
-
-  await sql`DELETE FROM cocktail_specs WHERE cocktail_id = ${id}`
-  for (const item of ingredients) {
-    if (item.ingredient.trim()) {
-      await sql`
-        INSERT INTO cocktail_specs (cocktail_id, ingredient, ml)
-        VALUES (${id}, ${item.ingredient.trim()}, ${item.ml || 0})
-      `
-    }
-  }
+  await sql.transaction((tx) => [
+    tx`UPDATE cocktails SET name = ${name}, category = ${category}, technique = ${technique || null}, glassware = ${glassware || null}, straining = ${straining || null}, garnish = ${garnish || null}, serve_extras = ${serve_extras || null}, is_batched = ${is_batched} WHERE id = ${id}`,
+    tx`DELETE FROM cocktail_specs WHERE cocktail_id = ${id}`,
+    ...ingredients.filter((item) => item.ingredient.trim()).map((item) => tx`INSERT INTO cocktail_specs (cocktail_id, ingredient, ml) VALUES (${id}, ${item.ingredient.trim()}, ${item.ml || 0})`),
+  ])
 
   refreshPages()
 }
 
 export async function createPremix(data: Omit<Parameters<typeof updatePremix>[0], "premix_id">) {
   const premix_id = slugify(data.name)
-  await sql`
-    INSERT INTO premixes (premix_id, name, current_bottles, target_bottles, threshold_bottles, preparation_notes, updated_at)
-    VALUES (${premix_id}, ${data.name}, ${data.current_bottles}, ${data.target_bottles}, ${data.threshold_bottles}, ${data.preparation_notes}, now())
-  `
-  for (const item of data.ingredients.filter((item) => item.ingredient_name.trim())) {
-    await sql`INSERT INTO premix_recipe_items (premix_id, ingredient_name, amount_per_batch, unit) VALUES (${premix_id}, ${item.ingredient_name.trim()}, ${item.amount_per_batch || 0}, ${item.unit || "ml"})`
-  }
+  if (!premix_id) throw new Error("Enter a premix name containing letters or numbers.")
+  if (data.threshold_bottles > data.target_bottles) throw new Error("Minimum threshold cannot exceed target stock.")
+  const existing = await sql`SELECT premix_id FROM premixes WHERE premix_id = ${premix_id}`
+  if (existing.length > 0) throw new Error("A premix with this name already exists.")
+  await sql.transaction((tx) => [
+    tx`INSERT INTO premixes (premix_id, name, current_bottles, target_bottles, threshold_bottles, preparation_notes, updated_at) VALUES (${premix_id}, ${data.name}, ${roundBottles(data.current_bottles)}, ${roundBottles(data.target_bottles)}, ${roundBottles(data.threshold_bottles)}, ${data.preparation_notes}, now())`,
+    ...data.ingredients.filter((item) => item.ingredient_name.trim()).map((item) => tx`INSERT INTO premix_recipe_items (premix_id, ingredient_name, amount_per_batch, unit) VALUES (${premix_id}, ${item.ingredient_name.trim()}, ${item.amount_per_batch || 0}, ${item.unit || "ml"})`),
+  ])
   refreshPages()
 }
 
 export async function createCocktail(data: Omit<Parameters<typeof updateCocktailSpec>[0], "id">) {
   const id = slugify(data.name)
-  await sql`
-    INSERT INTO cocktails (id, name, category, technique, glassware, straining, garnish, serve_extras, is_batched, updated_at)
-    VALUES (${id}, ${data.name}, ${data.category}, ${data.technique}, ${data.glassware}, ${data.straining}, ${data.garnish}, ${data.serve_extras}, ${data.is_batched}, now())
-  `
-  for (const item of data.ingredients.filter((item) => item.ingredient.trim())) {
-    await sql`INSERT INTO cocktail_specs (cocktail_id, ingredient, ml) VALUES (${id}, ${item.ingredient.trim()}, ${item.ml || 0})`
-  }
+  if (!id) throw new Error("Enter a cocktail name containing letters or numbers.")
+  const existing = await sql`SELECT id FROM cocktails WHERE id = ${id}`
+  if (existing.length > 0) throw new Error("A cocktail with this name already exists.")
+  await sql.transaction((tx) => [
+    tx`INSERT INTO cocktails (id, name, category, technique, glassware, straining, garnish, serve_extras, is_batched, updated_at) VALUES (${id}, ${data.name}, ${data.category}, ${data.technique}, ${data.glassware}, ${data.straining}, ${data.garnish}, ${data.serve_extras}, ${data.is_batched}, now())`,
+    ...data.ingredients.filter((item) => item.ingredient.trim()).map((item) => tx`INSERT INTO cocktail_specs (cocktail_id, ingredient, ml) VALUES (${id}, ${item.ingredient.trim()}, ${item.ml || 0})`),
+  ])
   refreshPages()
 }
 
 export async function archiveCocktail(formData: FormData) {
   const id = String(formData.get("id"))
-  await sql`INSERT INTO archived_cocktails (id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category) SELECT id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category FROM cocktails WHERE id = ${id}`
-  await sql`INSERT INTO archived_cocktail_specs (cocktail_id, ingredient, ml, created_at) SELECT cocktail_id, ingredient, ml, created_at FROM cocktail_specs WHERE cocktail_id = ${id}`
-  await sql`INSERT INTO archived_cocktail_premix_specs (cocktail_id, premix_note, batch_note, created_at, updated_at) SELECT cocktail_id, premix_note, batch_note, created_at, updated_at FROM cocktail_premix_specs WHERE cocktail_id = ${id}`
-  await sql`DELETE FROM cocktail_premix_specs WHERE cocktail_id = ${id}`
-  await sql`DELETE FROM cocktail_specs WHERE cocktail_id = ${id}`
-  await sql`DELETE FROM cocktails WHERE id = ${id}`
+  await sql.transaction([
+    sql`INSERT INTO archived_cocktails (id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category) SELECT id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category FROM cocktails WHERE id = ${id}`,
+    sql`INSERT INTO archived_cocktail_specs (cocktail_id, ingredient, ml, created_at) SELECT cocktail_id, ingredient, ml, created_at FROM cocktail_specs WHERE cocktail_id = ${id}`,
+    sql`INSERT INTO archived_cocktail_premix_specs (cocktail_id, premix_note, batch_note, created_at, updated_at) SELECT cocktail_id, premix_note, batch_note, created_at, updated_at FROM cocktail_premix_specs WHERE cocktail_id = ${id}`,
+    sql`DELETE FROM cocktail_premix_specs WHERE cocktail_id = ${id}`,
+    sql`DELETE FROM cocktail_specs WHERE cocktail_id = ${id}`,
+    sql`DELETE FROM cocktails WHERE id = ${id}`,
+  ])
   refreshPages()
 }
 
 export async function restoreCocktail(formData: FormData) {
   const id = String(formData.get("id"))
-  await sql`INSERT INTO cocktails (id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category) SELECT id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category FROM archived_cocktails WHERE id = ${id}`
-  await sql`INSERT INTO cocktail_specs (cocktail_id, ingredient, ml, created_at) SELECT cocktail_id, ingredient, ml, created_at FROM archived_cocktail_specs WHERE cocktail_id = ${id}`
-  await sql`INSERT INTO cocktail_premix_specs (cocktail_id, premix_note, batch_note, created_at, updated_at) SELECT cocktail_id, premix_note, batch_note, created_at, updated_at FROM archived_cocktail_premix_specs WHERE cocktail_id = ${id}`
-  await sql`DELETE FROM archived_cocktail_premix_specs WHERE cocktail_id = ${id}`
-  await sql`DELETE FROM archived_cocktail_specs WHERE cocktail_id = ${id}`
-  await sql`DELETE FROM archived_cocktails WHERE id = ${id}`
+  await sql.transaction([
+    sql`INSERT INTO cocktails (id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category) SELECT id, name, glassware, technique, straining, garnish, is_batched, serve_extras, created_at, updated_at, category FROM archived_cocktails WHERE id = ${id}`,
+    sql`INSERT INTO cocktail_specs (cocktail_id, ingredient, ml, created_at) SELECT cocktail_id, ingredient, ml, created_at FROM archived_cocktail_specs WHERE cocktail_id = ${id}`,
+    sql`INSERT INTO cocktail_premix_specs (cocktail_id, premix_note, batch_note, created_at, updated_at) SELECT cocktail_id, premix_note, batch_note, created_at, updated_at FROM archived_cocktail_premix_specs WHERE cocktail_id = ${id}`,
+    sql`DELETE FROM archived_cocktail_premix_specs WHERE cocktail_id = ${id}`,
+    sql`DELETE FROM archived_cocktail_specs WHERE cocktail_id = ${id}`,
+    sql`DELETE FROM archived_cocktails WHERE id = ${id}`,
+  ])
   refreshPages()
 }
